@@ -344,7 +344,19 @@ function publish(req,doc,old) {
   const message = createEventMessage(resourceType, method, doc, old);
 
   const query = {
-    _serviceGroup: getServiceGroup(req)
+/* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
+//we are filtering the HUB (subscriptions) using the eventType
+//Example entry in the HUB table in mongo
+/*
+        _id: 62dc3b6faeafd34b784a7d8c
+        callback: "http://10.220.239.92:8092/tmf-api/intent/v4/listener/intentCreateEvent"
+        id: "9cc219fb-65ea-42ee-9165-24feb6ba946b"
+        _query: "{"criteria":{"eventType":"IntentCreationNotification"},"options":{}}"
+        eventType: "IntentCreationNotification"
+*/
+//    _serviceGroup: getServiceGroup(req),
+eventType: message.eventType
+/* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
   };
     
   // Find subscribers for the serviceGroup
@@ -362,19 +374,20 @@ function publish(req,doc,old) {
 
 function notify(db,clients,message) {
   const EVENTS = "TMPEVENTS";
+
   db.collection(EVENTS)
   .insertOne(message)
   .then(() => {
-    // console.log("sendMessage: start processing");
+     console.log("sendMessage: start processing "+message);
     const promises = clients.map(client => processMessage(db,client,message));
 
-    const cleanup = function() {
+    const cleanup  
+    = function() {
        db.collection(EVENTS)
       .deleteOne(message)
       .then(() => {})
       .catch(err => console.log("notify clean-uperror=" + err))
     };
-
     Promise.all(promises)
     .then(() => {
       // console.log("sendMessage: finished processing - cleanup");
@@ -413,7 +426,7 @@ function processMessage(db,client,message) {
       rp({uri: client.callback, method: "POST", body: doc, json: true})
       .then(() => resolve())
       .catch(err => reject(err));
-      // console.log("processMessage: done");
+       console.log("processMessage: done");
     })
     .catch(err => {
       console.log("processMessage error=" + err);

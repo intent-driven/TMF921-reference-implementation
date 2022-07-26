@@ -51,6 +51,14 @@ exports.listIntentReport = function(req, res, next) {
   query = swaggerUtils.updateQueryServiceType(query, req,'intentId');
 
   const resourceType = getResponseType(req);
+  /* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
+  //The RI is not filtering intent report correctly using the intent ui
+  var intentId = {
+    'intent.id':req.swagger.params.intentId.value
+  }
+
+  query.criteria=intentId;
+  /* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
 
   const internalError =  new TError(TErrorEnum.INTERNAL_SERVER_ERROR, "Internal database error");
   
@@ -160,6 +168,11 @@ exports.retrieveIntentReport = function(req, res, next) {
 
   query = swaggerUtils.updateQueryServiceType(query, req,'id');
 
+   /* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
+  //The RI is not filtering intent report correctly using the intent report ui
+  query.criteria.id=req.swagger.params.id.value;
+ /* XXXXXXXXXXXXX Huawei IRC - end  XXXXXXXXXXXXXXXx*/
+  
   const resourceType = getResponseType(req);
 
   const internalError =  new TError(TErrorEnum.INTERNAL_SERVER_ERROR, "Internal database error");
@@ -218,19 +231,29 @@ exports.retrieveIntentReport = function(req, res, next) {
     .then(stats => {
       const totalSize=stats.count;
       db.collection(resourceType)
-      .find(query.criteria, query.options).toArray()
+   /* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
+   //Changed to findOne not many
+   .findOne(query.criteria, query.options)
       .then(doc => {
         doc = cleanPayloadServiceType(doc);
-        res.setHeader('X-Total-Count',totalSize);
-        res.setHeader('X-Result-Count',doc.length);
-        var skip = query.options.skip!==undefined ? parseInt(query.options.skip) : 0;
-        var limit;
-        if(query.options.limit!==undefined) limit = parseInt(query.options.limit);        
-        if(limit || skip>0) setLinks(res,query,skip,limit,totalSize);
+        //res.setHeader('X-Total-Count',totalSize);
+        //res.setHeader('X-Result-Count',doc.length);
+        //var skip = query.options.skip!==undefined ? parseInt(query.options.skip) : 0;
+        //var limit;
+        //if(query.options.limit!==undefined) limit = parseInt(query.options.limit);        
+        //if(limit || skip>0) setLinks(res,query,skip,limit,totalSize);
 
-        var code = 200;
-        if(limit && doc.length<totalSize) code=206;
-        sendDoc(res, code, doc);
+        //var code = 200;
+        //if(limit && doc.length<totalSize) code=206;
+        //sendDoc(res, code, doc);
+   /* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
+   if(doc) {
+          doc = cleanPayloadServiceType(doc);
+          console.log('doc: '+doc);
+          sendDoc(res, 200, doc)        
+        } else {
+            sendError(res, new TError(TErrorEnum.RESOURCE_NOT_FOUND,"No resource with given id found"));
+          }
       })
       .catch(error => {
         console.log("retrieveIntentReport: error=" + error);

@@ -30,6 +30,10 @@ const {TError, TErrorEnum, sendError} = require('../utils/errorUtils');
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 
+//fer
+const intentHandler = require('../handler/IntentHandler');
+const handlerUtils = require('../utils/handlerUtils');
+
 exports.createIntent = function(req, res, next) {
   /**
    * Creates a Intent
@@ -41,7 +45,7 @@ exports.createIntent = function(req, res, next) {
 
   console.log('createIntent :: ' + req.method + ' ' + req.url + ' ' + req.headers.host);
 
-  /* matching isRestfulCreate - argument intent */
+    /* matching isRestfulCreate - argument intent */
   
   const resourceType = getResponseType(req);
   const requestSchema = getPayloadSchema(req);
@@ -66,6 +70,13 @@ exports.createIntent = function(req, res, next) {
 
             sendDoc(res, 201, payload);
             notificationUtils.publish(req,payload);
+
+/* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
+// calls the intent handler for the knowledge extraction and storage
+
+            intentHandler.processIntent(req);
+/* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
+
           })
           .catch((error) => {
             console.log("createIntent: error=" + error);
@@ -83,7 +94,6 @@ exports.createIntent = function(req, res, next) {
     });
 
 
-
 };
 
 exports.deleteIntent = function(req, res, next) {
@@ -97,7 +107,7 @@ exports.deleteIntent = function(req, res, next) {
 
   console.log('deleteIntent :: ' + req.method + ' ' + req.url + ' ' + req.headers.host);
 
-  /* matching isRestfulDestroy */
+/* matching isRestfulDestroy */
 
   const id = String(req.swagger.params.id.value);
 
@@ -110,6 +120,13 @@ exports.deleteIntent = function(req, res, next) {
   const resourceType = getResponseType(req); 
 
   const internalError =  new TError(TErrorEnum.INTERNAL_SERVER_ERROR, "Internal database error");
+
+/* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
+// calls the intent handler for the deletetion of the triples in the knowledge base
+intentHandler.deleteIntent(query,resourceType);
+
+/* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
+
 
   mongoUtils.connect().then(db => {
     db.collection(resourceType)
@@ -124,7 +141,6 @@ exports.deleteIntent = function(req, res, next) {
       }).catch(error => sendError(res, internalError))
   })
   .catch(error => sendError(res, internalError));
-
 
 
 
@@ -355,6 +371,7 @@ exports.retrieveIntent = function(req, res, next) {
       .then(doc => {
         if(doc) {
           doc = cleanPayloadServiceType(doc);
+          console.log('doc: '+doc);
           sendDoc(res, 200, doc)
         } else {
           sendError(res, new TError(TErrorEnum.RESOURCE_NOT_FOUND,"No resource with given id found"));

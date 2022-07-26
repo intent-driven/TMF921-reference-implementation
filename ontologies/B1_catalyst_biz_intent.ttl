@@ -1,0 +1,102 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix icm: <http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#> .
+@prefix imo: <http://tio.models.tmforum.org/tio/v1.0.0/IntentManagementOntology#> .
+@prefix pbi: <http://tio.models.tmforum.org/tio/v1.0.0/ProposalBestIntent#> .
+@prefix cat: <http://www.operator.com/Catalog#> .
+@prefix spot: <http://www.sdo1.org/Models/DynamicpriceOntology#> .
+@prefix met: <http://www.sdo2.org/TelecomMetrics/Version_1.0#> .
+@prefix   t: <http://www.w3.org/2006/time#> .
+@prefix  ex: <http://www.example.org/IntentNamespace#> .
+@prefix iv: <https://tmforum.org/2021/07/intentValidity#> .
+@prefix itv: <https://tmforum.org/2021/07/intentTemporalValidity#> .
+@prefix cem:  <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# --- Intent ----------
+ex:B1_PSE_Biz_Intent1
+ a icm:Intent ;
+   rdfs:comment "Intent for ordering connectivity service via dynamic pricing";
+   imo:intentOwner ex:IntentManagerXYZ;
+   cem:layer "business";
+   icm:hasExpectation ex:PSE_Exp_delivery,
+                        ex:PSE_Exp_property,
+                        ex:PSE_Exp_proposal,
+                        ex:PSE_Exp_reporting; 
+   iv:hasValidity ex:PSE_temporalvalidity
+ .
+# --- Intent Validity ----------
+# How to model the fact we want the Intent NOW but we are willing to wait???
+ex:PSE_temporalvalidity
+ a itv:TemporalValidity ;
+      t:after [ a t:Instant ;  t:inXSDDateTimeStamp "2022-12-01T10:30:10+10:00"^^xsd:dateTime  ] 
+.
+
+# --- Delivery Expectation ----------
+ex:PSE_Exp_delivery
+ a icm:DeliveryExpectation ;
+   icm:target _:service ;
+   icm:params ex:PSE_Exp_delivery_Param_type;
+.
+ex:PSE_Exp_delivery_Param_type
+ a icm:DeliveryParam ;
+   icm:targetDescription cat:ConnectivityService_DynamicPrice 
+.
+
+# --- Proposal Expectation ----------
+# proposing 10$/hour
+ex:PSE_Exp_proposal
+ a pbi:ProposalExpectation ;
+   icm:target _:service ;
+   icm:params ex:PSE_Exp_property_Param_price ; 
+.
+ex:PSE_Exp_property_Param_price
+ a pbi:ProposalParam ;
+   spot:price [ icm:atMost [ spot:value "10" ; spot:unit spot:unitDollarHour  ] ];
+   pbi:proposingTime pbi:ProposeImmediately ;
+   pbi:proposingFrequency [ a t:Duration ; t:numericDuration "1" ; t:temporalUnit t:unitHour ] 
+.
+
+# --- Property Expectation ----------
+ex:PSE_Exp_property
+ a icm:PropertyExpectation ;
+   icm:target _:service ;
+   icm:params ex:PSE_Exp_property_Param_bandwidth , 
+               ex:PSE_Exp_property_Param_fromLocation ,
+               ex:PSE_Exp_property_Param_toLocation ;
+.
+ex:PSE_Exp_property_Param_bandwidth  
+ a icm:PropertyParam ;  
+   met:bandwidth [ icm:atLeast [ met:value "1" ; met:unit met:unitGBPS  ] ] ;
+.
+ex:PSE_Exp_property_Param_fromLocation
+ a icm:PropertyParam ;
+   spot:startLocation [ icm:exactly "locationA" ] ;
+.
+ex:PSE_Exp_property_Param_toLocation
+ a icm:PropertyParam ;
+   spot:endLocation [ icm:exactly "locationB" ] ;
+.
+
+# --- Reporting Expectation ----------
+ex:PSE_Exp_reporting
+ a icm:ReportingExpectation ;
+   icm:target ex:B1_PSE_Biz_Intent1 ;
+   icm:params ex:PSE_Exp_reporting_Param_interval,
+               ex:PSE_Exp_reporting_Param_event ;
+.
+ex:PSE_Exp_reporting_Param_interval
+ a icm:ReportingParam ;
+   icm:reportingInterval [ a t:Duration ;
+                                t:numericDuration 10 ;
+                                t:temporalUnit t:unitMinute ] .
+ex:PSE_Exp_reporting_Param_event              
+ a icm:ReportingParam ; 
+   icm:reportingEvent icm:ReportingIntervalExpired ,
+                        icm:IntentRejected ,
+                        icm:StateComplies ,
+                        icm:StateDegrades ,
+                        icm:HandlingEnded ,
+                        icm:UpdateRejected ,
+                        icm:UpdateFinished  ;
+.

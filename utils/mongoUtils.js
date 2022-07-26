@@ -46,8 +46,8 @@ function connectHelper(callback) {
 
   // We always want to make a validated TLS/SSL connection
   let options = {
-      ssl: true,
-      sslValidate: true,
+      ssl: false,
+      sslValidate: false,
       useNewUrlParser: true
   };
 

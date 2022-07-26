@@ -1,0 +1,6 @@
+{
+ "GRAPHDB_BASE_URL": "http://10.220.239.92:7200",
+ "GRAPHDB_REPOSITORY": "intent",
+ "GRAPHDB_USERNAME": "Test",
+ "GRAPHDB_PASSWORD": "Test"
+}

@@ -1,0 +1,13 @@
+{
+    "services": {
+        "compose-for-mongodb": [
+            {
+                "name": "local-mongodb-connector",
+                "label": "local-mongodb-connector",
+                "credentials": {
+                    "uri": "mongodb://10.220.239.92:27017/tmf"
+                }
+            }
+        ]
+    }
+}

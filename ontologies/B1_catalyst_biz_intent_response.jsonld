@@ -1,0 +1,424 @@
+[
+  {
+    "@id": "_:b0",
+    "http://www.w3.org/2006/time#inXSDDateTimeStamp": [
+      {
+        "@value": "2022-12-01T10:30:10+10:00",
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+      }
+    ]
+  },
+  {
+    "@id": "_:b1",
+    "@type": [
+      "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#DeliveryParam"
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportsAbout": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#PSE_Exp_delivery_Param_type"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#targetDescription": [
+      {
+        "@id": "http://www.operator.com/Catalog#ConnectivityService_DynamicPrice"
+      }
+    ]
+  },
+  {
+    "@id": "_:b10",
+    "@type": [
+      "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#ReportingParam"
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportsAbout": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#ExampleIntentXYZ_Exp_reporting_Param_interval"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportingIntervalLeft": [
+      {
+        "@id": "_:b12"
+      }
+    ]
+  },
+  {
+    "@id": "_:b11",
+    "@type": [
+      "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#ReportingParam"
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportsAbout": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#PSE_Exp_reporting_Param_event"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportingEvent": [
+      {
+        "@id": "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#ReportingIntervalExpired"
+      }
+    ]
+  },
+  {
+    "@id": "_:b12",
+    "@type": [
+      "http://www.w3.org/2006/time#Duration"
+    ],
+    "http://www.w3.org/2006/time#numericDuration": [
+      {
+        "@value": 0
+      }
+    ],
+    "http://www.w3.org/2006/time#temporalUnit": [
+      {
+        "@id": "http://www.w3.org/2006/time#unitMinute"
+      }
+    ]
+  },
+  {
+    "@id": "_:b2",
+    "@type": [
+      "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#PropertyParam"
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportsAbout": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#PSE_Exp_property_Param_price"
+      }
+    ],
+    "http://www.sdo1.org/Models/DynamicpriceOntology#price": [
+      {
+        "@id": "_:b3"
+      }
+    ]
+  },
+  {
+    "@id": "_:b3",
+    "http://www.sdo1.org/Models/DynamicpriceOntology#value": [
+      {
+        "@value": "9.3"
+      }
+    ],
+    "http://www.sdo1.org/Models/DynamicpriceOntology#unit": [
+      {
+        "@id": "http://www.sdo1.org/Models/DynamicpriceOntology#unitDollarHour"
+      }
+    ]
+  },
+  {
+    "@id": "_:b4",
+    "@type": [
+      "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#PropertyParam"
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportsAbout": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#PSE_Exp_property_Param_bandwidth"
+      }
+    ],
+    "http://www.sdo2.org/TelecomMetrics/Version_1.0#bandwidth": [
+      {
+        "@id": "_:b7"
+      }
+    ]
+  },
+  {
+    "@id": "_:b5",
+    "@type": [
+      "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#PropertyParam"
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportsAbout": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#PSE_Exp_property_Param_fromLocation"
+      }
+    ],
+    "http://www.sdo1.org/Models/DynamicpriceOntology#startLocation": [
+      {
+        "@id": "_:b8"
+      }
+    ]
+  },
+  {
+    "@id": "_:b6",
+    "@type": [
+      "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#PropertyParam"
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportsAbout": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#PSE_Exp_property_Param_toLocation"
+      }
+    ],
+    "http://www.sdo1.org/Models/DynamicpriceOntology#endLocation": [
+      {
+        "@id": "_:b9"
+      }
+    ]
+  },
+  {
+    "@id": "_:b7",
+    "http://www.sdo2.org/TelecomMetrics/Version_1.0#value": [
+      {
+        "@value": "1"
+      }
+    ],
+    "http://www.sdo2.org/TelecomMetrics/Version_1.0#unit": [
+      {
+        "@id": "http://www.sdo2.org/TelecomMetrics/Version_1.0#unitGBPS"
+      }
+    ]
+  },
+  {
+    "@id": "_:b8",
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#exactly": [
+      {
+        "@value": "locationA"
+      }
+    ]
+  },
+  {
+    "@id": "_:b9",
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#exactly": [
+      {
+        "@value": "locationA"
+      }
+    ]
+  },
+  {
+    "@id": "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#DeliveryExpectationReport"
+  },
+  {
+    "@id": "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#DeliveryParam"
+  },
+  {
+    "@id": "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#IntentReport"
+  },
+  {
+    "@id": "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#PropertyExpectationReport"
+  },
+  {
+    "@id": "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#PropertyParam"
+  },
+  {
+    "@id": "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#ReportingExpectationReport"
+  },
+  {
+    "@id": "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#ReportingIntervalExpired"
+  },
+  {
+    "@id": "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#ReportingParam"
+  },
+  {
+    "@id": "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#StateCompliant"
+  },
+  {
+    "@id": "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#StateNoUpdate"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#B1_PSE_Biz_Intent1"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#B1_PSE_Biz_Intent1_1",
+    "@type": [
+      "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#IntentReport"
+    ],
+    "http://www.w3.org/2000/01/rdf-schema#comment": [
+      {
+        "@value": "Intent report"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentManagementOntology#intentOwner": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#IntentManagerXYZ"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentManagementOntology#intentHandler": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#IntentManagerABC"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportsAbout": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#B1_PSE_Biz_Intent1"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportTimestamp": [
+      {
+        "@id": "_:b0"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#currentIntentHandlingState": [
+      {
+        "@id": "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#StateCompliant"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#currentIntentUpdateState": [
+      {
+        "@id": "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#StateNoUpdate"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportNumber": [
+      {
+        "@value": 1
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#hasExpectationReport": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#PSE_Exp_delivery_report"
+      },
+      {
+        "@id": "http://www.example.org/IntentNamespace#PSE_Exp_property_report"
+      },
+      {
+        "@id": "http://www.example.org/IntentNamespace#PSE_Exp_proposal_report"
+      },
+      {
+        "@id": "http://www.example.org/IntentNamespace#PSE_Exp_reporting_report"
+      }
+    ]
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#ExampleIntentXYZ_Exp_reporting_Param_interval"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#IntentManagerABC"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#IntentManagerXYZ"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#PSE_Exp_delivery"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#PSE_Exp_delivery_Param_type"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#PSE_Exp_delivery_report",
+    "@type": [
+      "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#DeliveryExpectationReport"
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportsAbout": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#PSE_Exp_delivery"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#targetReport": [
+      {
+        "@id": "http://www.operator.org/Inventory#ConnectivityService_000001"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#paramsCompliant": [
+      {
+        "@id": "_:b1"
+      }
+    ]
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#PSE_Exp_property"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#PSE_Exp_property_Param_bandwidth"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#PSE_Exp_property_Param_fromLocation"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#PSE_Exp_property_Param_price"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#PSE_Exp_property_Param_toLocation"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#PSE_Exp_property_report",
+    "@type": [
+      "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#PropertyExpectationReport"
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportsAbout": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#PSE_Exp_property"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#target": [
+      {
+        "@id": "http://www.operator.org/Inventory#ConnectivityService_000001"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#paramsCompliant": [
+      {
+        "@id": "_:b4"
+      },
+      {
+        "@id": "_:b5"
+      },
+      {
+        "@id": "_:b6"
+      }
+    ]
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#PSE_Exp_proposal"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#PSE_Exp_proposal_report",
+    "@type": [
+      "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#PropertyExpectationReport"
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportsAbout": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#PSE_Exp_proposal"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#target": [
+      {
+        "@id": "http://www.operator.org/Inventory#ConnectivityService_000001"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#paramsCompliant": [
+      {
+        "@id": "_:b2"
+      }
+    ]
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#PSE_Exp_reporting"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#PSE_Exp_reporting_Param_event"
+  },
+  {
+    "@id": "http://www.example.org/IntentNamespace#PSE_Exp_reporting_report",
+    "@type": [
+      "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#ReportingExpectationReport"
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#reportsAbout": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#PSE_Exp_reporting"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#target": [
+      {
+        "@id": "http://www.example.org/IntentNamespace#B1_PSE_Biz_Intent1"
+      }
+    ],
+    "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#paramsCompliant": [
+      {
+        "@id": "_:b10"
+      },
+      {
+        "@id": "_:b11"
+      }
+    ]
+  },
+  {
+    "@id": "http://www.operator.com/Catalog#ConnectivityService_DynamicPrice"
+  },
+  {
+    "@id": "http://www.operator.org/Inventory#ConnectivityService_000001"
+  },
+  {
+    "@id": "http://www.sdo1.org/Models/DynamicpriceOntology#unitDollarHour"
+  },
+  {
+    "@id": "http://www.sdo2.org/TelecomMetrics/Version_1.0#unitGBPS"
+  },
+  {
+    "@id": "http://www.w3.org/2006/time#Duration"
+  },
+  {
+    "@id": "http://www.w3.org/2006/time#unitMinute"
+  }
+]
