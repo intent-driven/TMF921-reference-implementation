@@ -30,9 +30,10 @@ const {TError, TErrorEnum, sendError} = require('../utils/errorUtils');
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 
-//fer
+/* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
 const intentHandler = require('../handler/IntentHandler');
 const handlerUtils = require('../utils/handlerUtils');
+/* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
 
 exports.createIntent = function(req, res, next) {
   /**
