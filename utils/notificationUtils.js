@@ -381,7 +381,7 @@ function notify(db,clients,message) {
      console.log("sendMessage: start processing "+message);
     const promises = clients.map(client => processMessage(db,client,message));
 
-    const cleanup  
+    const cleanup  //= function () {null};
     = function() {
        db.collection(EVENTS)
       .deleteOne(message)

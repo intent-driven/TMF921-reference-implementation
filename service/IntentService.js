@@ -123,6 +123,9 @@ exports.deleteIntent = function(req, res, next) {
   const internalError =  new TError(TErrorEnum.INTERNAL_SERVER_ERROR, "Internal database error");
 
 /* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
+// calls the intent handler for the deletetion of the intent reports triples in the knowledge base
+intentHandler.deleteIntentReports(id,'IntentReport');
+
 // calls the intent handler for the deletetion of the triples in the knowledge base
 intentHandler.deleteIntent(query,resourceType);
 

@@ -31,18 +31,22 @@ exports.processIntent = function(req) {
   const expression = handlerUtils.getExpression(req);
 
   //From expression extract triples and load the data in GraphDB 
-  handlerUtils.extractTriplesandKG(expression,`insert`);
+  handlerUtils.extractTriplesandKG(expression,`insert`,'text/turtle');
   
+  //check type of intent...just search for B1, S1, R1&slice or R1&private
+  var filename = handlerUtils.intentReportFileName(expression);
+  
+
   //now we need to send the IntentReport
   //1. read report - async
-  fs.readFile('./ontologies/B1_catalyst_biz_intent_response.jsonld', 'utf8', (err, data) => {
+  fs.readFile('./ontologies/'+filename, 'utf8', (err, data) => {
     if (err) {
       console.error(err);
       return;
     }
  //   console.log(data);
   //2. insert report in grapbdb
-  handlerUtils.extractTriplesandKG(data,`insert`);
+  handlerUtils.extractTriplesandKG(data,`insert`,'text/turtle');
 
  //3. insert report into mongodb and send notification
   handlerUtils.insertIntentReport(data,req);
@@ -61,6 +65,17 @@ exports.deleteIntent = function(query,resourceType) {
   //reads intent from mongo and then deletes objects from KG.  All in one function as async
   handlerUtils.getIntentExpressionandDeleteKG(query,resourceType); 
 
+};
+
+// This function is called from the RI once the intentReport as been deleted from MOngo
+//it reads the intentReport expression from mongo, parse the expresion into
+//triples and then deletes these triples from the graphdb.
+exports.deleteIntentReports = function(id,resourceType) {
+
+  console.log('intentid: '+id)
+  console.log('resourceType: '+resourceType)
+ //reads intent from mongo and then deletes objects from KG.  All in one function as async
+ handlerUtils.getIntentReportExpressionandDeleteKG(id,resourceType); 
 
 
 };

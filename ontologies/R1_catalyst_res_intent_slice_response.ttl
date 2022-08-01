@@ -1,0 +1,151 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix icm: <http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#> .
+@prefix imo: <http://tio.models.tmforum.org/tio/v1.0.0/IntentManagementOntology#> .
+@prefix pbi: <http://tio.models.tmforum.org/tio/v1.0.0/ProposalBestIntent#> .
+@prefix cat: <http://www.operator.com/Catalog#> .
+@prefix spot: <http://www.sdo1.org/Models/DynamicpriceOntology#> .
+@prefix met: <http://www.sdo2.org/TelecomMetrics/Version_1.0#> .
+@prefix   t: <http://www.w3.org/2006/time#> .
+@prefix  ex: <http://www.example.org/IntentNamespace#> .
+@prefix iv: <https://tmforum.org/2021/07/intentValidity#> .
+@prefix itv: <https://tmforum.org/2021/07/intentTemporalValidity#> .
+@prefix cem:  <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sli: <http://io.irc.huawei.com/Io/v1.0.0/SliceExtensionModel#> .
+@prefix  inv: <http://www.operator.org/Inventory#> .
+
+# --- Intent ----------
+ex:R1_PSE_Res_Slice_Intent1_Report_1
+ a icm:IntentReport ;
+   rdfs:comment "'Intent report'" ;
+   imo:intentOwner ex:IntentManagerXYZ_S ;
+   imo:intentHandler ex:IntentManagerABC_R ;
+   icm:reportsAbout ex:R1_PSE_Res_Slice_Intent1 ; 
+   icm:reportTimestamp [ t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime ] ;
+   icm:currentIntentHandlingState icm:StateDegraded ;
+   icm:currentIntentUpdateState icm:StateNoUpdate ;
+   icm:reportNumber 1 ;
+   icm:hasExpectationReport
+                         ex:PSE_Exp_R1Slice_delivery_report,
+                         ex:PSE_Exp_R1Slice_property_report,
+                         ex:PSE_Exp_R1Slice_reporting_report;  
+.
+
+
+##Delivery Expectation
+ex:PSE_Exp_R1Slice_delivery_report
+     a icm:DeliveryExpectationReport ;
+        icm:reportsAbout ex:PSE_Exp_R1Slice_delivery ;
+        icm:targetReport inv:Resource_slice_eMBB_000001 ;
+        icm:paramsCompliant 
+          [ a icm:DeliveryParam ; 
+            icm:reportsAbout ex:PSE_Exp_R1Slice_delivery_Param_type ;
+            icm:targetDescription cat:Slice_NEST_eMBB ]
+.
+
+
+##Property Expectation
+ex:PSE_Exp_R1Slice_property_report
+     a icm:PropertyExpectationReport ;
+        icm:reportsAbout ex:PSE_Exp_R1Slice_property ; 
+        icm:targetReport inv:Resource_slice_eMBB_000001 ;
+        icm:paramsDegraded 
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_latency ; 
+              met:latency [ icm:value "'13 ms'" ] ;
+          ] ;
+        icm:paramsCompliant 
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_nssiId ; 
+              sli:nssiId [ icm:value "'NEST-EMBB_VIDEOSTREAMING_INSIDE_VENUE_5G'"^^xsd:string ] 
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_nssiName ; 
+              sli:nssiName [ icm:value "'NEST-EMBB_VIDEOSTREAMING_INSIDE_VENUE_5G'"^^xsd:string ] 
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_nsiId ; 
+              sli:nssiName [ icm:value "'NEST-EMBB_VIDEOSTREAMING_INSIDE_VENUE_5G'"^^xsd:string ] 
+          ] ,          
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_ue ; 
+              sli:numberofUEs [ icm:value "'6780'" ] ;
+          ] ,          
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_throughputUL ; 
+              sli:throughputUL [ icm:value [ met:value "'67'" ; met:unit met:unitMBPS  ] ] ;
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_throughputDL ; 
+              sli:throughputUL [ icm:value [ met:value "'89123'" ; met:unit met:unitMBPS  ] ] ;
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_availability ; 
+              met:availability [ icm:value [ met:value "'99.9945'"; met:unit met:percentage ] ];
+          ] ,          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_ueMobilityLevel  ; 
+              sli:ueMobilityLevel [ icm:value "'10'"^^xsd:string ];
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_areaTrafficUL ; 
+              sli:areaTrafficUL [ icm:value [ met:value "'67'" ; met:unit met:unitMBPS  ] ] ;
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_areaTrafficDL ; 
+              sli:areaTrafficDL [ icm:value [ met:value "'89123'" ; met:unit met:unitMBPS  ] ] ;
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_expDataRateUL ; 
+              sli:expDataRateUL [ icm:value [ met:value "'67'" ; met:unit met:unitMBPS  ] ] ;
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_expDataRateDL ; 
+              sli:expDataRateDL [ icm:value [ met:value "'89123'" ; met:unit met:unitMBPS  ] ] ;
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_SLA5QI ; 
+              sli:SLA5QI [ icm:value "'1'"^^xsd:string  ];
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_packetErrorRate ; 
+              sli:packetErrorRate [ icm:value "'Premium'"^^xsd:string  ];
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_packetSize ; 
+              sli:packetSize [ icm:value [ met:value "'1500'" ; met:unit met:unitByte  ]  ];
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_numberofPDUSession ; 
+              sli:numberofPDUSession [ icm:value "'123'"^^xsd:string  ];
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_latencyFromUFPToApplicationServer ; 
+              sli:latencyFromUFPToApplicationServer [ icm:value "'1 ms'"  ];
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_missionCritical ; 
+              sli:missionCritical [ icm:value "'No'"^^xsd:string ];
+          ] ,
+          [ a icm:PropertyParam ;
+              icm:reportsAbout ex:PSE_Exp_R1Slice_property_Param_V2XCommunicationMode ; 
+              sli:V2XCommunicationMode [ icm:value "'No'"^^xsd:string ];
+          ] 
+.
+
+
+##Reporting Expectation
+ex:PSE_Exp_R1Slice_reporting
+      a icm:ReportingExpectationReport ;
+        icm:reportsAbout ex:PSE_Exp_R1Slice_reporting_report ; 
+        icm:target ex:R1_PSE_Res_Slice_Intent1 ;
+        icm:paramsCompliant 
+        [ a icm:ReportingParam ;
+            icm:reportsAbout ex:PSE_Exp_R1Slice_reporting_Param_interval ;
+            icm:reportingIntervalLeft [ a t:Duration ;  t:numericDuration "'0'" ;  t:temporalUnit t:unitMinute ]
+        ] ,
+        [ a icm:ReportingParam ;
+            icm:reportsAbout ex:PSE_Exp_R1Slice_reporting_Param_event ;
+            icm:reportingEvent icm:ReportingIntervalExpired
+        ]
+.

@@ -36,6 +36,25 @@ function getExpression(req) {
   return expression;
 }
 
+//////////////////////////////////////////////////////
+// Functions returns the file name                  //
+// to be used to create the intentReport            //  
+//////////////////////////////////////////////////////
+function intentReportFileName(expression) {
+  var filename = '';
+  if (expression.indexOf("B1")>0) { 
+     filename = 'B1_catalyst_biz_intent_response.ttl'
+  } else if (expression.indexOf("S1")>0) { 
+    filename = 'S1_catalyst_svc_intent_response.ttl'
+  } else if (expression.indexOf("R1")>0) { 
+    filename = 'R1_catalyst_res_intent_slice_response.ttl'
+  } else if (expression.indexOf("R2")>0) { 
+    filename = 'R2_catalyst_res_intent_privateline_response.ttl'
+  }
+  return filename;
+}
+
+
 ////////////////////////////////////////////////////////
 // Functions reads mongo to extract intent expression //
 // and then parse into triples and delete             //  
@@ -48,7 +67,10 @@ function getIntentExpressionandDeleteKG(query,resourceType) {
         if(doc) {
           console.log('doc: '+JSON.stringify(doc));
           //convert to triples and delete
-          extractTriplesandKG(doc.expression.expressionLanguage,`delete`);
+          extractTriplesandKG(doc.expression.expressionLanguage,`delete`,'text/turtle');
+          //now delete the intent reports - this should have been done by the RI
+          //need to do it here because here we have the report id
+          intentReportService
         } else {
           console.log("No resource with given id found");
         }
@@ -63,6 +85,81 @@ function getIntentExpressionandDeleteKG(query,resourceType) {
 }
 
 ////////////////////////////////////////////////////////
+// Deletes the intentreport without notification      //  
+////////////////////////////////////////////////////////
+function deleteIntentReport(id){
+  var query = {
+    id: id
+  };
+
+
+  const resourceType = 'IntentReport';
+
+mongoUtils.connect().then(db => {
+  db.collection(resourceType)
+    .deleteOne(query)
+    .then(doc => {
+      if (doc.result.n == 1) {
+         console.log("report deleted " + id);
+
+      } else { 
+        console.log("No resource with given id found");
+      }
+    }).catch(error => {
+        console.log("retrieveIntent before delete: error=" + error);
+      });
+  })
+  .catch(error => {
+    console.log("retrieveIntent before delete: error=" + error);
+  });
+}
+
+////////////////////////////////////////////////////////
+// Functions reads mongo to extract intentreport expression //
+// and then parse into triples and delete             //  
+////////////////////////////////////////////////////////
+function getIntentReportExpressionandDeleteKG(id,resourceType) {
+  var intentId = {
+    'intent.id':id
+  }
+
+  var query = {
+    criteria:intentId
+  }
+
+    // Find some documents based on criteria plus attribute selection
+    mongoUtils.connect()
+    .then(db => {
+      db.collection(resourceType).stats()
+      .then(stats => {
+        const totalSize=stats.count;
+        db.collection(resourceType)
+        .find(query.criteria, query.options).toArray()
+        .then(doc => {
+
+          doc.forEach(x => {
+            console.log('id: '+x.id);
+            //convert to triples and delete
+            extractTriplesandKG(x.expression.expressionLanguage,`delete`,'text/turtle');
+            deleteIntentReport(x.id);
+          });
+          })
+        })
+        .catch(error => {
+          console.log("listIntentReport: error=" + error);
+        })
+      })
+      .catch(error => {
+        console.log("listIntentReport: error=" + error);
+      })
+    .catch(error => {
+      console.log("listIntentReport: error=" + error);
+    })
+
+}
+
+
+////////////////////////////////////////////////////////
 // Functions receives an intent expression and parses  //
 // into mongo using RDFLIB                             //
 // Because expression is json-ld the parsing is done   //
@@ -70,13 +167,16 @@ function getIntentExpressionandDeleteKG(query,resourceType) {
 // Once parsing is done it will insert or delete,      //
 // according to action parameter                       //  
 ////////////////////////////////////////////////////////
-function extractTriplesandKG (expression,action) {
+function extractTriplesandKG (expression,action,type) {
   var uri = 'http://www.example.org/IntentNamespace/';
   var mimeType = 'application/ld+json';
-  //var mimeType = 'text/turtle';
+  if(type!==undefined) {
+    mimeType = type;
+  }
+
   var store = $rdf.graph();
   var triples;
-//  console.log('extract Triples:: ' + expression);
+  console.log('extract Triples:: ' + expression);
 
  //create rdf object
  try {
@@ -84,6 +184,7 @@ function extractTriplesandKG (expression,action) {
     triples = store.statementsMatching(undefined, undefined, undefined);
     console.log('number of triples: '+triples.length);
     return kgOperation(triples,action);
+//    return null;
   })
  } catch (err) {
    console.log(err);
@@ -110,7 +211,7 @@ function kgOperation(triples,action) {
 
   //  Now load into GraphDB
   const { EnapsoGraphDBClient } = require('@innotrade/enapso-graphdb-client');
-  // connection data to the run GraphDB instance
+    // connection data to the run GraphDB instance
     const GRAPHDB_BASE_URL = conf.GRAPHDB_BASE_URL,
           GRAPHDB_REPOSITORY = conf.GRAPHDB_REPOSITORY,
           GRAPHDB_USERNAME = conf.GRAPHDB_USERNAME,
@@ -157,18 +258,20 @@ function kgOperation(triples,action) {
   const intentreport_iri = '<http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#IntentReport>';
 
 
+  
   for (var i=0; i<triples.length;i++) {
     var triple = triples [i];
-    var q = action + ` data { graph <${GRAPHDB_CONTEXT_TEST}> { <` + triple.subject.value +`> <`+ triple.predicate.value +`> <`+ triple.object.value + `> }}`;
-
-//    console.log('query: '+q);    
+    var q = action + ` data { graph <${GRAPHDB_CONTEXT_TEST}> { ` + triple.subject +` `+ triple.predicate +` `+ triple.object + ` }}`;
+    console.log('query: '+q); 
     graphDBEndpoint
     .update( q)
     .then((result) => {
-        console.log(action + " a class :\n" + JSON.stringify(result, null, 2));})
+      console.log('OK');})
     .catch((err) => {
       console.log("failed "+ action + " " + err.message);});
   }
+
+
 
 }
 
@@ -274,9 +377,11 @@ function cleanmessageid(message) {
 module.exports = { 
   getExpression,
   getIntentExpressionandDeleteKG,
+  getIntentReportExpressionandDeleteKG,
   kgOperation,
   extractTriplesandKG,
   insertIntentReport,
   createIntentReportMessage,
-  createIntentReportReq
+  createIntentReportReq,
+  intentReportFileName
 				   			 };

@@ -16,9 +16,9 @@
 # --- Intent ----------
 ex:B1_PSE_Biz_Intent1
  a icm:Intent ;
-   rdfs:comment "Intent for ordering connectivity service via dynamic pricing";
+   rdfs:comment "'Intent for ordering connectivity service via dynamic pricing'";
    imo:intentOwner ex:IntentManagerXYZ;
-   cem:layer "business";
+   cem:layer "'business'";
    icm:hasExpectation ex:PSE_Exp_delivery,
                         ex:PSE_Exp_property,
                         ex:PSE_Exp_proposal,
@@ -29,7 +29,7 @@ ex:B1_PSE_Biz_Intent1
 # How to model the fact we want the Intent NOW but we are willing to wait???
 ex:PSE_temporalvalidity
  a itv:TemporalValidity ;
-      t:after [ a t:Instant ;  t:inXSDDateTimeStamp "2022-12-01T10:30:10+10:00"^^xsd:dateTime  ] 
+      t:after [ a t:Instant ;  t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime  ] 
 .
 
 # --- Delivery Expectation ----------
@@ -52,9 +52,9 @@ ex:PSE_Exp_proposal
 .
 ex:PSE_Exp_property_Param_price
  a pbi:ProposalParam ;
-   spot:price [ icm:atMost [ spot:value "10" ; spot:unit spot:unitDollarHour  ] ];
+   spot:price [ icm:atMost [ spot:value "'10'" ; spot:unit spot:unitDollarHour  ] ];
    pbi:proposingTime pbi:ProposeImmediately ;
-   pbi:proposingFrequency [ a t:Duration ; t:numericDuration "1" ; t:temporalUnit t:unitHour ] 
+   pbi:proposingFrequency [ a t:Duration ; t:numericDuration "'1'" ; t:temporalUnit t:unitHour ] 
 .
 
 # --- Property Expectation ----------
@@ -71,11 +71,11 @@ ex:PSE_Exp_property_Param_bandwidth
 .
 ex:PSE_Exp_property_Param_fromLocation
  a icm:PropertyParam ;
-   spot:startLocation [ icm:exactly "locationA" ] ;
+   spot:startLocation [ icm:exactly "'locationA'" ] ;
 .
 ex:PSE_Exp_property_Param_toLocation
  a icm:PropertyParam ;
-   spot:endLocation [ icm:exactly "locationB" ] ;
+   spot:endLocation [ icm:exactly "'locationB'" ] ;
 .
 
 # --- Reporting Expectation ----------
@@ -88,7 +88,7 @@ ex:PSE_Exp_reporting
 ex:PSE_Exp_reporting_Param_interval
  a icm:ReportingParam ;
    icm:reportingInterval [ a t:Duration ;
-                                t:numericDuration 10 ;
+                                t:numericDuration "'10'" ;
                                 t:temporalUnit t:unitMinute ] .
 ex:PSE_Exp_reporting_Param_event              
  a icm:ReportingParam ; 

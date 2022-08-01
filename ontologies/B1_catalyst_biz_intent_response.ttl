@@ -16,13 +16,13 @@
 
 # --- Intent Report ----------
 ##IntentReport
-ex:B1_PSE_Biz_Intent1_1
+ex:B1_PSE_Biz_Intent1_Report_1
  a icm:IntentReport ;
-   rdfs:comment "Intent report" ;
+   rdfs:comment "'Intent report'" ;
    imo:intentOwner ex:IntentManagerXYZ ;
    imo:intentHandler ex:IntentManagerABC ;
    icm:reportsAbout ex:B1_PSE_Biz_Intent1 ; 
-   icm:reportTimestamp [ t:inXSDDateTimeStamp "2022-12-01T10:30:10+10:00"^^xsd:dateTime ] ;
+   icm:reportTimestamp [ t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime ] ;
    icm:currentIntentHandlingState icm:StateCompliant ;
    icm:currentIntentUpdateState icm:StateNoUpdate ;
    icm:reportNumber 1 ;
@@ -52,7 +52,7 @@ ex:PSE_Exp_proposal_report
         icm:paramsCompliant 
 	      [ a icm:PropertyParam ;
               icm:reportsAbout ex:PSE_Exp_property_Param_price ; 
-              spot:price [spot:value "9.3" ; spot:unit spot:unitDollarHour ]
+              spot:price [spot:value "'9.3'" ; spot:unit spot:unitDollarHour ]
 		  ]
 .
 
@@ -63,15 +63,15 @@ ex:PSE_Exp_property_report
         icm:paramsCompliant 
           [ a icm:PropertyParam ;
               icm:reportsAbout ex:PSE_Exp_property_Param_bandwidth ; 
-              met:bandwidth [ met:value "1" ; met:unit met:unitGBPS  ] 
+              met:bandwidth [ met:value "'1'" ; met:unit met:unitGBPS  ] 
           ] ,
           [ a icm:PropertyParam ;
               icm:reportsAbout ex:PSE_Exp_property_Param_fromLocation ; 
-              spot:startLocation [ icm:exactly "locationA" ] 
+              spot:startLocation [ icm:exactly "'locationA'" ] 
           ] ,
           [ a icm:PropertyParam ;
               icm:reportsAbout ex:PSE_Exp_property_Param_toLocation ; 
-              spot:endLocation [ icm:exactly "locationA" ] 
+              spot:endLocation [ icm:exactly "'locationA'" ] 
           ] 
 .
 
@@ -83,7 +83,7 @@ ex:PSE_Exp_reporting_report
         icm:paramsCompliant 
         [ a icm:ReportingParam ;
 		    icm:reportsAbout ex:ExampleIntentXYZ_Exp_reporting_Param_interval ;
-            icm:reportingIntervalLeft [ a t:Duration ;  t:numericDuration 0 ;  t:temporalUnit t:unitMinute ]
+            icm:reportingIntervalLeft [ a t:Duration ;  t:numericDuration "'0'" ;  t:temporalUnit t:unitMinute ]
 		] ,
         [ a icm:ReportingParam ;
 		    icm:reportsAbout ex:PSE_Exp_reporting_Param_event ;
