@@ -43,13 +43,13 @@ function getExpression(req) {
 function intentReportFileName(expression) {
   var filename = '';
   if (expression.indexOf("B1")>0) { 
-     filename = 'B1_catalyst_biz_intent_response.ttl'
+     filename = 'B1R_catalyst_business_intent_report.ttl'
   } else if (expression.indexOf("S1")>0) { 
-    filename = 'S1_catalyst_svc_intent_response.ttl'
+    filename = 'S1_catalyst_service_intent_report.ttl'
   } else if (expression.indexOf("R1")>0) { 
-    filename = 'R1_catalyst_res_intent_slice_response.ttl'
+    filename = 'R1_catalyst_resource_intent_report_slice.ttl'
   } else if (expression.indexOf("R2")>0) { 
-    filename = 'R2_catalyst_res_intent_privateline_response.ttl'
+    filename = 'R2_catalyst_resource_intent_report_privateline.ttl'
   }
   return filename;
 }
