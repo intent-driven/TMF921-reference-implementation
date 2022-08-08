@@ -35,7 +35,11 @@ const intentHandler = require('../handler/IntentHandler');
 const handlerUtils = require('../utils/handlerUtils');
 /* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
 
-exports.createIntent = function(req, res, next) {
+/* XXXXXXXXXXXXX Ericsson IRC - Start  XXXXXXXXXXXXXXXx*/
+const serviceIntentHandler = require('../handler/ServiceIntentHandler');
+/* XXXXXXXXXXXXX Ericsson IRC - End  XXXXXXXXXXXXXXXx*/
+
+exports.createIntent = async function(req, res, next) {
   /**
    * Creates a Intent
    * This operation creates a Intent entity.
@@ -72,11 +76,21 @@ exports.createIntent = function(req, res, next) {
             sendDoc(res, 201, payload);
             notificationUtils.publish(req,payload);
 
+            var expression = handlerUtils.getExpression(req);
+
 /* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
 // calls the intent handler for the knowledge extraction and storage
-
-            intentHandler.processIntent(req);
+            if ((expression.indexOf("R1")>0) || (expression.indexOf("R2")>0)){ // check whether it's a resource intent
+              intentHandler.processIntent(req);
+            }
 /* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
+
+/* XXXXXXXXXXXXX Ericsson IRC - Start  XXXXXXXXXXXXXXXx*/
+// calls the service intent handler for creating intent
+            if (expression.indexOf("S1") > 0) { // check whether it's a service intent
+              serviceIntentHandler.processIntent(req);
+            }
+/* XXXXXXXXXXXXX Ericsson IRC - End  XXXXXXXXXXXXXXXx*/
 
           })
           .catch((error) => {
@@ -122,14 +136,39 @@ exports.deleteIntent = function(req, res, next) {
 
   const internalError =  new TError(TErrorEnum.INTERNAL_SERVER_ERROR, "Internal database error");
 
-/* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
-// calls the intent handler for the deletetion of the intent reports triples in the knowledge base
-intentHandler.deleteIntentReports(id,'IntentReport');
+  mongoUtils.connect().then(db => {
+    db.collection(resourceType)
+      .findOne(query)
+      .then(doc => {
+        if (doc) {
+          console.log('doc: ' + JSON.stringify(doc));
+          var expression = doc.expression.expressionLanguage;
+          /* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
+          if ((expression.indexOf("R1") > 0) || (expression.indexOf("R2") > 0)) { // check whether it's a resource intent
+            // calls the intent handler for the deletetion of the intent reports triples in the knowledge base
+            intentHandler.deleteIntentReports(id, 'IntentReport');
 
-// calls the intent handler for the deletetion of the triples in the knowledge base
-intentHandler.deleteIntent(query,resourceType);
+            // calls the intent handler for the deletetion of the triples in the knowledge base
+            intentHandler.deleteIntent(query, resourceType);
+          }
+          /* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
 
-/* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
+          /* XXXXXXXXXXXXX Ericsson IRC - Start  XXXXXXXXXXXXXXXx*/
+          // calls the service intent handler for deleting intent and intent report
+          if (expression.indexOf("S1") > 0) { // check whether it's a service intent
+            // calls the intent handler for the deletetion of the intent reports triples in the knowledge base
+            serviceIntentHandler.deleteIntentReports(id, 'IntentReport');
+
+            // calls the intent handler for the deletetion of the triples in the knowledge base
+            serviceIntentHandler.deleteIntent(query, resourceType);
+          }
+          /* XXXXXXXXXXXXX Ericsson IRC - End  XXXXXXXXXXXXXXXx*/
+        } else {
+          sendError(res, new TError(TErrorEnum.RESOURCE_NOT_FOUND, "No resource with given id found"));
+        }
+      }).catch(error => sendError(res, internalError))
+  })
+    .catch(error => sendError(res, internalError));
 
 
   mongoUtils.connect().then(db => {
@@ -137,14 +176,14 @@ intentHandler.deleteIntent(query,resourceType);
       .deleteOne(query)
       .then(doc => {
         if (doc.result.n == 1) {
-           sendDoc(res, 204, {});
-           notificationUtils.publish(req,doc);
-        } else { 
-           sendError(res, new TError(TErrorEnum.RESOURCE_NOT_FOUND,"No resource with given id found"));
+          sendDoc(res, 204, {});
+          notificationUtils.publish(req, doc);
+        } else {
+          sendError(res, new TError(TErrorEnum.RESOURCE_NOT_FOUND, "No resource with given id found"));
         }
       }).catch(error => sendError(res, internalError))
   })
-  .catch(error => sendError(res, internalError));
+    .catch(error => sendError(res, internalError));
 
 
 

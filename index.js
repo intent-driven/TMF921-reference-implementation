@@ -4,6 +4,7 @@ const fs = require('fs'),
       path = require('path'),
       http = require('http'),
       mongoUtils = require('./utils/mongoUtils'),
+      soUtils = require('./utils/soUtils'),
       swaggerUtils = require('./utils/swaggerUtils');
 
 const {TError, TErrorEnum, sendError} = require('./utils/errorUtils');
@@ -58,6 +59,13 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
   // Serve the Swagger documents and Swagger UI
   // using the more up-to-date swagger-ui-dist - not the default app.use(middleware.swaggerUi())
   app.use(middleware.swaggerUi({ swaggerUiDir: path.join(__dirname, 'node_modules', 'swagger-ui-dist') }));
+
+  /* XXXXXXXXXXXXX Ericsson IRC - Start  XXXXXXXXXXXXXXXx*/
+  // Login to SO and store the token obtained.
+  // Since the token needs to be obtained only once hence it is done during
+  // initilization rather than getting it each time an intent is created or deleted
+  soUtils.storeSoTokenAfterLogin();
+  /* XXXXXXXXXXXXX Ericsson IRC - End  XXXXXXXXXXXXXXXx*/
 
   // Start the server
   http.createServer(app).listen(serverPort, function () {

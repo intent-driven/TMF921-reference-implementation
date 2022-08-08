@@ -1,0 +1,160 @@
+{
+  "externalId": "external-ID_SentToNBI_BSS_ID",
+  "priority": "4",
+  "category": "INFRASTRUCTURE",
+  "source": "SIMF",
+  "orderType": "CREATE",
+  "relatedParty": [
+      {
+          "id": "NEST_AND_VIDEOSTREAMING_5G",
+          "source": "BSS",
+          "name": "NEST_AND_VIDEOSTREAMING_5G",
+          "role": "customer"
+      }
+  ],
+  "orderItems": [
+      {
+          "action": "New",
+          "service": {
+              "serviceSpecification": {
+                  "code": "NEST-EMBB-VIDEOSTREAMING",
+                  "version": "1.0"
+              },
+              "characteristics": [
+                  {
+                      "name": "delayTolerance",
+                      "value": "supported"
+                  },
+                  {
+                      "name": "ueMobilityLevel",
+                      "value": "5"
+                  },
+                  {
+                      "name": "availability",
+                      "value": "999900"
+                  },
+                  {
+                      "name": "countries",
+                      "value": "Portugal"
+                  },
+                  {
+                      "name": "regions",
+                      "value": "Lisboa"
+                  },
+                  {
+                      "name": "zones",
+                      "value": "Zone1"
+                  },
+                  {
+                      "name": "sliceType",
+                      "value": "EMBB"
+                  },
+                  {
+                      "name": "userEquipmentMaxDevices",
+                      "value": "700"
+                  },
+                  {
+                      "name": "downlinkThroughputSlice",
+                      "value": "3500"
+                  },
+                  {
+                      "name": "downlinkThroughputUE",
+                      "value": "10000"
+                  },
+                  {
+                      "name": "uplinkThroughputUE",
+                      "value": "10000"
+                  },
+                  {
+                      "name": "sampleFrequency",
+                      "value": "234"
+                  },
+                  {
+                      "name": "deviceVelocity",
+                      "value": "10"
+                  },
+                  {
+                      "name": "positioningAccuracy",
+                      "value": "1"
+                  },
+                  {
+                      "name": "positioningFrequency",
+                      "value": "30"
+                  },
+                  {
+                      "name": "radioSpectrum",
+                      "value": "5GNR_n01"
+                  },
+                  {
+                      "name": "SLA5QI",
+                      "value": "1"
+                  },
+                  {
+                      "name": "V2XCommunicationMode",
+                      "value": "NO"
+                  },
+                  {
+                      "name": "packetErrorRate",
+                      "value": "Premmium"
+                  },
+                  {
+                      "name": "maxPacketLossRate",
+                      "value": "Premmium"
+                  },
+                  {
+                      "name": "downlinkThroughputMaxSlice",
+                      "value": "100000"
+                  },
+                  {
+                      "name": "uplinkThroughputMaxSlice",
+                      "value": "100"
+                  },
+                  {
+                      "name": "maxPacketSize",
+                      "value": "1500"
+                  },
+                  {
+                      "name": "latencyFromUFPToApplicationServer",
+                      "value": "1"
+                  },
+                  {
+                      "name": "missionCritical",
+                      "value": "No"
+                  },
+                  {
+                      "name": "userEquipmentDeviceDensity",
+                      "value": "12"
+                  },
+                  {
+                      "name": "PDUSessionsMax",
+                      "value": "123"
+                  },
+                  {
+                      "name": "authenticationAndAuthorization",
+                      "value": "false"
+                  },
+                  {
+                      "name": "NBIOT",
+                      "value": "false"
+                  },
+                  {
+                      "name": "nonIPTrafficSupport",
+                      "value": "false"
+                  },
+                  {
+                      "name": "userManagementOpenness",
+                      "value": "false"
+                  }
+              ],
+              "publicIdentifier": "NEST-EMBB_VIDEOSTREAMING_INSIDE_VENUE_5G"
+          },
+          "id": "1"
+      }
+  ],
+  "extraValues": [
+      {
+          "name": "idan",
+          "value": "true"
+      }
+  ]
+}

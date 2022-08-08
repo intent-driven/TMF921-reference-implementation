@@ -45,7 +45,7 @@ function intentReportFileName(expression) {
   if (expression.indexOf("B1")>0) { 
      filename = 'B1R_catalyst_business_intent_report.ttl'
   } else if (expression.indexOf("S1")>0) { 
-    filename = 'S1_catalyst_service_intent_report.ttl'
+    filename = 'S1R_catalyst_service_intent_report.ttl'
   } else if (expression.indexOf("R1")>0) { 
     filename = 'R1_catalyst_resource_intent_report_slice.ttl'
   } else if (expression.indexOf("R2")>0) { 
