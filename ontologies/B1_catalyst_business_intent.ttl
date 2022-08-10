@@ -13,7 +13,7 @@
 @prefix  cem: <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
 @prefix  xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix  arc: <http://tio.models.tmforum.org/tio/v1.0.0/IntentAcceptanceControl/> .
-#  
+# --- Intent ------------------------------------------------------------------ 
 #  This intent represents the Spot Price Bid Request from PSE (Price Sentitive
 #  Enterprize) Customer to the business layer.
 #
@@ -51,19 +51,19 @@
 # if we use a BEST we would only get reports on price....its still a hyposthetic "what-if" scenario.
 # whereas, set is a active intent..
 ex:B1_PSE_Biz_Intent1
- a icm:Intent ;
-   rdfs:comment "'Intent for ordering connectivity service via dynamic pricing'" ;
-   imo:intentOwner ex:IntentManagerXYZ ;
-   cem:layer "'business'" ;
-   arc:intentRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
-   arc:updateRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
-   icm:hasExpectation ex:PSE_Exp_delivery ,
-                      ex:PSE_Capability_delivery_Param_type ,
-                      ex:PSE_spot_price_bid_proposal ,
-                      ex:PSE_Exp_reporting ; 
- .
+  a icm:Intent ;
+  rdfs:comment "'Intent for ordering connectivity service via dynamic pricing'" ;
+  imo:intentOwner ex:IntentManagerXYZ ;
+  cem:layer "'business'" ;
+  arc:intentRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
+  arc:updateRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
+  icm:hasExpectation ex:PSE_Exp_delivery ,
+                     ex:PSE_Capability_delivery_Param_type ,
+                     ex:PSE_spot_price_bid_proposal ,
+                     ex:PSE_Exp_reporting ; 
+.
 
-# --- Targets ----------
+# --- Targets -----------------------------------------------------------------
 # the latest intent common model introduced target onjects to be used instead 
 # of blank nodes. This target does not contain any properties. This means it
 # represents an empty set of teaget resources, which means that the intent 
@@ -72,14 +72,14 @@ ex:B1_PSE_Biz_Intent1
 ex:T1_Capability a icm:Target
 .
 
-#
+# --- Delivery Expectation and Parameters -------------------------------------
 # The delivery expectaion refers to a service description in the marketplace
-# catalog for specifying what needs to be delivered. THis means we are using
+# catalog for specifying what needs to be delivered. This means we are using
 # a catalog based approach. 
 #
+# This intent also uses a type/class based specification of what shall be 
+# deliverd 
 #
-#
-# --- Delivery Expectation ----------
 ex:PSE_Exp_delivery
   a icm:DeliveryExpectation ;
   icm:target ex:T1_Capability ;
@@ -87,7 +87,7 @@ ex:PSE_Exp_delivery
 .
 ex:PSE_Capability_delivery_Param_type
  a icm:DeliveryParam ;
-   icm:deliveryDescription cat:Connectivity_DynamicPrice 
+   icm:deliveryDescription cat:Connectivity_DynamicPrice ; 
    icm:deliveryType ex:ConnectivityCapability ; 
 .
 
