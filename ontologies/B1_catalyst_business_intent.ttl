@@ -12,46 +12,58 @@
 @prefix itv: <https://tmforum.org/2021/07/intentTemporalValidity#> .
 @prefix cem:  <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-
-# --- Intent ----------
+#  This is the Spot Price Bid Request from PSE Customer to the BSS layer
+#  CloudBlue: use Capability versus Product. Capability is an "abstract product in the marketplace, that is
+no tied to a single Operator.
+#  Decision go with Capability.  (Reminder: check Doug's blog!  Capability is also being done in ontology also TIO and CO!!  No Catalog!)
+# Introduce a  class called Capability. A Taxonomy (hierarchy)   of capabilities with subclasses.. Joerg: this is why we have 2 ways of defining
+# DeliveryExpectation..by pointer to catalog or Class  "DeliveryType". Current approach is Catalog-driven....
+#
+# --- B1 Intent - this is a SET INTENT Operation ( dont use  BEST )----------
+# if we use a BEST we would only get reports on price....its still a hyposthetic "what-if" scenario.
+# whereas, set is a active intent..
 ex:B1_PSE_Biz_Intent1
  a icm:Intent ;
    rdfs:comment "'Intent for ordering connectivity service via dynamic pricing'";
    imo:intentOwner ex:IntentManagerXYZ;
    cem:layer "'business'";
    icm:hasExpectation ex:PSE_Exp_delivery,
-                        ex:PSE_Exp_property,
-                        ex:PSE_Exp_proposal,
+                        ex:PSE_Capability_delivery_Param_type,
+                        ex:PSE_spot_price_bid_proposal,
                         ex:PSE_Exp_reporting; 
    iv:hasValidity ex:PSE_temporalvalidity
  .
-# --- Intent Validity ----------
-# How to model the fact we want the Intent NOW but we are willing to wait???
-ex:PSE_temporalvalidity
- a itv:TemporalValidity ;
-      t:after [ a t:Instant ;  t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime  ] 
-.
+#
+# How to model the fact we want the Intent NOW but we are willing to wait???  Don't use Validity use intentreport degradation
+# Overridding of rejection (TODO: Joerg)
 
 # --- Delivery Expectation ----------
 ex:PSE_Exp_delivery
  a icm:DeliveryExpectation ;
-   icm:target _:service ;
-   icm:params ex:PSE_Exp_delivery_Param_type;
+   icm:target _:capability ;
+   icm:params ex:PSE_Capability_delivery_Param_type;
 .
-ex:PSE_Exp_delivery_Param_type
+ex:PSE_Capability_delivery_Param_type
  a icm:DeliveryParam ;
    icm:targetDescription cat:ConnectivityService_DynamicPrice 
 .
 
 # --- Proposal Expectation ----------
+# Joerg: don't try to do negotiation in The expectation!
+# This is only the Requirement - Ask for it first!
+# Ask for reports on the current Price!  10$, 11$ , etc...
 # proposing 10$/hour
-ex:PSE_Exp_proposal
- a pbi:ProposalExpectation ;
-   icm:target _:service ;
+ex:PSE_spot_price_bid_proposal
+ a pbi:PropertyExpectation ;
+   icm:target _:capability ;
    icm:params ex:PSE_Exp_property_Param_price ; 
 .
+#  in this expectation, there is an *implied* threshold...
+#  the maximum price is $10 and using spot:value
+#  proposingFrequency determines how often you want updates on current price...
+#   (Kevin: this is our Gold standard EXPECTATION: everyone needs to know this!!!!)
 ex:PSE_Exp_property_Param_price
- a pbi:ProposalParam ;
+ a pbi:PropertyParam ;
    spot:price [ icm:atMost [ spot:value "'10'" ; spot:unit spot:unitDollarHour  ] ];
    pbi:proposingTime pbi:ProposeImmediately ;
    pbi:proposingFrequency [ a t:Duration ; t:numericDuration "'1'" ; t:temporalUnit t:unitHour ] 
@@ -60,7 +72,7 @@ ex:PSE_Exp_property_Param_price
 # --- Property Expectation ----------
 ex:PSE_Exp_property
  a icm:PropertyExpectation ;
-   icm:target _:service ;
+   icm:target _:capability ;
    icm:params ex:PSE_Exp_property_Param_bandwidth , 
                ex:PSE_Exp_property_Param_fromLocation ,
                ex:PSE_Exp_property_Param_toLocation ;
