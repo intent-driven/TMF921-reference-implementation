@@ -1,20 +1,48 @@
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix icm: <http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#> .
-@prefix imo: <http://tio.models.tmforum.org/tio/v1.0.0/IntentManagementOntology#> .
-@prefix pbi: <http://tio.models.tmforum.org/tio/v1.0.0/ProposalBestIntent#> .
-@prefix cat: <http://www.operator.com/Catalog#> .
+@prefix  icm: <http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#> .
+@prefix  imo: <http://tio.models.tmforum.org/tio/v1.0.0/IntentManagementOntology#> .
+@prefix  pbi: <http://tio.models.tmforum.org/tio/v1.0.0/ProposalBestIntent#> .
+@prefix  cat: <http://www.operator.com/Catalog#> .
 @prefix spot: <http://www.sdo1.org/Models/DynamicpriceOntology#> .
-@prefix met: <http://www.sdo2.org/TelecomMetrics/Version_1.0#> .
-@prefix   t: <http://www.w3.org/2006/time#> .
-@prefix  ex: <http://www.example.org/IntentNamespace#> .
-@prefix iv: <https://tmforum.org/2021/07/intentValidity#> .
-@prefix itv: <https://tmforum.org/2021/07/intentTemporalValidity#> .
-@prefix cem:  <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-#  This is the Spot Price Bid Request from PSE Customer to the BSS layer
-#  CloudBlue: use Capability versus Product. Capability is an "abstract product in the marketplace, that is
-no tied to a single Operator.
+@prefix  met: <http://www.sdo2.org/TelecomMetrics/Version_1.0#> .
+@prefix    t: <http://www.w3.org/2006/time#> .
+@prefix   ex: <http://www.example.org/IntentNamespace#> .
+@prefix   iv: <https://tmforum.org/2021/07/intentValidity#> .
+@prefix  itv: <https://tmforum.org/2021/07/intentTemporalValidity#> .
+@prefix  cem: <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
+@prefix  xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix  arc: <http://tio.models.tmforum.org/tio/v1.0.0/IntentAcceptanceControl/> .
+#  
+#  This intent represents the Spot Price Bid Request from PSE (Price Sentitive
+#  Enterprize) Customer to the business layer.
+#
+#  The PSE customer orders a capability to be delivered. A capability is an 
+#  abstract product that is not directly mapped to the product offering of a 
+#  single service provider. It can rather be delivered by the capability 
+#  marketplace choosing an appropriate product from any of the associated
+#  service providers. 
+#
+#  This intent provides the requirements for choosing a service/product from
+#  a service provider that would deliver the wanted capability with respect to
+#  functional and non-functional requirements:
+#  Functional requirement: 
+#       -> Connectivity shall be provided between two sites
+#  Non Functional requirements:
+#       -> A minimum bandwidth of 1 GBit/s shall be available
+#       -> The price shall not exceed 10 USD/h
+#
+#  Intent reports would keep the intent owner informed about current handling
+#  state. This includes current values for the property parameters regarding
+#  price and available bandwidth.
+#
+#  The customer is ok with the capability not delivered immediately. This 
+#  means the customer is fine with a degraded intent. In order to emsure
+#  that the intent handler does not reject the itnent, becasue it cannot
+#  immediately fulfill it, the intent acceptence and rejection control 
+#  extension model is used to override certain rejection reasons. 
+#  
+
 #  Decision go with Capability.  (Reminder: check Doug's blog!  Capability is also being done in ontology also TIO and CO!!  No Catalog!)
 # Introduce a  class called Capability. A Taxonomy (hierarchy)   of capabilities with subclasses.. Joerg: this is why we have 2 ways of defining
 # DeliveryExpectation..by pointer to catalog or Class  "DeliveryType". Current approach is Catalog-driven....
@@ -24,28 +52,43 @@ no tied to a single Operator.
 # whereas, set is a active intent..
 ex:B1_PSE_Biz_Intent1
  a icm:Intent ;
-   rdfs:comment "'Intent for ordering connectivity service via dynamic pricing'";
-   imo:intentOwner ex:IntentManagerXYZ;
-   cem:layer "'business'";
-   icm:hasExpectation ex:PSE_Exp_delivery,
-                        ex:PSE_Capability_delivery_Param_type,
-                        ex:PSE_spot_price_bid_proposal,
-                        ex:PSE_Exp_reporting; 
-   iv:hasValidity ex:PSE_temporalvalidity
+   rdfs:comment "'Intent for ordering connectivity service via dynamic pricing'" ;
+   imo:intentOwner ex:IntentManagerXYZ ;
+   cem:layer "'business'" ;
+   arc:intentRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
+   arc:updateRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
+   icm:hasExpectation ex:PSE_Exp_delivery ,
+                      ex:PSE_Capability_delivery_Param_type ,
+                      ex:PSE_spot_price_bid_proposal ,
+                      ex:PSE_Exp_reporting ; 
  .
-#
-# How to model the fact we want the Intent NOW but we are willing to wait???  Don't use Validity use intentreport degradation
-# Overridding of rejection (TODO: Joerg)
 
+# --- Targets ----------
+# the latest intent common model introduced target onjects to be used instead 
+# of blank nodes. This target does not contain any properties. This means it
+# represents an empty set of teaget resources, which means that the intent 
+# handler is supposed to select appropriate resource for fulfilling the
+# intent 
+ex:T1_Capability a icm:Target
+.
+
+#
+# The delivery expectaion refers to a service description in the marketplace
+# catalog for specifying what needs to be delivered. THis means we are using
+# a catalog based approach. 
+#
+#
+#
 # --- Delivery Expectation ----------
 ex:PSE_Exp_delivery
- a icm:DeliveryExpectation ;
-   icm:target _:capability ;
-   icm:params ex:PSE_Capability_delivery_Param_type;
+  a icm:DeliveryExpectation ;
+  icm:target ex:T1_Capability ;
+  icm:params ex:PSE_Capability_delivery_Param_type ;
 .
 ex:PSE_Capability_delivery_Param_type
  a icm:DeliveryParam ;
-   icm:targetDescription cat:ConnectivityService_DynamicPrice 
+   icm:deliveryDescription cat:Connectivity_DynamicPrice 
+   icm:deliveryType ex:ConnectivityCapability ; 
 .
 
 # --- Proposal Expectation ----------
