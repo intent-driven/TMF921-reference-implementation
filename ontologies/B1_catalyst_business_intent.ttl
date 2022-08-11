@@ -17,6 +17,7 @@
 # --- Intent ------------------------------------------------------------------ 
 #  This intent represents the Spot Price Bid Request from PSE (Price Sentitive
 #  Enterprize) Customer to the business layer.
+#  It is the B1 intent in the IDAN Catalyst Phase 2
 #
 #  The PSE customer orders a capability to be delivered. A capability is an 
 #  abstract product that is not directly mapped to the product offering of a 
@@ -68,11 +69,27 @@ ex:B1_PSE_Biz_Intent1
 
 # --- Targets -----------------------------------------------------------------
 # the latest intent common model introduced target onjects to be used instead 
-# of blank nodes. This target does not contain any properties. This means it
-# represents an empty set of teaget resources, which means that the intent 
-# handler is supposed to select appropriate resource for fulfilling the
-# intent 
-ex:T1_Capability a icm:Target
+# of blank nodes. 
+# The target used here specifies a condition for selecting a valid resource 
+# for fulfilling the expectations. It tells that one of the resources from a
+# container shall be used. Thie deliberately leaves a choice to the intent 
+# handler. 
+# Here, the container to choose from is determined by the condition property
+# icm:elementType. This means all individuals of the specified class are 
+# elements of that container. Here, the container contains all resources. 
+# This is the widest possible defintion, because everything is a resource in 
+# rdf. 
+# This means that the target defintion tells to choose exactly one element
+# from the container of all resources and use that to fulfill the expextations 
+# associated with this target.
+# The resource conditions in the Target are 
+# The target itself is otherwise an empty Container, because a choice of 
+# resources was not yet done when creating the intent. The intent report
+# will however drop the condition and provide a concrete container of 
+# resources that were selected. 
+ex:T1_Capability 
+  a icm:IndividualTarget ;
+  icm:oneOf [ icm:elementType rdf:Resource ];
 .
 
 # --- Delivery Expectation and Parameters -------------------------------------
@@ -83,6 +100,15 @@ ex:T1_Capability a icm:Target
 # This intent also uses a type/class based specification of what shall be 
 # deliverd 
 #
+# The delivery expectation expresses the requirement that something shall be
+# delivered. It also describes the nature of this something. This practically
+# steers the selection of target resources. In this case the target is an
+# empty container and 
+# The system is compliant to this type of expectation if the respective 
+# resources, which were selected to fulfill this delivery, meet the 
+# requirements of the delivery expectation. 
+# This something
+#
 ex:PSE_Exp_delivery
   a icm:DeliveryExpectation ;
   icm:target ex:T1_Capability ;
@@ -90,55 +116,66 @@ ex:PSE_Exp_delivery
 .
 
 ex:PSE_Capability_delivery_Param_type
-  a icm:DeliveryParam ;
+  a icm:DeliveryParameter ;
   icm:deliveryDescription cat:Connectivity_DynamicPrice ; 
-  icm:deliveryType ex:ConnectivityCapability ; 
+  icm:deliveryType ex:ConnectivityCapability_DynamicPrice ; 
 .
 
 # --- Proposal Expectation ----------
 # Not needed, becasue the regular reporting would already provide the information
 # needed about current price.
-ex:PSE_spot_price_bid_proposal
-  a pbi:PropertyExpectation ;
-  icm:target _:capability ;
-  icm:hasParameter ex:PSE_Exp_property_Param_price ; 
-.
-#  in this expectation, there is an *implied* threshold...
-#  the maximum price is $10 and using spot:value
-#  proposingFrequency determines how often you want updates on current price...
-#   (Kevin: this is our Gold standard EXPECTATION: everyone needs to know this!!!!)
-ex:PSE_Exp_property_Param_price
- a pbi:PropertyParam ;
-   spot:price [ icm:atMost [ spot:value "'10'" ; spot:unit spot:unitDollarHour  ] ];
-   pbi:proposingTime pbi:ProposeImmediately ;
-   pbi:proposingFrequency [ a t:Duration ; t:numericDuration "'1'" ; t:temporalUnit t:unitHour ] 
-.
+
 
 # --- Property Expectation ----------------------------------------------------
 ex:PSE_Exp_property
   a icm:PropertyExpectation ;
   icm:target _:capability ;
-  icm:anyOf [ a rdf:bag ;
-              rdf:li ex:PSE_Exp_property_Param_bandwidth ;
-              rdf:li ex:PSE_Exp_property_Param_fromLocation ;
-              rdf:li ex:PSE_Exp_property_Param_toLocation ;
+  icm:allOf [ rdf:li ex:PSE_Exp_Param_price ;
+              rdf:li ex:PSE_Exp_Param_bandwidth ;
+              rdf:li ex:PSE_Exp_Param_Location ;
 			] ;
 .
+
+ex:PSE_Exp_Param_price
+  a icm:PropertyExpectation ;
+  icm:observation [ icm:latestValueOf spot:price ] ;
+  icm:atMost "10" ;
+  icm:hasUnit [ icm:unit spot:unitDollarHour ] ;
+.
 ex:PSE_Exp_property_Param_bandwidth  
-  a icm:PropertyParam ;  
-  icm:metric met:Bandwidth ;
-  icm:value "1";
-  icm:unit
-  met:bandwidth [ icm:atLeast [ met:value "1" ; met:unit met:unitGBPS  ] ] ;
+  a icm:PropertyParameter ;  
+  icm:observation [ icm:latestValueOf met:AvailableBandwidth ] ;
+  icm:atLeast "1" ;
+  icm:hasUnit [ icm:unit "GBit/s" ] ;
 .
-ex:PSE_Exp_property_Param_fromLocation
-  a icm:PropertyParam ;
-  spot:startLocation [ icm:exactly "'locationA'" ] ;
+ex:PSE_Exp_property_Param_Location
+  a icm:PropertyParameter ;
+  icm:subject [ rdf:li "'locationA'" ;
+                rdf:li "'locationB'" ;
+              ] ;
+  icm:includedIn met:ConnectedLocations ;
 .
-ex:PSE_Exp_property_Param_toLocation
-  a icm:PropertyParam ;
-  spot:endLocation [ icm:exactly "'locationB'" ] ;
+#  alternative parameter expression using statements
+ex:PSE_Exp_property_Param_bandwidth  
+  a icm:PropertyParameter ;  
+  icm:resultFrom [ rdf:subject [ icm:latestValueOf met:AvialableBandwidth ] ;
+                   rdf:predicate icm:atLeast ;
+				   rdf:object  [ rdf:value "1" ;
+				                 icm:hasUnit [ icm:unit "GBit/s" ]
+				               ] ;
+                 ] ;
 .
+  
+ex:PSE_Exp_property_Param_Location
+  a icm:PropertyParameter ;
+  icm:resultFrom [ rdf:subject [ rdf:li "'locationA'" ;
+                                 rdf:li "'locationB'" ;
+                               ] ;
+                   rdf:predicate icm:includedIn ;
+	               rdf:object met:ConnectedLocations ;
+                 ] ; 
+.
+
 
 # --- Reporting Expectation ---------------------------------------------------
 # Ask for reporting about key events and regular reports every 10 minutes
@@ -150,16 +187,15 @@ ex:PSE_Exp_property_Param_toLocation
 # 
 ex:PSE_Exp_reporting
   a icm:ReportingExpectation ;
-  icm:receiver ex:IMF_Customer1 ;
   icm:target ex:B1_PSE_Biz_Intent1 ;
-  icm:anyOf [ a rdf:bag 
-              rdf:li ex:PSE_Exp_reporting_Param_interval ;
+  icm:receiver ex:IMF_Customer1 ;
+  icm:anyOf [ rdf:li ex:PSE_Exp_reporting_Param_interval ;
               rdf:li ex:PSE_Exp_reporting_Param_event ;
 			] ;
 .
 ex:PSE_Exp_reporting_Param_interval
- a icm:ReportingParam ;
- icm:reportingEvent [ 
+ a icm:ReportingParameter ;
+ icm:reportingEvent [ a rdf:bag ;
                     ] ;
  
  icm:reportingTime
