@@ -13,6 +13,7 @@
 @prefix  cem: <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
 @prefix  xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix  arc: <http://tio.models.tmforum.org/tio/v1.0.0/IntentAcceptanceControl/> .
+
 # --- Intent ------------------------------------------------------------------ 
 #  This intent represents the Spot Price Bid Request from PSE (Price Sentitive
 #  Enterprize) Customer to the business layer.
@@ -26,8 +27,10 @@
 #  This intent provides the requirements for choosing a service/product from
 #  a service provider that would deliver the wanted capability with respect to
 #  functional and non-functional requirements:
+#
 #  Functional requirement: 
 #       -> Connectivity shall be provided between two sites
+#
 #  Non Functional requirements:
 #       -> A minimum bandwidth of 1 GBit/s shall be available
 #       -> The price shall not exceed 10 USD/h
@@ -83,23 +86,22 @@ ex:T1_Capability a icm:Target
 ex:PSE_Exp_delivery
   a icm:DeliveryExpectation ;
   icm:target ex:T1_Capability ;
-  icm:params ex:PSE_Capability_delivery_Param_type ;
+  icm:hasParameter ex:PSE_Capability_delivery_Param_type ;
 .
+
 ex:PSE_Capability_delivery_Param_type
- a icm:DeliveryParam ;
-   icm:deliveryDescription cat:Connectivity_DynamicPrice ; 
-   icm:deliveryType ex:ConnectivityCapability ; 
+  a icm:DeliveryParam ;
+  icm:deliveryDescription cat:Connectivity_DynamicPrice ; 
+  icm:deliveryType ex:ConnectivityCapability ; 
 .
 
 # --- Proposal Expectation ----------
-# Joerg: don't try to do negotiation in The expectation!
-# This is only the Requirement - Ask for it first!
-# Ask for reports on the current Price!  10$, 11$ , etc...
-# proposing 10$/hour
+# Not needed, becasue the regular reporting would already provide the information
+# needed about current price.
 ex:PSE_spot_price_bid_proposal
- a pbi:PropertyExpectation ;
-   icm:target _:capability ;
-   icm:params ex:PSE_Exp_property_Param_price ; 
+  a pbi:PropertyExpectation ;
+  icm:target _:capability ;
+  icm:hasParameter ex:PSE_Exp_property_Param_price ; 
 .
 #  in this expectation, there is an *implied* threshold...
 #  the maximum price is $10 and using spot:value
@@ -112,36 +114,55 @@ ex:PSE_Exp_property_Param_price
    pbi:proposingFrequency [ a t:Duration ; t:numericDuration "'1'" ; t:temporalUnit t:unitHour ] 
 .
 
-# --- Property Expectation ----------
+# --- Property Expectation ----------------------------------------------------
 ex:PSE_Exp_property
- a icm:PropertyExpectation ;
-   icm:target _:capability ;
-   icm:params ex:PSE_Exp_property_Param_bandwidth , 
-               ex:PSE_Exp_property_Param_fromLocation ,
-               ex:PSE_Exp_property_Param_toLocation ;
+  a icm:PropertyExpectation ;
+  icm:target _:capability ;
+  icm:anyOf [ a rdf:bag ;
+              rdf:li ex:PSE_Exp_property_Param_bandwidth ;
+              rdf:li ex:PSE_Exp_property_Param_fromLocation ;
+              rdf:li ex:PSE_Exp_property_Param_toLocation ;
+			] ;
 .
 ex:PSE_Exp_property_Param_bandwidth  
- a icm:PropertyParam ;  
-   met:bandwidth [ icm:atLeast [ met:value "1" ; met:unit met:unitGBPS  ] ] ;
+  a icm:PropertyParam ;  
+  icm:metric met:Bandwidth ;
+  icm:value "1";
+  icm:unit
+  met:bandwidth [ icm:atLeast [ met:value "1" ; met:unit met:unitGBPS  ] ] ;
 .
 ex:PSE_Exp_property_Param_fromLocation
- a icm:PropertyParam ;
-   spot:startLocation [ icm:exactly "'locationA'" ] ;
+  a icm:PropertyParam ;
+  spot:startLocation [ icm:exactly "'locationA'" ] ;
 .
 ex:PSE_Exp_property_Param_toLocation
- a icm:PropertyParam ;
-   spot:endLocation [ icm:exactly "'locationB'" ] ;
+  a icm:PropertyParam ;
+  spot:endLocation [ icm:exactly "'locationB'" ] ;
 .
 
-# --- Reporting Expectation ----------
+# --- Reporting Expectation ---------------------------------------------------
+# Ask for reporting about key events and regular reports every 10 minutes
+# A proposal expectation is not needed, because the regular reporting would 
+# provide the same information. 
+# The scope of the reporting is the entire intent as indicated by the target
+# The receiver of the report is the itnent managment Function of Customer1. It
+# is represented by the resource ex:IMF_Customer1
+# 
 ex:PSE_Exp_reporting
- a icm:ReportingExpectation ;
-   icm:target ex:B1_PSE_Biz_Intent1 ;
-   icm:params ex:PSE_Exp_reporting_Param_interval,
-               ex:PSE_Exp_reporting_Param_event ;
+  a icm:ReportingExpectation ;
+  icm:receiver ex:IMF_Customer1 ;
+  icm:target ex:B1_PSE_Biz_Intent1 ;
+  icm:anyOf [ a rdf:bag 
+              rdf:li ex:PSE_Exp_reporting_Param_interval ;
+              rdf:li ex:PSE_Exp_reporting_Param_event ;
+			] ;
 .
 ex:PSE_Exp_reporting_Param_interval
  a icm:ReportingParam ;
+ icm:reportingEvent [ 
+                    ] ;
+ 
+ icm:reportingTime
    icm:reportingInterval [ a t:Duration ;
                                 t:numericDuration "'10'" ;
                                 t:temporalUnit t:unitMinute ] .
