@@ -14,7 +14,8 @@
 @prefix  xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix  arc: <http://tio.models.tmforum.org/tio/v1.0.0/IntentAcceptanceControl/> .
 
-# --- Intent ------------------------------------------------------------------ 
+##### Intent ##################################################################
+#
 #  This intent represents the Spot Price Bid Request from PSE (Price Sentitive
 #  Enterprize) Customer to the business layer.
 #  It is the B1 intent in the IDAN Catalyst Phase 2
@@ -46,14 +47,6 @@
 #  immediately fulfill it, the intent acceptence and rejection control 
 #  extension model is used to override certain rejection reasons. 
 #  
-
-#  Decision go with Capability.  (Reminder: check Doug's blog!  Capability is also being done in ontology also TIO and CO!!  No Catalog!)
-# Introduce a  class called Capability. A Taxonomy (hierarchy)   of capabilities with subclasses.. Joerg: this is why we have 2 ways of defining
-# DeliveryExpectation..by pointer to catalog or Class  "DeliveryType". Current approach is Catalog-driven....
-#
-# --- B1 Intent - this is a SET INTENT Operation ( dont use  BEST )----------
-# if we use a BEST we would only get reports on price....its still a hyposthetic "what-if" scenario.
-# whereas, set is a active intent..
 ex:B1_PSE_Biz_Intent1
   a icm:Intent ;
   rdfs:comment "'Intent for ordering connectivity service via dynamic pricing'" ;
@@ -67,13 +60,24 @@ ex:B1_PSE_Biz_Intent1
                      ex:PSE_Exp_reporting ; 
 .
 
-# --- Targets -----------------------------------------------------------------
-# the latest intent common model introduced target onjects to be used instead 
-# of blank nodes. 
-# The target used here specifies a condition for selecting a valid resource 
-# for fulfilling the expectations. It tells that one of the resources from a
-# container shall be used. Thie deliberately leaves a choice to the intent 
-# handler. 
+##### Targets #################################################################
+#
+# The latest intent common model introduced target objects to be used instead 
+# of blank nodes. The target specifies the collection of resources to be used,
+# or a condition for selection that involves a set of resources to choose from. 
+# In this example the target does not prescribe resources, but allows a 
+# selection of exactly one resource from the Collection of all resources. 
+#
+# To be compliant the resource selected to be used needs to fulfill the
+# Target condition as well as the requirements defined by expectations. 
+# The delivery expectation mainly steers the target resource selection, but
+# practically the intent handler would choose a resource that is overall
+# preferential. This can mean it chooses a resource that is the cheapest one,
+# which would allow to meet all expectations. 
+#
+# The target used here specifies a condition for selectable resources.
+# It tells that exactly one of the resources from a container can be selected. 
+# Thisdeliberately leaves a choice to the intent handler. 
 # Here, the container to choose from is determined by the condition property
 # icm:elementType. This means all individuals of the specified class are 
 # elements of that container. Here, the container contains all resources. 
@@ -82,80 +86,158 @@ ex:B1_PSE_Biz_Intent1
 # This means that the target defintion tells to choose exactly one element
 # from the container of all resources and use that to fulfill the expextations 
 # associated with this target.
-# The resource conditions in the Target are 
-# The target itself is otherwise an empty Container, because a choice of 
+#
+# The target itself is otherwise an empty container, because a choice of 
 # resources was not yet done when creating the intent. The intent report
 # will however drop the condition and provide a concrete container of 
 # resources that were selected. 
+#
+# The second target is a container with the intent itself as single member
+# it does not leave any choice and just tells that the report shall be 
+# about the intent.
+#
 ex:T1_Capability 
   a icm:IndividualTarget ;
   icm:oneOf [ icm:elementType rdf:Resource ];
 .
+ex:T2_Reporting
+  a icm:IndividualTarget ;
+  rdf:li ex:B1_PSE_Biz_Intent1 ;
+. 
 
-# --- Delivery Expectation and Parameters -------------------------------------
-# The delivery expectaion refers to a service description in the marketplace
-# catalog for specifying what needs to be delivered. This means we are using
-# a catalog based approach. 
+##### Delivery Expectation and Parameters #####################################
 #
-# This intent also uses a type/class based specification of what shall be 
-# deliverd 
+# The delivery expectation is mainly concerned to specify that something needs 
+# to be delivered. Delivery usually involves providing access to a service,
+# product or capability and this typically requires that resources need to be
+# used to provide it.
 #
-# The delivery expectation expresses the requirement that something shall be
-# delivered. It also describes the nature of this something. This practically
-# steers the selection of target resources. In this case the target is an
-# empty container and 
-# The system is compliant to this type of expectation if the respective 
+# A delivery expectation is therefore concerned with two main questions:
+#
+# 1. What is the thing that needs to be delivered?
+#    This constitutes a functional requirement, becasue it is about the
+#    nature of the needed thing.  
+#    -> Catalog Based.  The intent common model allows to refer to an external 
+#                       description of that thing. This can, for example, be 
+#                       a service description in a catalog. 
+#    -> Ontology Based. The second way to define the nature of the thing to 
+#                       be delivered is by requireing that this thing is an
+#                       object of a particular class within the ontology.
+#    
+# 2. Under which conditions shall the delivery happen?
+#    The delivery might be conditional and therefore the thing shall only be 
+#    delivered if a given condition holds.
+#
+# The delivery expectaion in this intent refers to a capability description 
+# in the marketplace catalog for specifying what needs to be delivered. This 
+# intent also uses a type/class based specification of what shall be deliverd.
+# This means we are demonstrating a combined a catalog and ontology based 
+# approach. 
+#
+# The delivery expectation practically steers the selection of target
+# resources to be used to deliver the wanted thing. In this case the target 
+# is an empty container, meaning there is not a fixed resource 
+# pre-determined to be used. Instead the target specifies the conditions for 
+# valid resources.
+#
+# The system is compliant to a delivery expectation if the respective 
 # resources, which were selected to fulfill this delivery, meet the 
-# requirements of the delivery expectation. 
-# This something
+# requirements of the delivery expectation. This means they comply to an 
+# external description of the thing to be delivered and/or they are objects
+# of a required class. Furthermore the condition for delivery needs to be met
+# for compliance. 
 #
 ex:PSE_Exp_delivery
   a icm:DeliveryExpectation ;
   icm:target ex:T1_Capability ;
-  icm:hasParameter ex:PSE_Capability_delivery_Param_type ;
+  icm:hasParameter ex:PSE_Capability_delivery_type ,
+                   ex:PSE_Capability_delivery_condition ;
 .
 
-ex:PSE_Capability_delivery_Param_type
+# Select a resource (service, product) according to the description in the 
+# catalog. Furthermore the resource ahsll be an object of a class in the 
+# ontology
+ex:PSE_Capability_delivery_type
   a icm:DeliveryParameter ;
   icm:deliveryDescription cat:Connectivity_DynamicPrice ; 
   icm:deliveryType ex:ConnectivityCapability_DynamicPrice ; 
 .
 
-# --- Proposal Expectation ----------
-# Not needed, becasue the regular reporting would already provide the information
-# needed about current price.
+# Only deliver if target resources can be selected that would meet the
+# condition. This means the observation is associated with the target.
+# If no suitable target resource is available to make this observation, the 
+# parameter would be evaluated as not compliant. 
+ex:PSE_Capability_delivery_condition ;
+  a icm:DeliveryParameter ;
+  icm:observation [ icm:latestValueOf spot:price ] ;
+  icm:atMost "10" ;
+  icm:hasUnit [ icm:unit spot:unitDollarHour ] ;
+.
+
+##### Proposal Expectation ####################################################
+# Not needed, becasue the regular reporting would already provide the 
+# information needed about current price.
 
 
-# --- Property Expectation ----------------------------------------------------
+##### Property Expectation ####################################################
+# A property expectation allwos to define requirements based on observable 
+# properties of the system setting goal/target values and thresholds for these
+# properties. 
+# The vocabulary of the intent common model allws to express this by defining
+# the condition under which the system would be considered compliant. 
+# The condition can be based on individual target values versus an observation,
+# and it can be based on collection/set logic. 
+# 
+# This example defines three property based requirements and all of them need 
+# to be fulfilled to consider the system compliant to the property expectation.
+# 
 ex:PSE_Exp_property
   a icm:PropertyExpectation ;
   icm:target _:capability ;
   icm:allOf [ rdf:li ex:PSE_Exp_Param_price ;
               rdf:li ex:PSE_Exp_Param_bandwidth ;
-              rdf:li ex:PSE_Exp_Param_Location ;
+              rdf:li ex:PSE_Exp_Param_location ;
 			] ;
 .
 
+# Price based condition. The system is compliant if the price of the target 
+# is below 10 USD per hour. 
+# This requirement might be redundent here, becasue it is already a delivery 
+# condition. A non compliant delivery condition would stop the delivery. 
+# The same condition within a property expectation would not imply if it shall
+# delivered or not. It would only indicate that ther emight be problem with 
+# the delivered thing. So there is a semantic difference. 
 ex:PSE_Exp_Param_price
   a icm:PropertyExpectation ;
   icm:observation [ icm:latestValueOf spot:price ] ;
   icm:atMost "10" ;
   icm:hasUnit [ icm:unit spot:unitDollarHour ] ;
 .
-ex:PSE_Exp_property_Param_bandwidth  
+# The wanted connectivity capability shall allow usage of at least 1 GBit/s
+# As the used metric measures the overall bandwidth acorss all users, the
+# requirement is also about the accumulated available bandwidth. 
+# Please note that this requirement would only fail if there is acutually 
+# demand above 1Gbit/s. This is implied by using an available Bandwidth
+# metric, rather than a current bandwidth.  
+ex:PSE_Exp_Param_bandwidth  
   a icm:PropertyParameter ;  
   icm:observation [ icm:latestValueOf met:AvailableBandwidth ] ;
   icm:atLeast "1" ;
   icm:hasUnit [ icm:unit "GBit/s" ] ;
 .
-ex:PSE_Exp_property_Param_Location
+# There is an collextion of all connected locations. This compliance condition
+# states that the set of all locations that shall be connected is included in
+# the set of all connected locations. 
+ex:PSE_Exp_Param_location
   a icm:PropertyParameter ;
   icm:subject [ rdf:li "'locationA'" ;
                 rdf:li "'locationB'" ;
               ] ;
   icm:includedIn met:ConnectedLocations ;
 .
-#  alternative parameter expression using statements
+# Alternative parameter expression using RDF statements. 
+# The latest Intent Common Model will support compliance conditions with
+# statements
 ex:PSE_Exp_property_Param_bandwidth  
   a icm:PropertyParameter ;  
   icm:resultFrom [ rdf:subject [ icm:latestValueOf met:AvialableBandwidth ] ;
@@ -165,8 +247,7 @@ ex:PSE_Exp_property_Param_bandwidth
 				               ] ;
                  ] ;
 .
-  
-ex:PSE_Exp_property_Param_Location
+ex:PSE_Exp_property_Param_location
   a icm:PropertyParameter ;
   icm:resultFrom [ rdf:subject [ rdf:li "'locationA'" ;
                                  rdf:li "'locationB'" ;
@@ -176,39 +257,47 @@ ex:PSE_Exp_property_Param_Location
                  ] ; 
 .
 
-
-# --- Reporting Expectation ---------------------------------------------------
+#### Reporting Expectation ####################################################
+#
 # Ask for reporting about key events and regular reports every 10 minutes
-# A proposal expectation is not needed, because the regular reporting would 
-# provide the same information. 
+#
 # The scope of the reporting is the entire intent as indicated by the target
+#
 # The receiver of the report is the itnent managment Function of Customer1. It
-# is represented by the resource ex:IMF_Customer1
+# is represented by the resource ex:IMF_Customer1.
+#
+# icm:NewEventTypes is a container of types (classes) of the events that
+# were observed since last report. A report shall be created if this container 
+# intersects with the container of those event types a report is wanted for.
+# Compliance is reached if the report is creatred and received. 
+# 
+# icm:reportingInterval is a context. It sets a timer for interval based 
+# reporting. This timer will generate an event of class 
+# icm:reportingIntercalExpired
+# Multiple of these timers can be specified, but here we only use one. 
+# Compliance is reached if the event is correctly issued. 
 # 
 ex:PSE_Exp_reporting
   a icm:ReportingExpectation ;
-  icm:target ex:B1_PSE_Biz_Intent1 ;
+  icm:target ex:T2_reporting ;
   icm:receiver ex:IMF_Customer1 ;
-  icm:anyOf [ rdf:li ex:PSE_Exp_reporting_Param_interval ;
-              rdf:li ex:PSE_Exp_reporting_Param_event ;
-			] ;
+  icm:hasParameter ex:PSE_Exp_reporting_Param ;
 .
-ex:PSE_Exp_reporting_Param_interval
- a icm:ReportingParameter ;
- icm:reportingEvent [ a rdf:bag ;
-                    ] ;
- 
- icm:reportingTime
-   icm:reportingInterval [ a t:Duration ;
-                                t:numericDuration "'10'" ;
-                                t:temporalUnit t:unitMinute ] .
-ex:PSE_Exp_reporting_Param_event              
- a icm:ReportingParam ; 
-   icm:reportingEvent icm:ReportingIntervalExpired ,
-                        icm:IntentRejected ,
-                        icm:StateComplies ,
-                        icm:StateDegrades ,
-                        icm:HandlingEnded ,
-                        icm:UpdateRejected ,
-                        icm:UpdateFinished  ;
+
+ex:PSE_Exp_reporting_Param
+  a icm:ReportingParameter ;
+  icm:subject icm:NewEventTypes ;
+  intersectWith [ rdf:li icm:ReportingIntervalExpired ;
+                  rdf:li icm:IntentRejected ;
+                  rdf:li icm:StateComplies ;
+                  rdf:li icm:StateDegrades ;
+                  rdf:li icm:HandlingEnded ;
+                  rdf:li icm:UpdateRejected ;
+                  rdf:li icm:UpdateFinished  ;
+                ] ;
+  icm:reportingInterval [ a t:Duration ;
+                          t:numericDuration "'10'" ;
+                          t:temporalUnit t:unitMinute ;
+    					] ;
 .
+
