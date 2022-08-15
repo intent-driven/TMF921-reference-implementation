@@ -98,7 +98,7 @@ ex:B1_PSE_Biz_Intent1
 #
 ex:T1_Capability 
   a icm:IndividualTarget ;
-  icm:oneOf [ icm:elementType rdf:Resource ];
+  icm:OneElementOf [ icm:elementType rdf:Resource ] ;
 .
 ex:T2_Reporting
   a icm:IndividualTarget ;
@@ -195,7 +195,7 @@ ex:PSE_Capability_delivery_condition ;
 # 
 ex:PSE_Exp_property
   a icm:PropertyExpectation ;
-  icm:target _:capability ;
+  icm:target ex:T1_Capability ;
   icm:allOf [ rdf:li ex:PSE_Exp_Param_price ;
               rdf:li ex:PSE_Exp_Param_bandwidth ;
               rdf:li ex:PSE_Exp_Param_location ;
@@ -210,7 +210,7 @@ ex:PSE_Exp_property
 # delivered or not. It would only indicate that there might be problem with
 # the delivered thing. So there is a semantic difference. 
 ex:PSE_Exp_Param_price
-  a icm:PropertyExpectation ;
+  a icm:PropertyParameter ;
   icm:observation [ icm:latestValueOf spot:price ] ;
   icm:atMost "10" ;
   icm:hasUnit [ icm:unit spot:unitDollarHour ] ;
@@ -279,6 +279,10 @@ ex:PSE_Exp_property_Param_location
 # Multiple of these timers can be specified, but here we only use one. 
 # Compliance is reached if the event is correctly issued. 
 # 
+# Speech Bubble: Sent a report about the intent to intent owner if since last 
+# report any of these events were observed. Also set a timer for regular
+# reporting.
+#
 ex:PSE_Exp_reporting
   a icm:ReportingExpectation ;
   icm:target ex:T2_reporting ;
