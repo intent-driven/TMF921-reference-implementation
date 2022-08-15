@@ -155,8 +155,8 @@ ex:PSE_Exp_delivery
 .
 
 # Select a resource (service, product) according to the description in the 
-# catalog. Furthermore the resource ahsll be an object of a class in the 
-# ontology
+# catalog. Furthermore the resource shall be an object of a class in the
+# ontology. This showcases the flexible approach of using ontology with a catalog approach
 ex:PSE_Capability_delivery_type
   a icm:DeliveryParameter ;
   icm:deliveryDescription cat:Connectivity_DynamicPrice ; 
@@ -166,7 +166,9 @@ ex:PSE_Capability_delivery_type
 # Only deliver if target resources can be selected that would meet the
 # condition. This means the observation is associated with the target.
 # If no suitable target resource is available to make this observation, the 
-# parameter would be evaluated as not compliant. 
+# parameter would be evaluated as not compliant. Note this is not a PropertyExpectation its a condition of
+# DeliveryExpectation - there is  different semantics to this.
+# (Note: This is a key triple to explain spot price 10 dollar)
 ex:PSE_Capability_delivery_condition ;
   a icm:DeliveryParameter ;
   icm:observation [ icm:latestValueOf spot:price ] ;
@@ -175,12 +177,12 @@ ex:PSE_Capability_delivery_condition ;
 .
 
 ##### Proposal Expectation ####################################################
-# Not needed, becasue the regular reporting would already provide the 
+# Not needed, because the regular reporting would already provide the
 # information needed about current price.
 
 
 ##### Property Expectation ####################################################
-# A property expectation allwos to define requirements based on observable 
+# A property expectation always to define requirements based on observable
 # properties of the system setting goal/target values and thresholds for these
 # properties. 
 # The vocabulary of the intent common model allws to express this by defining
@@ -202,10 +204,10 @@ ex:PSE_Exp_property
 
 # Price based condition. The system is compliant if the price of the target 
 # is below 10 USD per hour. 
-# This requirement might be redundent here, becasue it is already a delivery 
+# This requirement might be redundant here, because it is already a delivery
 # condition. A non compliant delivery condition would stop the delivery. 
 # The same condition within a property expectation would not imply if it shall
-# delivered or not. It would only indicate that ther emight be problem with 
+# delivered or not. It would only indicate that there might be problem with
 # the delivered thing. So there is a semantic difference. 
 ex:PSE_Exp_Param_price
   a icm:PropertyExpectation ;
@@ -225,7 +227,7 @@ ex:PSE_Exp_Param_bandwidth
   icm:atLeast "1" ;
   icm:hasUnit [ icm:unit "GBit/s" ] ;
 .
-# There is an collextion of all connected locations. This compliance condition
+# There is an collection of all connected locations. This compliance condition
 # states that the set of all locations that shall be connected is included in
 # the set of all connected locations. 
 ex:PSE_Exp_Param_location
@@ -263,17 +265,17 @@ ex:PSE_Exp_property_Param_location
 #
 # The scope of the reporting is the entire intent as indicated by the target
 #
-# The receiver of the report is the itnent managment Function of Customer1. It
+# The receiver of the report is the intent management Function of Customer1. It
 # is represented by the resource ex:IMF_Customer1.
 #
 # icm:NewEventTypes is a container of types (classes) of the events that
 # were observed since last report. A report shall be created if this container 
 # intersects with the container of those event types a report is wanted for.
-# Compliance is reached if the report is creatred and received. 
+# Compliance is reached if the report is created and received.
 # 
 # icm:reportingInterval is a context. It sets a timer for interval based 
 # reporting. This timer will generate an event of class 
-# icm:reportingIntercalExpired
+# icm:reportingIntervalExpired
 # Multiple of these timers can be specified, but here we only use one. 
 # Compliance is reached if the event is correctly issued. 
 # 
