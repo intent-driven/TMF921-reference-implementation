@@ -3,8 +3,8 @@ swagger: "2.0"
 info:
   description: "This is Swagger UI environment generated for the TM Forum Intent Management\
     \ API specification"
-  version: "4.0.0"
-  title: "Intent"
+  version: "4.0.1"
+  title: "Intent Managenment"
 host: "serverRoot:8080"
 basePath: "/tmf-api/intent/v4/"
 tags:
@@ -377,6 +377,55 @@ paths:
           description: "Success"
           schema:
             $ref: "#/definitions/IntentReport"
+        400:
+          description: "Bad Request"
+          schema:
+            $ref: "#/definitions/Error"
+        401:
+          description: "Unauthorized"
+          schema:
+            $ref: "#/definitions/Error"
+        403:
+          description: "Forbidden"
+          schema:
+            $ref: "#/definitions/Error"
+        404:
+          description: "Not Found"
+          schema:
+            $ref: "#/definitions/Error"
+        405:
+          description: "Method Not allowed"
+          schema:
+            $ref: "#/definitions/Error"
+        409:
+          description: "Conflict"
+          schema:
+            $ref: "#/definitions/Error"
+        500:
+          description: "Internal Server Error"
+          schema:
+            $ref: "#/definitions/Error"
+      x-swagger-router-controller: "IntentReport"
+    delete:
+      tags:
+      - "intentReport"
+      summary: "Deletes a IntentReport"
+      description: "This operation deletes a IntentReport entity."
+      operationId: "deleteIntentReport"
+      parameters:
+      - name: "intentId"
+        in: "path"
+        description: "Identifier of the parent Intent entity"
+        required: true
+        type: "string"
+      - name: "id"
+        in: "path"
+        description: "Identifier of the IntentReport"
+        required: true
+        type: "string"
+      responses:
+        204:
+          description: "Deleted"
         400:
           description: "Bad Request"
           schema:
@@ -880,12 +929,45 @@ definitions:
         type: "string"
         description: "When sub-classing, this defines the sub-class Extensible name"
     description: "Base entity schema for use in TMForum Open-APIs"
+  EntityRef:
+    type: "object"
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+        description: "unique identifier"
+      href:
+        type: "string"
+        format: "uri"
+        description: "Hyperlink reference"
+      name:
+        type: "string"
+        description: "Name of the related entity."
+      '@baseType':
+        type: "string"
+        description: "When sub-classing, this defines the super-class"
+      '@schemaLocation':
+        type: "string"
+        format: "uri"
+        description: "A URI to a JSON-Schema file that defines additional attributes\
+          \ and relationships"
+      '@type':
+        type: "string"
+        description: "When sub-classing, this defines the sub-class Extensible name"
+      '@referredType':
+        type: "string"
+        description: "The actual type of the target instance when needed for disambiguation."
+    description: "Entity reference schema to be use for all entityRef class."
   Expression:
     type: "object"
     properties:
-      expressionLanguage:
+      expressionValue:
         type: "string"
         description: "The serialized Expression language of the intent serialized."
+      expressionLanguage:
+        type: "string"
+        description: "The language used for the ExpressionValue."
       iri:
         type: "string"
         description: "Internationalized Resource Identifier of the intent Expression"
@@ -905,6 +987,7 @@ definitions:
       iri: "iri"
       '@baseType': "@baseType"
       '@type': "@type"
+      expressionValue: "expressionValue"
       expressionLanguage: "expressionLanguage"
       '@schemaLocation': "http://example.com/aeiou"
   Extensible:
@@ -978,8 +1061,7 @@ definitions:
           \ and relationships"
       '@type':
         type: "string"
-        description: "When sub-classing Intent, this defines the sub-class Extensible\
-          \ name"
+        description: "When sub-classing, this defines the sub-class Extensible name"
         enum:
         - "Intent"
         - "ProbeIntent"
@@ -992,6 +1074,7 @@ definitions:
         iri: "iri"
         '@baseType': "@baseType"
         '@type': "@type"
+        expressionValue: "expressionValue"
         expressionLanguage: "expressionLanguage"
         '@schemaLocation': "http://example.com/aeiou"
       lifecycleStatus: "lifecycleStatus"
@@ -1071,6 +1154,7 @@ definitions:
         iri: "iri"
         '@baseType': "@baseType"
         '@type': "@type"
+        expressionValue: "expressionValue"
         expressionLanguage: "expressionLanguage"
         '@schemaLocation': "http://example.com/aeiou"
       lifecycleStatus: "lifecycleStatus"
@@ -1144,6 +1228,7 @@ definitions:
         iri: "iri"
         '@baseType': "@baseType"
         '@type': "@type"
+        expressionValue: "expressionValue"
         expressionLanguage: "expressionLanguage"
         '@schemaLocation': "http://example.com/aeiou"
       lifecycleStatus: "lifecycleStatus"
@@ -1158,6 +1243,122 @@ definitions:
       creationDate: "2000-01-23T04:56:07.000+00:00"
       '@schemaLocation': "http://example.com/aeiou"
       version: "version"
+  IntentRef:
+    type: "object"
+    required:
+    - "id"
+    properties:
+      id:
+        type: "string"
+        description: "unique identifier"
+      href:
+        type: "string"
+        format: "uri"
+        description: "Hyperlink reference"
+      name:
+        type: "string"
+        description: "Name of the related entity."
+      '@baseType':
+        type: "string"
+        description: "When sub-classing, this defines the super-class"
+      '@schemaLocation':
+        type: "string"
+        format: "uri"
+        description: "A URI to a JSON-Schema file that defines additional attributes\
+          \ and relationships"
+      '@type':
+        type: "string"
+        description: "When sub-classing, this defines the sub-class Extensible name"
+      '@referredType':
+        type: "string"
+        description: "The actual type of the target instance when needed for disambiguation."
+    description: "Intent reference, for when Intent is used by other entities"
+  IntentRefOrValue:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        description: "unique identifier"
+      href:
+        type: "string"
+        format: "uri"
+        description: "Hyperlink reference"
+      creationDate:
+        type: "string"
+        format: "date-time"
+        description: "Date and time of the creation of this Intent"
+      description:
+        type: "string"
+        description: "The description of the intent."
+      lastUpdate:
+        type: "string"
+        format: "date-time"
+        description: "Date and time of the last update of this Intent"
+      lifecycleStatus:
+        type: "string"
+        description: "Used to indicate the current lifecycle status of this Intent"
+      name:
+        type: "string"
+        description: "The name of the intent."
+      statusChangeDate:
+        type: "string"
+        format: "date-time"
+        description: "A date time( DateTime). The date that the entity status changed\
+          \ to the current one"
+      version:
+        type: "string"
+        description: "A field that identifies the specific version of an instance\
+          \ of an entity. If not specified version is defaulted to 1.0"
+      expression:
+        description: "An Intent contains a set of expectations expressed  (expression)\
+          \ in statements using a particular expressionLanguage. This attribute captures\
+          \ the intent expressed by the TM Forum Intent Ontology (TIO) as is stored\
+          \ as a string. The Expression is the formal statement of the intent and\
+          \ contains all the information that describes the complete intent."
+        $ref: "#/definitions/Expression"
+      validFor:
+        description: "The period for which this intent is valid"
+        $ref: "#/definitions/TimePeriod"
+      '@baseType':
+        type: "string"
+        description: "When sub-classing, this defines the super-class"
+      '@schemaLocation':
+        type: "string"
+        format: "uri"
+        description: "A URI to a JSON-Schema file that defines additional attributes\
+          \ and relationships"
+      '@type':
+        type: "string"
+        description: "When sub-classing, this defines the sub-class Extensible name"
+      '@referredType':
+        type: "string"
+        description: "The actual type of the target instance when needed for disambiguation."
+    description: "Intent Ref (if Intent already exists) or Value (if Intent be created\
+      \ or its details be presented)"
+    example:
+      '@referredType': "@referredType"
+      expression:
+        iri: "iri"
+        '@baseType': "@baseType"
+        '@type': "@type"
+        expressionValue: "expressionValue"
+        expressionLanguage: "expressionLanguage"
+        '@schemaLocation': "http://example.com/aeiou"
+      lifecycleStatus: "lifecycleStatus"
+      validFor:
+        startDateTime: "1985-04-12T23:20:50.52Z"
+        endDateTime: "1985-04-12T23:20:50.52Z"
+      '@type': "@type"
+      description: "description"
+      creationDate: "2000-01-23T04:56:07.000+00:00"
+      version: "version"
+      statusChangeDate: "2000-01-23T04:56:07.000+00:00"
+      '@baseType': "@baseType"
+      lastUpdate: "2000-01-23T04:56:07.000+00:00"
+      name: "name"
+      id: "id"
+      href: "http://example.com/aeiou"
+      '@schemaLocation': "http://example.com/aeiou"
   IntentReport:
     type: "object"
     properties:
@@ -1186,7 +1387,7 @@ definitions:
           \ and contains all the information that describes the complete intent."
         $ref: "#/definitions/Expression"
       intent:
-        $ref: "#/definitions/Intent"
+        $ref: "#/definitions/IntentRefOrValue"
       validFor:
         description: "The period for which this intent report is valid"
         $ref: "#/definitions/TimePeriod"
@@ -1208,6 +1409,7 @@ definitions:
         iri: "iri"
         '@baseType': "@baseType"
         '@type': "@type"
+        expressionValue: "expressionValue"
         expressionLanguage: "expressionLanguage"
         '@schemaLocation': "http://example.com/aeiou"
       '@baseType': "@baseType"
@@ -1222,17 +1424,19 @@ definitions:
       creationDate: "2000-01-23T04:56:07.000+00:00"
       '@schemaLocation': "http://example.com/aeiou"
       intent:
+        '@referredType': "@referredType"
         expression:
           iri: "iri"
           '@baseType': "@baseType"
           '@type': "@type"
+          expressionValue: "expressionValue"
           expressionLanguage: "expressionLanguage"
           '@schemaLocation': "http://example.com/aeiou"
         lifecycleStatus: "lifecycleStatus"
         validFor:
           startDateTime: "1985-04-12T23:20:50.52Z"
           endDateTime: "1985-04-12T23:20:50.52Z"
-        '@type': "Intent"
+        '@type': "@type"
         description: "description"
         creationDate: "2000-01-23T04:56:07.000+00:00"
         version: "version"
@@ -1243,32 +1447,6 @@ definitions:
         id: "id"
         href: "http://example.com/aeiou"
         '@schemaLocation': "http://example.com/aeiou"
-  JsonLdExpression:
-    type: "object"
-    properties:
-      expressionLanguage:
-        type: "string"
-        description: "The serialized Expression language of the intent serialized."
-      expressionValue:
-        type: "string"
-        description: "JsonLdExpression is the ontology-encoded form of the Intent\
-          \ as JSON-LD as defined in https://www.w3.org/TR/json-ld/ should be validated\
-          \ against https://raw.githubusercontent.com/json-ld/json-ld.org/main/schemas/jsonld-schema.json"
-      iri:
-        type: "string"
-        description: "Internationalized Resource Identifier of the intent Expression"
-      '@baseType':
-        type: "string"
-        description: "When sub-classing, this defines the super-class"
-      '@schemaLocation':
-        type: "string"
-        format: "uri"
-        description: "A URI to a JSON-Schema file that defines additional attributes\
-          \ and relationships"
-      '@type':
-        type: "string"
-        description: "When sub-classing, this defines the sub-class Extensible name"
-    description: "JsonLdExpression is the ontology-encoded form of the Intent"
   JudgeIntent:
     type: "object"
     properties:
@@ -1387,31 +1565,6 @@ definitions:
         description: "When sub-classing, this defines the sub-class Extensible name"
     description: "An Probe Intent instance is the formal description of all expectations\
       \ including requirements, goals, and constraints given to a technical system"
-  RdxmlExpression:
-    type: "object"
-    properties:
-      expressionLanguage:
-        type: "string"
-        description: "The serialized Expression language of the intent serialized."
-      expressionValue:
-        type: "string"
-        description: "RdxmlExpression is the ontology-encoded form of the Intent as\
-          \ RDF-XML as defined in https://www.w3.org/TR/rdf-syntax-grammar/"
-      iri:
-        type: "string"
-        description: "Internationalized Resource Identifier of the intent Expression"
-      '@baseType':
-        type: "string"
-        description: "When sub-classing, this defines the super-class"
-      '@schemaLocation':
-        type: "string"
-        format: "uri"
-        description: "A URI to a JSON-Schema file that defines additional attributes\
-          \ and relationships"
-      '@type':
-        type: "string"
-        description: "When sub-classing, this defines the sub-class Extensible name"
-    description: "RdxmlExpression is the ontology-encoded form of the Intent as RDF-XML"
   TimePeriod:
     type: "object"
     properties:
@@ -1430,32 +1583,6 @@ definitions:
     example:
       startDateTime: "1985-04-12T23:20:50.52Z"
       endDateTime: "1985-04-12T23:20:50.52Z"
-  TurtleExpression:
-    type: "object"
-    properties:
-      expressionLanguage:
-        type: "string"
-        description: "The serialized Expression language of the intent serialized."
-      expressionValue:
-        type: "string"
-        description: "TurtleExpression is the ontology-encoded form of the Intent\
-          \ as Turtle RDF as defined in https://www.w3.org/TR/turtle/"
-      iri:
-        type: "string"
-        description: "Internationalized Resource Identifier of the intent Expression"
-      '@baseType':
-        type: "string"
-        description: "When sub-classing, this defines the super-class"
-      '@schemaLocation':
-        type: "string"
-        format: "uri"
-        description: "A URI to a JSON-Schema file that defines additional attributes\
-          \ and relationships"
-      '@type':
-        type: "string"
-        description: "When sub-classing, this defines the sub-class Extensible name"
-    description: "TurtleExpression is the ontology-encoded form of the Intent as Turtle\
-      \ RDF"
   EventSubscription:
     type: "object"
     required:
@@ -1542,6 +1669,7 @@ definitions:
             iri: "iri"
             '@baseType': "@baseType"
             '@type': "@type"
+            expressionValue: "expressionValue"
             expressionLanguage: "expressionLanguage"
             '@schemaLocation': "http://example.com/aeiou"
           lifecycleStatus: "lifecycleStatus"
@@ -1575,6 +1703,7 @@ definitions:
           iri: "iri"
           '@baseType': "@baseType"
           '@type': "@type"
+          expressionValue: "expressionValue"
           expressionLanguage: "expressionLanguage"
           '@schemaLocation': "http://example.com/aeiou"
         lifecycleStatus: "lifecycleStatus"
@@ -1641,6 +1770,7 @@ definitions:
             iri: "iri"
             '@baseType': "@baseType"
             '@type': "@type"
+            expressionValue: "expressionValue"
             expressionLanguage: "expressionLanguage"
             '@schemaLocation': "http://example.com/aeiou"
           lifecycleStatus: "lifecycleStatus"
@@ -1674,6 +1804,7 @@ definitions:
           iri: "iri"
           '@baseType': "@baseType"
           '@type': "@type"
+          expressionValue: "expressionValue"
           expressionLanguage: "expressionLanguage"
           '@schemaLocation': "http://example.com/aeiou"
         lifecycleStatus: "lifecycleStatus"
@@ -1740,6 +1871,7 @@ definitions:
             iri: "iri"
             '@baseType': "@baseType"
             '@type': "@type"
+            expressionValue: "expressionValue"
             expressionLanguage: "expressionLanguage"
             '@schemaLocation': "http://example.com/aeiou"
           lifecycleStatus: "lifecycleStatus"
@@ -1773,6 +1905,7 @@ definitions:
           iri: "iri"
           '@baseType': "@baseType"
           '@type': "@type"
+          expressionValue: "expressionValue"
           expressionLanguage: "expressionLanguage"
           '@schemaLocation': "http://example.com/aeiou"
         lifecycleStatus: "lifecycleStatus"
@@ -1839,6 +1972,7 @@ definitions:
             iri: "iri"
             '@baseType': "@baseType"
             '@type': "@type"
+            expressionValue: "expressionValue"
             expressionLanguage: "expressionLanguage"
             '@schemaLocation': "http://example.com/aeiou"
           '@baseType': "@baseType"
@@ -1853,17 +1987,19 @@ definitions:
           creationDate: "2000-01-23T04:56:07.000+00:00"
           '@schemaLocation': "http://example.com/aeiou"
           intent:
+            '@referredType': "@referredType"
             expression:
               iri: "iri"
               '@baseType': "@baseType"
               '@type': "@type"
+              expressionValue: "expressionValue"
               expressionLanguage: "expressionLanguage"
               '@schemaLocation': "http://example.com/aeiou"
             lifecycleStatus: "lifecycleStatus"
             validFor:
               startDateTime: "1985-04-12T23:20:50.52Z"
               endDateTime: "1985-04-12T23:20:50.52Z"
-            '@type': "Intent"
+            '@type': "@type"
             description: "description"
             creationDate: "2000-01-23T04:56:07.000+00:00"
             version: "version"
@@ -1890,6 +2026,7 @@ definitions:
           iri: "iri"
           '@baseType': "@baseType"
           '@type': "@type"
+          expressionValue: "expressionValue"
           expressionLanguage: "expressionLanguage"
           '@schemaLocation': "http://example.com/aeiou"
         '@baseType': "@baseType"
@@ -1904,17 +2041,19 @@ definitions:
         creationDate: "2000-01-23T04:56:07.000+00:00"
         '@schemaLocation': "http://example.com/aeiou"
         intent:
+          '@referredType': "@referredType"
           expression:
             iri: "iri"
             '@baseType': "@baseType"
             '@type': "@type"
+            expressionValue: "expressionValue"
             expressionLanguage: "expressionLanguage"
             '@schemaLocation': "http://example.com/aeiou"
           lifecycleStatus: "lifecycleStatus"
           validFor:
             startDateTime: "1985-04-12T23:20:50.52Z"
             endDateTime: "1985-04-12T23:20:50.52Z"
-          '@type': "Intent"
+          '@type': "@type"
           description: "description"
           creationDate: "2000-01-23T04:56:07.000+00:00"
           version: "version"
@@ -1974,6 +2113,7 @@ definitions:
             iri: "iri"
             '@baseType': "@baseType"
             '@type': "@type"
+            expressionValue: "expressionValue"
             expressionLanguage: "expressionLanguage"
             '@schemaLocation': "http://example.com/aeiou"
           '@baseType': "@baseType"
@@ -1988,17 +2128,19 @@ definitions:
           creationDate: "2000-01-23T04:56:07.000+00:00"
           '@schemaLocation': "http://example.com/aeiou"
           intent:
+            '@referredType': "@referredType"
             expression:
               iri: "iri"
               '@baseType': "@baseType"
               '@type': "@type"
+              expressionValue: "expressionValue"
               expressionLanguage: "expressionLanguage"
               '@schemaLocation': "http://example.com/aeiou"
             lifecycleStatus: "lifecycleStatus"
             validFor:
               startDateTime: "1985-04-12T23:20:50.52Z"
               endDateTime: "1985-04-12T23:20:50.52Z"
-            '@type': "Intent"
+            '@type': "@type"
             description: "description"
             creationDate: "2000-01-23T04:56:07.000+00:00"
             version: "version"
@@ -2025,6 +2167,7 @@ definitions:
           iri: "iri"
           '@baseType': "@baseType"
           '@type': "@type"
+          expressionValue: "expressionValue"
           expressionLanguage: "expressionLanguage"
           '@schemaLocation': "http://example.com/aeiou"
         '@baseType': "@baseType"
@@ -2039,17 +2182,19 @@ definitions:
         creationDate: "2000-01-23T04:56:07.000+00:00"
         '@schemaLocation': "http://example.com/aeiou"
         intent:
+          '@referredType': "@referredType"
           expression:
             iri: "iri"
             '@baseType': "@baseType"
             '@type': "@type"
+            expressionValue: "expressionValue"
             expressionLanguage: "expressionLanguage"
             '@schemaLocation': "http://example.com/aeiou"
           lifecycleStatus: "lifecycleStatus"
           validFor:
             startDateTime: "1985-04-12T23:20:50.52Z"
             endDateTime: "1985-04-12T23:20:50.52Z"
-          '@type': "Intent"
+          '@type': "@type"
           description: "description"
           creationDate: "2000-01-23T04:56:07.000+00:00"
           version: "version"
@@ -2109,6 +2254,7 @@ definitions:
             iri: "iri"
             '@baseType': "@baseType"
             '@type': "@type"
+            expressionValue: "expressionValue"
             expressionLanguage: "expressionLanguage"
             '@schemaLocation': "http://example.com/aeiou"
           '@baseType': "@baseType"
@@ -2123,17 +2269,19 @@ definitions:
           creationDate: "2000-01-23T04:56:07.000+00:00"
           '@schemaLocation': "http://example.com/aeiou"
           intent:
+            '@referredType': "@referredType"
             expression:
               iri: "iri"
               '@baseType': "@baseType"
               '@type': "@type"
+              expressionValue: "expressionValue"
               expressionLanguage: "expressionLanguage"
               '@schemaLocation': "http://example.com/aeiou"
             lifecycleStatus: "lifecycleStatus"
             validFor:
               startDateTime: "1985-04-12T23:20:50.52Z"
               endDateTime: "1985-04-12T23:20:50.52Z"
-            '@type': "Intent"
+            '@type': "@type"
             description: "description"
             creationDate: "2000-01-23T04:56:07.000+00:00"
             version: "version"
@@ -2160,6 +2308,7 @@ definitions:
           iri: "iri"
           '@baseType': "@baseType"
           '@type': "@type"
+          expressionValue: "expressionValue"
           expressionLanguage: "expressionLanguage"
           '@schemaLocation': "http://example.com/aeiou"
         '@baseType': "@baseType"
@@ -2174,17 +2323,19 @@ definitions:
         creationDate: "2000-01-23T04:56:07.000+00:00"
         '@schemaLocation': "http://example.com/aeiou"
         intent:
+          '@referredType': "@referredType"
           expression:
             iri: "iri"
             '@baseType': "@baseType"
             '@type': "@type"
+            expressionValue: "expressionValue"
             expressionLanguage: "expressionLanguage"
             '@schemaLocation': "http://example.com/aeiou"
           lifecycleStatus: "lifecycleStatus"
           validFor:
             startDateTime: "1985-04-12T23:20:50.52Z"
             endDateTime: "1985-04-12T23:20:50.52Z"
-          '@type': "Intent"
+          '@type': "@type"
           description: "description"
           creationDate: "2000-01-23T04:56:07.000+00:00"
           version: "version"

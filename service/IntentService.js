@@ -83,6 +83,10 @@ exports.createIntent = async function(req, res, next) {
             if ((expression.indexOf("R1")>0) || (expression.indexOf("R2")>0)){ // check whether it's a resource intent
               intentHandler.processIntent(req);
             }
+//for the time being using the common handler for the biz intent
+            if (expression.indexOf("B1")>0){ // check whether it's a resource intent
+              intentHandler.processIntent(req);
+            }
 /* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
 
 /* XXXXXXXXXXXXX Ericsson IRC - Start  XXXXXXXXXXXXXXXx*/
@@ -142,9 +146,17 @@ exports.deleteIntent = function(req, res, next) {
       .then(doc => {
         if (doc) {
           console.log('doc: ' + JSON.stringify(doc));
-          var expression = doc.expression.expressionLanguage;
+          var expression = doc.expression.expressionValue;
           /* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
           if ((expression.indexOf("R1") > 0) || (expression.indexOf("R2") > 0)) { // check whether it's a resource intent
+            // calls the intent handler for the deletetion of the intent reports triples in the knowledge base
+            intentHandler.deleteIntentReports(id, 'IntentReport');
+
+            // calls the intent handler for the deletetion of the triples in the knowledge base
+            intentHandler.deleteIntent(query, resourceType);
+          }
+//for the time being use the common handler for the B1 intent
+          if (expression.indexOf("B1") > 0)  { // check whether it's a resource intent
             // calls the intent handler for the deletetion of the intent reports triples in the knowledge base
             intentHandler.deleteIntentReports(id, 'IntentReport');
 
@@ -176,14 +188,14 @@ exports.deleteIntent = function(req, res, next) {
       .deleteOne(query)
       .then(doc => {
         if (doc.result.n == 1) {
-          sendDoc(res, 204, {});
-          notificationUtils.publish(req, doc);
-        } else {
-          sendError(res, new TError(TErrorEnum.RESOURCE_NOT_FOUND, "No resource with given id found"));
+           sendDoc(res, 204, {});
+           notificationUtils.publish(req,doc);
+        } else { 
+           sendError(res, new TError(TErrorEnum.RESOURCE_NOT_FOUND,"No resource with given id found"));
         }
       }).catch(error => sendError(res, internalError))
   })
-    .catch(error => sendError(res, internalError));
+  .catch(error => sendError(res, internalError));
 
 
 
