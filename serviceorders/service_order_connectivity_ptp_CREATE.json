@@ -1,0 +1,126 @@
+{
+    "externalId": "external-ID_SentToNBI_BSS_ID",
+    "priority": "4",
+    "category": "Connectivity INFRASTRUCTURE",
+    "source": "SIMF",
+    "orderType": "CREATE",
+    "relatedParty": [
+        {
+            "id": "CONNECTIVITY_PTP",
+            "source": "BSS",
+            "name": "CONNECTIVITY_PTP",
+            "role": "customer"
+        }
+    ],
+    "orderItems": [
+        {
+            "action": "New",
+            "service": {
+                "serviceSpecification": {
+                    "code": "CONNECTIVITY_PTP",
+                    "version": "1.0"
+                },
+                "characteristics": [
+                    {
+                        "name": "countries",
+                        "value": "USA"
+                    },
+                    {
+                        "name": "regions",
+                        "value": "StateX"
+                    },
+                    {
+                        "name": "zones",
+                        "value": "Zone1"
+                    },
+                    {
+                        "name": "availability",
+                        "value": "999900"
+                    },
+                    {
+                        "name": "maxPacketLossRate",
+                        "value": "Premmium"
+                    },
+                    {
+                        "name": "bandwith",
+                        "value": "1"
+                    },
+                    {
+                        "name": "jitter",
+                        "value": "30"
+                    },
+                    {
+                        "name": "latency",
+                        "value": "2"
+                    }
+                ],
+                "places": [
+                    {
+                        "name": "SiteA",
+                        "role": "Role",
+                        "address": {
+                            "streetName": "Street Name",
+                            "streetType": "",
+                            "streetNumber": "Street Number",
+                            "streetNumberSuffix": "",
+                            "streetNumberLastSuffix": "",
+                            "streetSuffix": "",
+                            "postCode": "",
+                            "locality": "Locality",
+                            "city": "City",
+                            "stateOrProvince": "State",
+                            "country": "United States"
+                        },
+                        "location": {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [
+                                    12.12,
+                                    14.14
+                                ]
+                            },
+                            "properties": {}
+                        }
+                    },
+                    {
+                        "name": "SiteB",
+                        "role": "Role",
+                        "address": {
+                            "streetName": "Street Name",
+                            "streetType": "",
+                            "streetNumber": "Street Number",
+                            "streetNumberSuffix": "",
+                            "streetNumberLastSuffix": "",
+                            "streetSuffix": "",
+                            "postCode": "",
+                            "locality": "Locality",
+                            "city": "City",
+                            "stateOrProvince": "State",
+                            "country": "United States"
+                        },
+                        "location": {
+                            "type": "Feature",
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": [
+                                    12.12,
+                                    14.14
+                                ]
+                            },
+                            "properties": {}
+                        }
+                    }
+                ],
+                "publicIdentifier": "CONNECTIVITY_PTP"
+            },
+            "id": "1"
+        }
+    ],
+    "extraValues": [
+        {
+            "name": "idan",
+            "value": "true"
+        }
+    ]
+}
