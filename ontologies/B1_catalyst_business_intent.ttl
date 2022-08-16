@@ -55,8 +55,7 @@ ex:B1_PSE_Biz_Intent1
   arc:intentRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
   arc:updateRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
   icm:hasExpectation ex:PSE_Exp_delivery ,
-                     ex:PSE_Capability_delivery_Param_type ,
-                     ex:PSE_spot_price_bid_proposal ,
+                     ex:PSE_Exp_property ,
                      ex:PSE_Exp_reporting ; 
 .
 
@@ -293,7 +292,7 @@ ex:PSE_Exp_reporting
 ex:PSE_Exp_reporting_Param
   a icm:ReportingParameter ;
   icm:subject icm:NewEventTypes ;
-  intersectWith [ rdf:li icm:ReportingIntervalExpired ;
+  rdf:intersectWith [ rdf:li icm:ReportingIntervalExpired ;
                   rdf:li icm:IntentRejected ;
                   rdf:li icm:StateComplies ;
                   rdf:li icm:StateDegrades ;
