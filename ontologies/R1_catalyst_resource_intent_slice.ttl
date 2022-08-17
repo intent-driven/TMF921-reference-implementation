@@ -15,16 +15,11 @@
 @prefix sli: <http://io.irc.huawei.com/Io/v1.0.0/SliceExtensionModel#> .
 
 
-# R1: maxPacketLossRate 0.0001
-# R1: Availability of core slice resource > 0.9999
-# R1: jitter <30
-# R1: SliceBandwidth 1 Gbit/s
-# R1: Latency <2ms
-
-# service order: Priority 10 changed to 20 for healing
-
-
-###### Resouce Intent towards core network ####################################
+##### Resouce Intent towards core network #####################################
+#
+# This is the intent sent from service IMF (by the orchestrator) to the intent
+# management function in Core Network
+#
 ex:R1_Intent_Slice_Core
   a icm:Intent ;
   rdfs:comment "Intent for ordering connectivity via slice" ;
@@ -32,11 +27,14 @@ ex:R1_Intent_Slice_Core
   arc:intentRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
   arc:updateRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
   cem:layer "resource" ;
-  icm:oneOf [ rdfs:member
+  icm:oneOf [ rdfs:member ex:R1E1_delivery ;
+              rdfs:member ex:R1E2_property ;
+			  rdfs:member ex:R1E3_reporting ;
             ] ; 
 .
 
 ##### Targets #################################################################
+#
 ex:T1_CoreSlice 
   a icm:IndividualTarget ;
   icm:OneElementOf [ icm:elementType rdf:Resource ] ;
@@ -47,7 +45,8 @@ ex:T2_R1_Reporting
 . 
 
 ##### Delivery Expectation ####################################################
-ex:PSE_Exp_delivery
+#
+ex:R1E1_delivery
   a icm:DeliveryExpectation ;
   icm:target ex:T1_CoreSlice ;
   icm:allOf [ rdfs:member ex:R1P1_delivery_type ;
@@ -60,6 +59,88 @@ ex:R1P1_delivery_type
   icm:deliveryType ex:ServiceType_CoreSlice ; 
 .
 
+##### Property Expectation ####################################################
+#
+# R1: maxPacketLossRate 0.0001
+# R1: Availability of core slice resource > 0.9999
+# R1: jitter <30
+# R1: SliceBandwidth 1 Gbit/s
+# R1: Latency <2ms
+#
+ex:R1E2_property
+ a icm:PropertyExpectation ;
+   icm:target ex:T1_CoreSlice ;
+   icm:allOf [ rdfs:member ex:R1P2_packet_loss ;
+               rdfs:member ex:R1P3_slice_availability ;
+			   rdfs:member ex:R1P4_jitter ;
+			   rdfs:member ex:R1P5_bandwidth ;
+			   rdfs:member ex:R1P6_latency
+             ] ;
+.
+# Packet loss rate on the slice shall be smaller than 0.01%
+ex:R1P2_packet_loss
+  a icm:Parameter ;  
+  icm:observation [ icm:latestValueOf met:SlicePacketLossRate ] ;
+  icm:smaller [ icm:value 0.01 ;
+			  ] ;
+.
+# Avilability of slice in core shall be at least 0.9999
+ex:R1P3_slice_availability
+  a icm:Parameter ;  
+  icm:observation [ icm:latestValueOf met:ServiceAvailability ] ;
+  icm:atLeast [ icm:value 0.9999 ;
+			  ] ;
+.
+# Jitter on the slice measured in core network shall be smaller than 30
+ex:R1P4_jitter
+  a icm:Parameter ;  
+  icm:observation [ icm:latestValueOf met:CoreSliceJitter ] ;
+  icm:smaller [ icm:value 30 ;
+			  ] ;
+.
+# bandwidth available on the slice shall be 1 GBit/s
+ex:R1P5_bandwidth
+  a icm:Parameter ;  
+  icm:observation [ icm:latestValueOf met:CoreSliceBandwidth ] ;
+  icm:smaller [ icm:value 1 ;
+                icm:unit80000 "GBit/s" ;
+			  ] ;
+.
+# Latency on the slice in the core network shall not exceed 2ms
+ex:R1P6_latency
+  a icm:Parameter ;  
+  icm:observation [ icm:latestValueOf met:CoreSliceLatency ] ;
+  icm:atMost [ icm:value 2 ;
+               icm:unit80000 "ms" ;
+			 ] ;
+.
+
+##### Reporting Expectation ###################################################
+#
+ex:R1E3_reporting
+  a icm:ReportingExpectation ;
+  icm:target ex:T2_R1_Reporting ;
+  icm:receiver ex:IMF_Service ;
+  icm:allOf [ rdfs:member ex:R1P7_reporting ;
+            ] ;
+  icm:reportingInterval [ a t:Duration ;
+                          t:numericDuration 10 ;
+                          t:temporalUnit t:unitMinute ;
+    					] ;
+.
+
+ex:R1P7_reporting
+  a icm:Parameter ;
+  icm:subjectContainer icm:NewEventTypes ;
+  intersectWith [ rdf:li icm:ReportingIntervalExpired ;
+                  rdf:li icm:IntentRejected ;
+                  rdf:li icm:StateComplies ;
+                  rdf:li icm:StateDegrades ;
+                  rdf:li icm:HandlingEnded ;
+                  rdf:li icm:UpdateRejected ;
+                  rdf:li icm:UpdateFinished  ;
+                ] ;
+.
 
 
 
@@ -75,6 +156,7 @@ ex:R1P1_delivery_type
 
 
 
+##########################################################################
 
 
 
