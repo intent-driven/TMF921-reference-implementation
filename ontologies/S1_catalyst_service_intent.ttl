@@ -68,9 +68,8 @@ ex:T2_S1_Reporting
   rdfs:member ex:S1_Intent_ConnectivityService ;
 . 
 
-
 ##### Delivery Expectation ####################################################
-ex:PSE_Exp_delivery
+ex:S1E1_delivery
   a icm:DeliveryExpectation ;
   icm:target ex:T1_Service ;
   icm:allOf [ rdfs:member ex:S1P1_delivery_type ;
