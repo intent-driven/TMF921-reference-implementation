@@ -54,9 +54,10 @@ ex:B1_PSE_Biz_Intent1
   cem:layer "business" ;
   arc:intentRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
   arc:updateRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
-  icm:hasExpectation ex:B1E1_delivery ,
-                     ex:B1E2_property ,
-                     ex:B1E3_reporting ; 
+  icm:allOf [ rdfs:member ex:B1E1_delivery ;
+              rdfs:member ex:B1E2_property ;
+              rdfs:member ex:B1E3_reporting ; 
+			] ;
 .
 
 ##### Targets #################################################################
