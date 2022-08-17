@@ -13,7 +13,7 @@
 @prefix  cem: <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
 @prefix  xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-##### Service Intent  ##########################################################
+##### Service Intent ##########################################################
 #
 # Explanation in English:
 # I want a connectivity service between location A and location B.  
