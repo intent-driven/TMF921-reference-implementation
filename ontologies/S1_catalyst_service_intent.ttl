@@ -146,7 +146,7 @@ ex:S1E3_reporting
   a icm:ReportingExpectation ;
   icm:target ex:T2_S1_Reporting ;
   icm:receiver ex:IMF_Business ;
-  icm:allOf [ rdfs:member ex:B1P6_reporting ;
+  icm:allOf [ rdfs:member ex:B1P7_reporting ;
             ] ;
   icm:reportingInterval [ a t:Duration ;
                           t:numericDuration 10 ;
