@@ -175,29 +175,26 @@ exports.deleteIntent = function(req, res, next) {
             serviceIntentHandler.deleteIntent(query, resourceType);
           }
           /* XXXXXXXXXXXXX Ericsson IRC - End  XXXXXXXXXXXXXXXx*/
+          // return db for next promise
+          return db;
         } else {
           sendError(res, new TError(TErrorEnum.RESOURCE_NOT_FOUND, "No resource with given id found"));
         }
       }).catch(error => sendError(res, internalError))
   })
+    .then(db => {
+      db.collection(resourceType)
+        .deleteOne(query)
+        .then(doc => {
+          if (doc.result.n == 1) {
+            sendDoc(res, 204, {});
+            notificationUtils.publish(req, doc);
+          } else {
+            sendError(res, new TError(TErrorEnum.RESOURCE_NOT_FOUND, "No resource with given id found"));
+          }
+        }).catch(error => sendError(res, internalError))
+    })
     .catch(error => sendError(res, internalError));
-
-
-  mongoUtils.connect().then(db => {
-    db.collection(resourceType)
-      .deleteOne(query)
-      .then(doc => {
-        if (doc.result.n == 1) {
-           sendDoc(res, 204, {});
-           notificationUtils.publish(req,doc);
-        } else { 
-           sendError(res, new TError(TErrorEnum.RESOURCE_NOT_FOUND,"No resource with given id found"));
-        }
-      }).catch(error => sendError(res, internalError))
-  })
-  .catch(error => sendError(res, internalError));
-
-
 
 };
 

@@ -62,15 +62,12 @@ function intentReportFileName(expression) {
 function getIntentExpressionandDeleteKG(query,resourceType) {
   mongoUtils.connect().then(db => {
     db.collection(resourceType)
-      .findOne(query.criteria, query.options)
+      .findOne(query)
       .then(doc => {
         if(doc) {
           console.log('doc: '+JSON.stringify(doc));
           //convert to triples and delete
           extractTriplesandKG(doc.expression.expressionValue,`delete`,'text/turtle');
-          //now delete the intent reports - this should have been done by the RI
-          //need to do it here because here we have the report id
-          intentReportService
         } else {
           console.log("No resource with given id found");
         }
