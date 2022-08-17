@@ -1,113 +1,175 @@
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix icm: <http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#> .
-@prefix imo: <http://tio.models.tmforum.org/tio/v1.0.0/IntentManagementOntology#> .
-@prefix pbi: <http://tio.models.tmforum.org/tio/v1.0.0/ProposalBestIntent#> .
-@prefix cat: <http://www.operator.com/Catalog#> .
+@prefix  icm: <http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#> .
+@prefix  imo: <http://tio.models.tmforum.org/tio/v1.0.0/IntentManagementOntology#> .
+@prefix  pbi: <http://tio.models.tmforum.org/tio/v1.0.0/ProposalBestIntent#> .
+@prefix  cat: <http://www.operator.com/Catalog#> .
 @prefix spot: <http://www.sdo1.org/Models/DynamicpriceOntology#> .
-@prefix met: <http://www.sdo2.org/TelecomMetrics/Version_1.0#> .
-@prefix   t: <http://www.w3.org/2006/time#> .
-@prefix  ex: <http://www.example.org/IntentNamespace#> .
-@prefix iv: <https://tmforum.org/2021/07/intentValidity#> .
-@prefix itv: <https://tmforum.org/2021/07/intentTemporalValidity#> .
-@prefix cem:  <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix  met: <http://www.sdo2.org/TelecomMetrics/Version_1.0#> .
+@prefix    t: <http://www.w3.org/2006/time#> .
+@prefix   ex: <http://www.example.org/IntentNamespace#> .
+@prefix   iv: <https://tmforum.org/2021/07/intentValidity#> .
+@prefix  itv: <https://tmforum.org/2021/07/intentTemporalValidity#> .
+@prefix  cem: <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
+@prefix  xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-# --- Service Intent Expressed in English ----------
+##### Service Intent ##########################################################
 #
-# I want connectivity between location A and Data Center B.  DELIVERYEXPECTATION
-# Bandwidth availability in links > 50%  PROPERTYEXPECTATION
-# Valid asap but ok with waiting until valid  VALIDITY
+# Explanation in English:
+# I want a connectivity service between location A and location B.  
+# it shall only be delivered if the the network utilization is below 50%
+# The service shall deliver a bandwidth of 1 GBit/S
+# The service shall have a availability of 99.99% while it is delivered/available
+# The service shall have the characterisitcs of a premium service experiance while
+# it is delivered.
+# Do reporting at least every 10 minutes and for major events
+# 
+# Considerations for the service IMF:
+# 
+# Suitable resource services (RFS) to delivetr the wanted connectivity service (CFS)
+# are slice or private line. We go for slice
 #
-# The "Product" we want is Connectivity  i.e a Fixed Private Line Connecivity Service
-# 2 Enterprise Customers  ->  Price-sensitive and QoS.
-#  S1 is looking for the cheapest instance of this Connecvity product Offering...
+# Service IMF is looking for the an service in the catalog that can be used to 
+# deliver the connectivity service. 
+# 
+# The service IMF will decide which maxPacketLossRate, SliceAvailability, Jitter, 
+# SliceBandwidth and Latency it needs to satisfy the S1 intent. 
+# It then cooses a service from the catalog that it expects to deliver the wanted 
+# function and experience. 
+#
+# The service IMF will order the ConnectivityP2P service over TMF641 and it 
+# configures it by asking for silver service level and including of the needed
+# locations.
+# Service Order: ConnectiviyP2P (Silver, Places: LocationA, LocationB)
+# 
 
-
-
-ex:S1_Service_Intent
- a icm:Intent ;
-   rdfs:comment "'Intent for connectivity service via dynamic pricing'";
-   imo:intentOwner ex:IntentManagerXYZ;
-   cem:layer "'service'";
-   icm:hasExpectation ex:PSE_Exp_delivery,
-                        ex:PSE_Exp_property,
-                        ex:PSE_Exp_proposal,
-                        ex:PSE_Exp_reporting; 
-   iv:hasValidity ex:PSE_temporalvalidity
- .
-# --- Intent Validity ----------
-# How to model the fact we want the Intent NOW but we are willing to wait???
-ex:PSE_temporalvalidity
- a itv:TemporalValidity ;
-      t:after [ a t:Instant ;  t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime  ] 
+ex:S1_Intent_ConnectivityService
+  a icm:Intent ;
+  rdfs:comment "Intent for connectivity service";
+  imo:intentOwner ex:IMF_Business ;
+  arc:intentRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
+  arc:updateRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
+  cem:layer "service" ;
+  icm:allOf [ rdfs:member ex:S1E1_delivery ;
+              rdfs:member ex:S1E2_property ;
+              rdfs:member ex:S1E3_reporting ; 
+			] ; 
 .
 
-# --- Delivery Expectation ----------
+##### Targets #################################################################
+# Service resource to be selected from the set of all resources
+# Target for reporting is the intent itself
+ex:T1_Service 
+  a icm:IndividualTarget ;
+  icm:OneElementOf [ icm:elementType rdf:Resource ] ;
+.
+ex:T2_S1_Reporting
+  a icm:IndividualTarget ;
+  rdfs:member ex:S1_Intent_ConnectivityService ;
+. 
+
+
+##### Delivery Expectation ####################################################
 ex:PSE_Exp_delivery
- a icm:DeliveryExpectation ;
-   icm:target _:service ;
-   icm:params ex:PSE_Exp_delivery_Param_type;
+  a icm:DeliveryExpectation ;
+  icm:target ex:T1_Service ;
+  icm:allOf [ rdfs:member ex:S1P1_delivery_type ;
+              rdfs:member ex:S1P2_delivery_condition ; 
+            ] ;			  
 .
-ex:PSE_Exp_delivery_Param_type
- a icm:DeliveryParam ;
-   icm:targetDescription cat:ConnectivityService_DynamicPrice 
+# Description and type the selected target service shall comply to
+ex:S1P1_delivery_type
+  a icm:Parameter ;
+  icm:deliveryDescription cat:Connectivity_Service ; 
+  icm:deliveryType ex:ServiceType_Connectivity ; 
 .
-
-# --- Proposal Expectation ----------
-# proposing 10$/hour
-ex:PSE_Exp_proposal
- a pbi:ProposalExpectation ;
-   icm:target _:service ;
-   icm:params ex:PSE_Exp_property_Param_price ; 
-.
-ex:PSE_Exp_property_Param_price
- a pbi:ProposalParam ;
-   spot:price [ icm:atMost [ spot:value "'10'" ; spot:unit spot:unitDollarHour  ] ];
-   pbi:proposingTime pbi:ProposeImmediately ;
-   pbi:proposingFrequency [ a t:Duration ; t:numericDuration "'1'" ; t:temporalUnit t:unitHour ] 
+# only deliver the service if the utilization of the network is below 50%
+ex:B1P2_delivery_condition ;
+  a icm:Parameter ;
+  icm:observation [ icm:latestValueOf met:NetworkUtilization ] ;
+  icm:smaller [ icm:value 0.5 ;
+              ] ;
 .
 
-# --- Property Expectation ----------
-ex:PSE_Exp_property
+
+##### Property Expectation ####################################################
+ex:S1E2_property
  a icm:PropertyExpectation ;
-   icm:target _:service ;
-   icm:params ex:PSE_Exp_property_Param_bandwidth , 
-               ex:PSE_Exp_property_Param_fromLocation ,
-               ex:PSE_Exp_property_Param_toLocation ;
+   icm:target ex:T1_Service ;
+   icm:allOf [ rdfs:member ex:S1P3_bandwidth ;
+               rdfs:member ex:S1P4_service_availability ;
+			   rdfs:member ex:S1P5_service_level ;
+			   rdfs:member ex:S1P6_location ;
+             ] ;
 .
-ex:PSE_Exp_property_Param_bandwidth  
- a icm:PropertyParam ;  
-   met:bandwidth [ icm:atLeast [ met:value "1" ; met:unit met:unitGBPS  ] ] ;
+# TotalBandwidth of connectivity service at least 1 GBit/s
+ex:S1P3_bandwidth
+  a icm:Parameter ;  
+  icm:observation [ icm:latestValueOf met:ServiceBandwidth ] ;
+  icm:atLeast [ icm:value 1 ;
+                icm:unit80000 "GBit/s" ;
+			  ] ;
 .
-ex:PSE_Exp_property_Param_fromLocation
- a icm:PropertyParam ;
-   spot:startLocation [ icm:exactly "'locationA'" ] ;
-.
-ex:PSE_Exp_property_Param_toLocation
- a icm:PropertyParam ;
-   spot:endLocation [ icm:exactly "'locationB'" ] ;
+# S1: Avilability of service at least 0.9999
+ex:S1P4_service_availability
+  a icm:Parameter ;  
+  icm:observation [ icm:latestValueOf met:ServiceAvailability ] ;
+  icm:atLeast [ icm:value 0.9999 ;
+			  ] ;
 .
 
-# --- Reporting Expectation ----------
-ex:PSE_Exp_reporting
- a icm:ReportingExpectation ;
-   icm:target ex:B1_PSE_Biz_Intent1 ;
-   icm:params ex:PSE_Exp_reporting_Param_interval,
-               ex:PSE_Exp_reporting_Param_event ;
+# S1: ServiceQualityLevel Premium
+# This condition assumes that "premium" is modeled throught he class of the service
+# all premium services have the type/class cem:PremiumService
+# The target is the container of all service resources being used. the subject of the 
+# condition is then a container that contains the types of all elements in the Target. 
+# After the intent manager has selected the service instance to be used as target, this
+# refers to the actually used service instance. So we get a container of the type(s) of
+# the service instance we are using.
+# in the condition we evaluate if this is actually an instance of type cem:PremiumService
+ex:S1P5_service_level
+  a icm:Parameter ;  
+  icm:subjectContainer [ icm:elementTypes ex:T1_service ] ;
+  icm:intersectsWith [ rdfs:member cem:PremiumService ] ;
 .
-ex:PSE_Exp_reporting_Param_interval
- a icm:ReportingParam ;
-   icm:reportingInterval [ a t:Duration ;
-                                t:numericDuration "'10'" ;
-                                t:temporalUnit t:unitMinute ] .
-ex:PSE_Exp_reporting_Param_event              
- a icm:ReportingParam ; 
-   icm:reportingEvent icm:ReportingIntervalExpired ,
-                        icm:IntentRejected ,
-                        icm:StateComplies ,
-                        icm:StateDegrades ,
-                        icm:HandlingEnded ,
-                        icm:UpdateRejected ,
-                        icm:UpdateFinished  ;
+
+# forwarding the location requirement to the service layer
+ex:S1P6_location
+  a icm:Parameter ;
+  icm:subjectContainer [ rdf:member "locationA" ;
+                         rdf:member "locationB" ;
+                       ] ;
+  icm:includedIn met:ConnectedLocations ;
 .
+
+##### Reporting Expectation ###################################################
+ex:S1E3_reporting
+  a icm:ReportingExpectation ;
+  icm:target ex:T2_S1_Reporting ;
+  icm:receiver ex:IMF_Business ;
+  icm:allOf [ rdfs:member ex:B1P6_reporting ;
+            ] ;
+  icm:reportingInterval [ a t:Duration ;
+                          t:numericDuration 10 ;
+                          t:temporalUnit t:unitMinute ;
+    					] ;
+.
+
+ex:S1P7_reporting
+  a icm:Parameter ;
+  icm:subjectContainer icm:NewEventTypes ;
+  intersectWith [ rdf:li icm:ReportingIntervalExpired ;
+                  rdf:li icm:IntentRejected ;
+                  rdf:li icm:StateComplies ;
+                  rdf:li icm:StateDegrades ;
+                  rdf:li icm:HandlingEnded ;
+                  rdf:li icm:UpdateRejected ;
+                  rdf:li icm:UpdateFinished  ;
+                ] ;
+.
+
+
+
+
+
+

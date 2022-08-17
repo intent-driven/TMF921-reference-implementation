@@ -14,16 +14,40 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix sli: <http://io.irc.huawei.com/Io/v1.0.0/SliceExtensionModel#> .
 
-# --- Intent ----------
-ex:R1_PSE_Res_Slice_Intent1
- a icm:Intent ;
-   rdfs:comment "'Intent for ordering connectivity via slice'";
-   imo:intentOwner ex:IntentManagerXYZ_S;
-   cem:layer "'resource'";
-   icm:hasExpectation ex:PSE_Exp_R1Slice_delivery,
-                         ex:PSE_Exp_R1Slice_property,
-                         ex:PSE_Exp_R1Slice_reporting; 
+
+
+
+
+
+
+
+
+
+# R1: maxPacketLossRate 0.0001
+# R1: Availability of core slice resource > 0.9999
+# R1: jitter <30
+# R1: SliceBandwidth 1 Gbit/s
+# R1: Latency <2ms
+
+# service order: Priority 10 changed to 20 for healing
+
+
+
+
+
+
+###### Resouce Intent towards core network ####################################
+ex:R1_Intent_Slice_Core
+  a icm:Intent ;
+  rdfs:comment "Intent for ordering connectivity via slice" ;
+  imo:intentOwner ex:IMF_Service ;
+  arc:intentRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
+  arc:updateRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
+  cem:layer "'resource'";
+  icm:oneOf [ rdfs:member
+            ] ; 
 .
+
 ##Delivery Expectation
 ex:PSE_Exp_R1Slice_delivery
  a icm:DeliveryExpectation ;

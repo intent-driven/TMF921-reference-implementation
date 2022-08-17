@@ -49,15 +49,14 @@
 #  
 ex:B1_PSE_Biz_Intent1
   a icm:Intent ;
-  rdfs:comment "'Intent for ordering connectivity service via dynamic pricing'" ;
-  imo:intentOwner ex:IntentManagerXYZ ;
-  cem:layer "'business'" ;
+  rdfs:comment "Intent for ordering connectivity service via dynamic pricing" ;
+  imo:intentOwner ex:IMF_Customer1 ;
+  cem:layer "business" ;
   arc:intentRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
   arc:updateRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
-  icm:hasExpectation ex:PSE_Exp_delivery ,
-                     ex:PSE_Capability_delivery_Param_type ,
-                     ex:PSE_spot_price_bid_proposal ,
-                     ex:PSE_Exp_reporting ; 
+  icm:hasExpectation ex:B1E1_delivery ,
+                     ex:B1E2_property ,
+                     ex:B1E3_reporting ; 
 .
 
 ##### Targets #################################################################
@@ -100,9 +99,9 @@ ex:T1_Capability
   a icm:IndividualTarget ;
   icm:OneElementOf [ icm:elementType rdf:Resource ] ;
 .
-ex:T2_Reporting
+ex:T2_B1_Reporting
   a icm:IndividualTarget ;
-  rdf:li ex:B1_PSE_Biz_Intent1 ;
+  rdfs:member ex:B1_PSE_Biz_Intent1 ;
 . 
 
 ##### Delivery Expectation and Parameters #####################################
@@ -147,18 +146,19 @@ ex:T2_Reporting
 # of a required class. Furthermore the condition for delivery needs to be met
 # for compliance. 
 #
-ex:PSE_Exp_delivery
+ex:B1E1_delivery
   a icm:DeliveryExpectation ;
   icm:target ex:T1_Capability ;
-  icm:hasParameter ex:PSE_Capability_delivery_type ,
-                   ex:PSE_Capability_delivery_condition ;
+  icm:allOf [ rdfs:member ex:B1P1_delivery_type ;
+              rdfs:member ex:B1P2_delivery_condition ;
+			] ;
 .
 
 # Select a resource (service, product) according to the description in the 
 # catalog. Furthermore the resource ahsll be an object of a class in the 
 # ontology
-ex:PSE_Capability_delivery_type
-  a icm:DeliveryParameter ;
+ex:B1P1_delivery_type
+  a icm:Parameter ;
   icm:deliveryDescription cat:Connectivity_DynamicPrice ; 
   icm:deliveryType ex:ConnectivityCapability_DynamicPrice ; 
 .
@@ -167,11 +167,12 @@ ex:PSE_Capability_delivery_type
 # condition. This means the observation is associated with the target.
 # If no suitable target resource is available to make this observation, the 
 # parameter would be evaluated as not compliant. 
-ex:PSE_Capability_delivery_condition ;
-  a icm:DeliveryParameter ;
-  icm:observation [ icm:latestValueOf spot:price ] ;
-  icm:atMost "10" ;
-  icm:hasUnit [ icm:unit spot:unitDollarHour ] ;
+ex:B1P2_delivery_condition ;
+  a icm:Parameter ;
+  icm:observation [ icm:latestValueOf spot:Price ] ;
+  icm:atMost [ icm:value 10 ;
+               spot:unit spot:unitDollarHour ;
+			 ] ;
 .
 
 ##### Proposal Expectation ####################################################
@@ -191,12 +192,12 @@ ex:PSE_Capability_delivery_condition ;
 # This example defines three property based requirements and all of them need 
 # to be fulfilled to consider the system compliant to the property expectation.
 # 
-ex:PSE_Exp_property
+ex:B1E2_property
   a icm:PropertyExpectation ;
   icm:target ex:T1_Capability ;
-  icm:allOf [ rdf:li ex:PSE_Exp_Param_price ;
-              rdf:li ex:PSE_Exp_Param_bandwidth ;
-              rdf:li ex:PSE_Exp_Param_location ;
+  icm:allOf [ rdfs:member ex:B1P3_price ;
+              rdfs:member ex:B1P4_bandwidth ;
+              rdfs:member ex:B1P5_location ;
 			] ;
 .
 
@@ -207,11 +208,12 @@ ex:PSE_Exp_property
 # The same condition within a property expectation would not imply if it shall
 # delivered or not. It would only indicate that ther emight be problem with 
 # the delivered thing. So there is a semantic difference. 
-ex:PSE_Exp_Param_price
-  a icm:PropertyParameter ;
-  icm:observation [ icm:latestValueOf spot:price ] ;
-  icm:atMost "10" ;
-  icm:hasUnit [ icm:unit spot:unitDollarHour ] ;
+ex:B1P3_price
+  a icm:Parameter ;
+  icm:observation [ icm:latestValueOf spot:Price ] ;
+  icm:atMost [ icm:value 10 ;
+               spot:unit spot:unitDollarHour ;
+			 ] ;
 .
 # The wanted connectivity capability shall allow usage of at least 1 GBit/s
 # As the used metric measures the overall bandwidth acorss all users, the
@@ -219,42 +221,24 @@ ex:PSE_Exp_Param_price
 # Please note that this requirement would only fail if there is acutually 
 # demand above 1Gbit/s. This is implied by using an available Bandwidth
 # metric, rather than a current bandwidth.  
-ex:PSE_Exp_Param_bandwidth  
-  a icm:PropertyParameter ;  
+# unit80000 usues a unit string according to ISO/IEC 80000 standard
+ex:B1P4_bandwidth
+  a icm:Parameter ;  
   icm:observation [ icm:latestValueOf met:AvailableBandwidth ] ;
-  icm:atLeast "1" ;
-  icm:hasUnit [ icm:unit "GBit/s" ] ;
+  icm:atLeast [ icm:value 1 ;
+                icm:unit80000 "GBit/s" ;
+			  ] ;
 .
+
 # There is an collextion of all connected locations. This compliance condition
 # states that the set of all locations that shall be connected is included in
 # the set of all connected locations. 
-ex:PSE_Exp_Param_location
-  a icm:PropertyParameter ;
-  icm:subject [ rdf:li "'locationA'" ;
-                rdf:li "'locationB'" ;
-              ] ;
+ex:B1P5_location
+  a icm:Parameter ;
+  icm:subjectContainer [ rdf:member "'locationA'" ;
+                         rdf:member "'locationB'" ;
+                       ] ;
   icm:includedIn met:ConnectedLocations ;
-.
-# Alternative parameter expression using RDF statements. 
-# The latest Intent Common Model will support compliance conditions with
-# statements
-ex:PSE_Exp_property_Param_bandwidth  
-  a icm:PropertyParameter ;  
-  icm:resultFrom [ rdf:subject [ icm:latestValueOf met:AvialableBandwidth ] ;
-                   rdf:predicate icm:atLeast ;
-				   rdf:object  [ rdf:value "1" ;
-				                 icm:hasUnit [ icm:unit "GBit/s" ]
-				               ] ;
-                 ] ;
-.
-ex:PSE_Exp_property_Param_location
-  a icm:PropertyParameter ;
-  icm:resultFrom [ rdf:subject [ rdf:li "'locationA'" ;
-                                 rdf:li "'locationB'" ;
-                               ] ;
-                   rdf:predicate icm:includedIn ;
-	               rdf:object met:ConnectedLocations ;
-                 ] ; 
 .
 
 #### Reporting Expectation ####################################################
@@ -281,16 +265,21 @@ ex:PSE_Exp_property_Param_location
 # report any of these events were observed. Also set a timer for regular
 # reporting.
 #
-ex:PSE_Exp_reporting
+ex:B1E3_reporting
   a icm:ReportingExpectation ;
-  icm:target ex:T2_reporting ;
+  icm:target ex:T2_B1_reporting ;
   icm:receiver ex:IMF_Customer1 ;
-  icm:hasParameter ex:PSE_Exp_reporting_Param ;
+  icm:allOf [ rdfs:member ex:B1P6_reporting ;
+            ] ;
+  icm:reportingInterval [ a t:Duration ;
+                          t:numericDuration "'10'" ;
+                          t:temporalUnit t:unitMinute ;
+    					] ;
 .
 
-ex:PSE_Exp_reporting_Param
-  a icm:ReportingParameter ;
-  icm:subject icm:NewEventTypes ;
+ex:B1P6_reporting
+  a icm:Parameter ;
+  icm:subjectContainer icm:NewEventTypes ;
   intersectWith [ rdf:li icm:ReportingIntervalExpired ;
                   rdf:li icm:IntentRejected ;
                   rdf:li icm:StateComplies ;
@@ -299,9 +288,6 @@ ex:PSE_Exp_reporting_Param
                   rdf:li icm:UpdateRejected ;
                   rdf:li icm:UpdateFinished  ;
                 ] ;
-  icm:reportingInterval [ a t:Duration ;
-                          t:numericDuration "'10'" ;
-                          t:temporalUnit t:unitMinute ;
-    					] ;
 .
+
 
