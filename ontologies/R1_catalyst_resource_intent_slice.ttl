@@ -15,14 +15,6 @@
 @prefix sli: <http://io.irc.huawei.com/Io/v1.0.0/SliceExtensionModel#> .
 
 
-
-
-
-
-
-
-
-
 # R1: maxPacketLossRate 0.0001
 # R1: Availability of core slice resource > 0.9999
 # R1: jitter <30
@@ -32,10 +24,6 @@
 # service order: Priority 10 changed to 20 for healing
 
 
-
-
-
-
 ###### Resouce Intent towards core network ####################################
 ex:R1_Intent_Slice_Core
   a icm:Intent ;
@@ -43,10 +31,53 @@ ex:R1_Intent_Slice_Core
   imo:intentOwner ex:IMF_Service ;
   arc:intentRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
   arc:updateRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
-  cem:layer "'resource'";
+  cem:layer "resource" ;
   icm:oneOf [ rdfs:member
             ] ; 
 .
+
+##### Targets #################################################################
+ex:T1_CoreSlice 
+  a icm:IndividualTarget ;
+  icm:OneElementOf [ icm:elementType rdf:Resource ] ;
+.
+ex:T2_R1_Reporting
+  a icm:IndividualTarget ;
+  rdfs:member ex:R1_Intent_Slice_Core ;
+. 
+
+##### Delivery Expectation ####################################################
+ex:PSE_Exp_delivery
+  a icm:DeliveryExpectation ;
+  icm:target ex:T1_CoreSlice ;
+  icm:allOf [ rdfs:member ex:R1P1_delivery_type ;
+            ] ;			  
+.
+# Description and type the selected target service shall comply to
+ex:R1P1_delivery_type
+  a icm:Parameter ;
+  icm:deliveryDescription cat:CoreSlice ; 
+  icm:deliveryType ex:ServiceType_CoreSlice ; 
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ##Delivery Expectation
 ex:PSE_Exp_R1Slice_delivery
