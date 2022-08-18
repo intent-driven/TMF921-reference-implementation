@@ -31,7 +31,7 @@ exports.processIntent = function(req) {
   const soUtils = require('../utils/soUtils');
 
   // send a hardcoded service order over TMF641
-  fs.readFile('./serviceorders/service_order_video_streaming_CREATE.json', 'utf8', (err, createOrder) => {
+  fs.readFile('./serviceorders/service_order_connectivity_ptp_CREATE.json', 'utf8', (err, createOrder) => {
     if (err) {
       console.error('unable to read create service order json file due to error:', err);
       return;
@@ -79,7 +79,7 @@ exports.deleteIntent = function (query, resourceType) {
   const soUtils = require('../utils/soUtils');
 
   // send a hardcoded service order over TMF641
-  fs.readFile('./serviceorders/service_order_video_streaming_DELETE.json', 'utf8', (err, deleteOrder) => {
+  fs.readFile('./serviceorders/service_order_connectivity_ptp_DELETE.json', 'utf8', (err, deleteOrder) => {
     if (err) {
       console.error('unable to read delete service order json file due to error:', err);
       return;

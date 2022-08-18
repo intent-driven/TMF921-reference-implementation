@@ -1,0 +1,34 @@
+{
+    "externalId": "external-ID_SentToNBI_BSS_ID",
+    "priority": "1",
+    "category": "Connectivity INFRASTRUCTURE",
+    "orderType": "TERMINATE",
+    "source": "SIMF",
+    "relatedParty": [
+        {
+            "id": "CONNECTIVITY_PTP",
+            "source": "BSS",
+            "name": "CONNECTIVITY_PTP",
+            "role": "customer"
+        }
+    ],
+    "orderItems": [
+        {
+            "action": "Remove",
+            "service": {
+                "serviceSpecification": {
+                    "code": "CONNECTIVITY_PTP",
+                    "version": "1.0"
+                },
+                "publicIdentifier": "CONNECTIVITY_PTP"
+            },
+            "id": 1
+        }
+    ],
+    "extraValues": [
+        {
+            "name": "idan",
+            "value": "true"
+        }
+    ]
+}
