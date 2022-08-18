@@ -25,13 +25,13 @@ var swaggerDoc = null;
 const EXPRESSION = "expression";
 
 //////////////////////////////////////////////////////
-// Functions returns the expressionLanguage         //
+// Functions returns the expressionValue            //
 // property from theintent request                  //  
 //////////////////////////////////////////////////////
 function getExpression(req) {
 	var expression;
-  if(req.body.expression.expressionLanguage!==undefined) {
-  	expression=req.body.expression.expressionLanguage;
+  if(req.body.expression.expressionValue!==undefined) {
+  	expression=req.body.expression.expressionValue;
   }  
   return expression;
 }
@@ -67,7 +67,7 @@ function getIntentExpressionandDeleteKG(query,resourceType) {
         if(doc) {
           console.log('doc: '+JSON.stringify(doc));
           //convert to triples and delete
-          extractTriplesandKG(doc.expression.expressionLanguage,`delete`,'text/turtle');
+          extractTriplesandKG(doc.expression.expressionValue,`delete`,'text/turtle');
           //now delete the intent reports - this should have been done by the RI
           //need to do it here because here we have the report id
           intentReportService
@@ -140,7 +140,7 @@ function getIntentReportExpressionandDeleteKG(id,resourceType) {
           doc.forEach(x => {
             console.log('id: '+x.id);
             //convert to triples and delete
-            extractTriplesandKG(x.expression.expressionLanguage,`delete`,'text/turtle');
+            extractTriplesandKG(x.expression.expressionValue,`delete`,'text/turtle');
             deleteIntentReport(x.id);
           });
           })
@@ -262,6 +262,7 @@ function kgOperation(triples,action) {
   for (var i=0; i<triples.length;i++) {
     var triple = triples [i];
     var q = action + ` data { graph <${GRAPHDB_CONTEXT_TEST}> { ` + triple.subject +` `+ triple.predicate +` `+ triple.object + ` }}`;
+    q = q.replace(/_:/g,'ex:');
     console.log('query: '+q); 
     graphDBEndpoint
     .update( q)
@@ -317,11 +318,12 @@ function createIntentReportMessage(data,req) {
   var intent_href=req.body.href;
     //expression
   var expression = {
-    expressionLanguage: data,
-    iri: "iri string",
-    "@baseType": "@baseType string",
-    "@schemaLocation": "@schemaLocation string",
-    "@type": "@type string" 
+    iri: "http://tio.models.tmforum.org/tio/v2.0.0/IntentCommonModel",
+    "@baseType": "Expression",
+    "@type": "TurtleExpression", 
+    expressionLanguage: "Turtle",
+    expressionValue: data,
+    "@schemaLocation": "https://mycsp.com:8080/tmf-api/schema/Common/TurtleExpression.schema.json",
   };
 
   //intent
