@@ -12,6 +12,7 @@
 @prefix  itv: <https://tmforum.org/2021/07/intentTemporalValidity#> .
 @prefix  cem: <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
 @prefix  xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix  arc: <http://tio.models.tmforum.org/tio/v1.0.0/IntentAcceptanceControl/> .
 
 ##### Service Intent ##########################################################
 #
@@ -83,7 +84,7 @@ ex:S1P1_delivery_type
   icm:deliveryType ex:ServiceType_Connectivity ; 
 .
 # only deliver the service if the utilization of the network is below 50%
-ex:B1P2_delivery_condition ;
+ex:S1P2_delivery_condition
   a icm:Parameter ;
   icm:observation [ icm:latestValueOf met:NetworkUtilization ] ;
   icm:smaller [ icm:value 0.5 ;
@@ -128,7 +129,7 @@ ex:S1P4_service_availability
 # in the condition we evaluate if this is actually an instance of type cem:PremiumService
 ex:S1P5_service_level
   a icm:Parameter ;  
-  icm:subjectContainer [ icm:elementTypes ex:T1_service ] ;
+  icm:subjectContainer [ icm:elementTypes ex:T1_Service ] ;
   icm:intersectsWith [ rdfs:member cem:PremiumService ] ;
 .
 
@@ -146,7 +147,7 @@ ex:S1E3_reporting
   a icm:ReportingExpectation ;
   icm:target ex:T2_S1_Reporting ;
   icm:receiver ex:IMF_Business ;
-  icm:allOf [ rdfs:member ex:B1P7_reporting ;
+  icm:allOf [ rdfs:member ex:S1P7_reporting ;
             ] ;
   icm:reportingInterval [ a t:Duration ;
                           t:numericDuration 10 ;
@@ -157,7 +158,7 @@ ex:S1E3_reporting
 ex:S1P7_reporting
   a icm:Parameter ;
   icm:subjectContainer icm:NewEventTypes ;
-  intersectWith [ rdf:li icm:ReportingIntervalExpired ;
+  icm:intersectsWith [ rdf:li icm:ReportingIntervalExpired ;
                   rdf:li icm:IntentRejected ;
                   rdf:li icm:StateComplies ;
                   rdf:li icm:StateDegrades ;
@@ -166,9 +167,3 @@ ex:S1P7_reporting
                   rdf:li icm:UpdateFinished  ;
                 ] ;
 .
-
-
-
-
-
-
