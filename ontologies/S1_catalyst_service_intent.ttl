@@ -114,7 +114,7 @@ ex:S1P3_bandwidth
 ex:S1P4_service_availability
   a icm:Parameter ;  
   icm:observation [ icm:latestValueOf met:ServiceAvailability ] ;
-  icm:atLeast [ icm:value 0.9999 ;
+  icm:atLeast [ icm:value 0.99 ;
 			  ] ;
 .
 
