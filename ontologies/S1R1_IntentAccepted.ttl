@@ -30,10 +30,9 @@ ex:S1R1_Intent_Accepted
   icm:updateState icm:StateNoUpdate ;
   icm:reportNumber 1 ;
   cem:layer "service" ;
-  icm:hasExpectationReport [ rdfs:member ex:S1R1ER1_delivery ;
-              rdfs:member ex:S1R1ER2_property ;
-              rdfs:member ex:S1R1ER3_reporting ; 
-			] ; 
+  icm:hasExpectationReport ex:S1R1ER1_delivery ,
+                           ex:S1R1ER2_property ,
+                           ex:S1R1ER3_reporting ; 
 .
 
 ##### Targets #################################################################
@@ -92,7 +91,7 @@ ex:S1R1E2_property
 	 	                          ex:S1P5_service_level ,
 								  ex:S1P6_location ;
 				 icm:reason icm:ReasonConditionCannotBeEvaluated ,
-				            icm:ReasonNoObservationAvailable ,
+  				            icm:ReasonNoObservationAvailable ,
 				            icm:ReasonNoTarget ,
                             icm:ReasonTargetResourceNotSelected ;
 			   ] ,
