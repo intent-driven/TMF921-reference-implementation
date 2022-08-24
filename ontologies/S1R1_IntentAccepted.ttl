@@ -81,7 +81,7 @@ ex:S1R1E1_delivery
 # As there is no reasource selected to report about, none of the conditions 
 # could be evaluated. 
 #
-ex:S1E2_property
+ex:S1R1E2_property
   a icm:ExpectationReport ;
   icm:reportsAbout ex:S1E2_property ;
   icm:target ex:S1R1T1_Service ;
@@ -97,27 +97,27 @@ ex:S1E2_property
 			   ] ,
 			   
 ##### Reporting Expectation Report ############################################
-ex:S1E3_reporting
-  a icm:ReportingExpectation ;
+# This report was sent, becasue the intent entered a degraded stste. 
+# note: the intent also got accepted, but the intent owner has not asked for
+# a report for the intent acceptance event. But as the intent handling starts 
+# in a degraded state, the owner gets the report from the degradation event. 
+#
+# The reporting expectation is compliant, becasue an report was actually sent
+# according to the reporting conditions. 
+#
+ex:S1R1E3_reporting
+  a icm:ExpectationReport ;
+  icm:reportsAbout ex:S1E3_reporting
   icm:target ex:T2_S1_Reporting ;
   icm:receiver ex:IMF_Business ;
-  icm:allOf [ rdfs:member ex:S1P7_reporting ;
-            ] ;
-  icm:reportingInterval [ a t:Duration ;
-                          t:numericDuration 10 ;
-                          t:temporalUnit t:unitMinute ;
-    					] ;
-.
-
-ex:S1P7_reporting
-  a icm:Parameter ;
-  icm:subjectContainer icm:NewEventTypes ;
-  icm:intersectsWith [ rdf:li icm:ReportingIntervalExpired ;
-                  rdf:li icm:IntentRejected ;
-                  rdf:li icm:StateComplies ;
-                  rdf:li icm:StateDegrades ;
-                  rdf:li icm:HandlingEnded ;
-                  rdf:li icm:UpdateRejected ;
-                  rdf:li icm:UpdateFinished  ;
+  icm:compliant [ a icm:ConditionReport
+                  icm:reportsAbout ex:S1P7_reporting ;
+				  icm:observation [ a rdf:Container ;
+				                    rdfs:element icm:StateDegrades ;
+				                  ] ;
                 ] ;
+  icm:reportingIntervalRemaining [ a t:Duration ;
+                                   t:numericDuration 5 ;
+                                   t:temporalUnit t:unitMinute ;
+    					         ] ;
 .
