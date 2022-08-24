@@ -1,0 +1,139 @@
+@prefix  rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix  icm: <http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#> .
+@prefix  imo: <http://tio.models.tmforum.org/tio/v1.0.0/IntentManagementOntology#> .
+@prefix  pbi: <http://tio.models.tmforum.org/tio/v1.0.0/ProposalBestIntent#> .
+@prefix  cat: <http://www.operator.com/Catalog#> .
+@prefix spot: <http://www.sdo1.org/Models/DynamicpriceOntology#> .
+@prefix  met: <http://www.sdo2.org/TelecomMetrics/Version_1.0#> .
+@prefix    t: <http://www.w3.org/2006/time#> .
+@prefix   ex: <http://www.example.org/IntentNamespace#> .
+@prefix   iv: <https://tmforum.org/2021/07/intentValidity#> .
+@prefix  itv: <https://tmforum.org/2021/07/intentTemporalValidity#> .
+@prefix  cem: <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
+@prefix  xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix  arc: <http://tio.models.tmforum.org/tio/v1.0.0/IntentAcceptanceControl/> .
+
+##### Service Intent Report ###################################################
+#
+# This intent report is sent on acceptance of the service intnet to the intnet 
+# manager on business level
+# 
+ex:S1R3_Intent_Issue
+  a icm:IntentReport ;
+  rdfs:comment "Intent Report after accting the intent" ;
+  imo:intentOwner ex:IMF_Business ;
+  imo:intentHander ex:IMF_Service ;
+  icm:reportsAbout ex:S1_Intent_ConnectivityService ;
+  # put in the live timestamp from the time the report is created:
+  icm:generated [ t:inXSDDateTimeStamp "2022-12-01T10:30:10+10:00"^^xsd:dateTime ] ;
+  icm:handlingState icm:StateDegraded ;
+  icm:updateState icm:StateNoUpdate ;
+  icm:reportNumber 3 ;
+  cem:layer "service" ;
+  icm:hasExpectationReport ex:S1R3E1_delivery ,
+                           ex:S1R3E2_property ,
+                           ex:S1R3E3_reporting ;
+.
+
+##### Targets #################################################################
+# Service resource is selected 
+ex:S1R2T1_Service 
+  a icm:IndividualTarget ;
+  rdfs:element ex:ConnectivityService001 ;
+.
+
+##### Delivery Expectation Report #############################################
+#
+ex:S1R3E1_delivery
+  a icm:ExpectationReport ;
+  icm:reportsAbout ex:S1E1_delivery
+  icm:target ex:S1R2T1_Service ;
+  icm:compliant [ a ConditionReport ,
+                  icm:reportsAbout ex:S1P1_delivery_type ;
+			 	  icm:deliveryDescription cat:Connectivity_Service ; 
+                  icm:deliveryType ex:ServiceType_Connectivity ; 
+	  			  icm:reason icm:ReasonConditionTrue ;
+                ] ;		
+  icm:compliant [ a ConditionReport ;
+                 icm:reportsAbout ex:S1P2_delivery_condition ; 
+				 icm:observation [ a met:NetworkUtilization ;
+				                   icm:observed [ a icm:Quantity ;
+								                  # put in the value from the knowledge base
+								                  icm:value 0.4 ;
+												] ;
+				 icm:reason icm:ReasonConditionTrue ;
+			   ] ;
+.
+
+##### Property Expectation Report ################################################
+#
+ex:S1R3E2_property
+  a icm:ExpectationReport ;
+  icm:reportsAbout ex:S1E2_property ;
+  icm:target ex:S1R1T1_Service ;
+  icm:compliant [ a ConditionReport ;
+                 # Compliant, becasue the bandwidth is high enough
+                 icm:reportsAbout ex:S1P3_bandwidth ,
+				 icm:observation [ a met:ServiceBandwidth ;
+				                   icm:observed [ a icm:Quantity ;
+								                  # put in the value from the knowledge base
+								                  icm:value 1.4 ;
+												  icm:unit80000 "GBit/s" ;
+												] ;
+				 icm:reason icm:ReasonConditionTrue ;
+			   ] ,
+			   [ a ConditionReport ;
+			     # Compliant, becasue the availability is high enough
+                 icm:reportsAbout ex:S1P4_service_availability ,
+                 icm:observation [ a met:ServiceAvailability ] ;
+                                   icm:observed [ a icm:Quantity ;
+  								                  # put in the value from the knowledge base
+								                  icm:value 0.9945 ;
+			                                    ] ;
+				 icm:reason icm:ReasonConditionTrue ;
+			   ] ,
+			   [ a ConditionReport ;
+			     # Compliant, becasue the needed locations are in the list of all connected locations
+                 icm:reportsAbout ex:S1P6_location ;
+				 icm:observation [ a rdf:Container ;
+				                   rdfs:member "locationA" , "locationB", "locationC" ;
+				                 ] ;
+				 icm:reason icm:ReasonConditionTrue ;
+			   ] ;
+  icm:degraded [ a ConditionReport ;
+			     # Degraded, becasue the service is now considered to be only 
+				 # a basic service due to the higher latency
+                 icm:reportsAbout ex:S1P5_service_level ,
+                 icm:observation [ a rdf:Container ;
+				                   rdfs:member cem:BasicService ;
+				                 ] ;
+				 icm:reason icm:ReasonConditionNotMet ;
+			   ] ,
+.
+			   
+##### Reporting Expectation Report ############################################
+# This report was sent, becasue the intent entered a degraded stste. 
+# note: the intent also got accepted, but the intent owner has not asked for
+# a report for the intent acceptance event. But as the intent handling starts 
+# in a degraded state, the owner gets the report from the degradation event. 
+#
+# The reporting expectation is compliant, becasue an report was actually sent
+# according to the reporting conditions. 
+#
+ex:S1R3E3_reporting
+  a icm:ExpectationReport ;
+  icm:reportsAbout ex:S1E3_reporting
+  icm:target ex:T2_S1_Reporting ;
+  icm:receiver ex:IMF_Business ;
+  icm:compliant [ a icm:ConditionReport
+                  icm:reportsAbout ex:S1P7_reporting ;
+				  icm:observation [ a rdf:Container ;
+				                    rdfs:element icm:StateComplies ;
+				                  ] ;
+                ] ;
+  icm:reportingIntervalRemaining [ a t:Duration ;
+                                   t:numericDuration 4 ;
+                                   t:temporalUnit t:unitMinute ;
+    					         ] ;
+.
