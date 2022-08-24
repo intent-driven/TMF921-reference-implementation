@@ -31,10 +31,9 @@ ex:S1R2_Intent_Compliant
   icm:updateState icm:StateNoUpdate ;
   icm:reportNumber 2 ;
   cem:layer "service" ;
-  icm:hasExpectationReport [ rdfs:member ex:S1R2ER1_delivery ;
-                             rdfs:member ex:S1R2ER2_property ;
-                             rdfs:member ex:S1R2ER3_reporting ; 
-		                   ] ; 
+  icm:hasExpectationReport ex:S1R2ER1_delivery ,
+                           ex:S1R2ER2_property ,
+                           ex:S1R2ER3_reporting ;
 .
 
 ##### Targets #################################################################
@@ -60,13 +59,13 @@ ex:S1R2E1_delivery
   a icm:ExpectationReport ;
   icm:reportsAbout ex:S1E1_delivery
   icm:target ex:S1R2T1_Service ;
-  icm:Compliant [ a ConditionReport ,
+  icm:compliant [ a ConditionReport ,
                   icm:reportsAbout ex:S1P1_delivery_type ;
 			 	  icm:deliveryDescription cat:Connectivity_Service ; 
                   icm:deliveryType ex:ServiceType_Connectivity ; 
 	  			  icm:reason icm:ReasonConditionTrue ;
                 ] ;		
-  icm:Compliant [ a ConditionReport ;
+  icm:compliant [ a ConditionReport ;
                  icm:reportsAbout ex:S1P2_delivery_condition ; 
 				 icm:observation [ a met:NetworkUtilization ;
 				                   icm:observed [ a icm:Quantity ;
@@ -86,6 +85,7 @@ ex:S1R2E2_property
   icm:reportsAbout ex:S1E2_property ;
   icm:target ex:S1R1T1_Service ;
   icm:Compliant [ a ConditionReport ;
+                 # Compliant, becasue the bandwidth is high enough
                  icm:reportsAbout ex:S1P3_bandwidth ,
 				 icm:observation [ a met:ServiceBandwidth ;
 				                   icm:observed [ a icm:Quantity ;
@@ -96,35 +96,33 @@ ex:S1R2E2_property
 				 icm:reason icm:ReasonConditionTrue ;
 			   ] ,
 			   [ a ConditionReport ;
-                 icm:reportsAbout ex:S1P3_bandwidth ,
-				                  ex:S1P4_service_availability ,
-	 	                          ex:S1P5_service_level ,
-								  ex:S1P6_location ;
-				 icm:reason icm:ReasonConditionCannotBeEvaluated ,
-				            icm:ReasonNoObservationAvailable ,
-				            icm:ReasonNoTarget ,
-                            icm:ReasonTargetResourceNotSelected ;
+			     # Compliant, becasue the availability is high enough
+                 icm:reportsAbout ex:S1P4_service_availability ,
+                 icm:observation [ a met:ServiceAvailability ] ;
+                                   icm:observed [ a icm:Quantity ;
+  								                  # put in the value from the knowledge base
+								                  icm:value 0.9945 ;
+			                                    ] ;
+				 icm:reason icm:ReasonConditionTrue ;
 			   ] ,
 			   [ a ConditionReport ;
-                 icm:reportsAbout ex:S1P3_bandwidth ,
-				                  ex:S1P4_service_availability ,
-	 	                          ex:S1P5_service_level ,
-								  ex:S1P6_location ;
-				 icm:reason icm:ReasonConditionCannotBeEvaluated ,
-				            icm:ReasonNoObservationAvailable ,
-				            icm:ReasonNoTarget ,
-                            icm:ReasonTargetResourceNotSelected ;
+			     # Compliant, becasue the service level propoerties of the target
+				 # includes the wanted premiumService attribute
+                 icm:reportsAbout ex:S1P5_service_level ,
+                 icm:observation [ a rdf:Container ;
+				                   rdfs:member cem:PremiumService ;
+				                 ] ;
+				 icm:reason icm:ReasonConditionTrue ;
 			   ] ,
 			   [ a ConditionReport ;
-                 icm:reportsAbout ex:S1P3_bandwidth ,
-				                  ex:S1P4_service_availability ,
-	 	                          ex:S1P5_service_level ,
-								  ex:S1P6_location ;
-				 icm:reason icm:ReasonConditionCannotBeEvaluated ,
-				            icm:ReasonNoObservationAvailable ,
-				            icm:ReasonNoTarget ,
-                            icm:ReasonTargetResourceNotSelected ;
-			   ] ,
+			     # Compliant, becasue the needed locations are in the list of all connected locations
+                 icm:reportsAbout ex:S1P6_location ;
+				 icm:observation [ a rdf:Container ;
+				                   rdfs:member "locationA" , "locationB", "locationC" ;
+				                 ] ;
+				 icm:reason icm:ReasonConditionTrue ;
+			   ] ;
+.
 			   
 ##### Reporting Expectation Report ############################################
 # This report was sent, becasue the intent entered a degraded stste. 
@@ -143,11 +141,11 @@ ex:S1R2E3_reporting
   icm:compliant [ a icm:ConditionReport
                   icm:reportsAbout ex:S1P7_reporting ;
 				  icm:observation [ a rdf:Container ;
-				                    rdfs:element icm:StateDegrades ;
+				                    rdfs:element icm:StateComplies ;
 				                  ] ;
                 ] ;
   icm:reportingIntervalRemaining [ a t:Duration ;
-                                   t:numericDuration 5 ;
+                                   t:numericDuration 4 ;
                                    t:temporalUnit t:unitMinute ;
     					         ] ;
 .
