@@ -74,6 +74,7 @@ ex:S1R1E1_delivery
 								                  # put in the value from the knowledge base
 								                  icm:value 0.6 ;
 												] ;
+				 icm:reason icm:ConditionFalse ;
 			   ] ;
 .
 
