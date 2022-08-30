@@ -54,6 +54,35 @@ function intentReportFileName(expression) {
   return filename;
 }
 
+////////////////////////////////////////////////////////
+// Deletes the intent without notification            //  
+////////////////////////////////////////////////////////
+function deleteIntent(id) {
+  var query = {
+    id: id
+  };
+
+
+  const resourceType = 'Intent';
+
+  mongoUtils.connect().then(db => {
+    db.collection(resourceType)
+      .deleteOne(query)
+      .then(doc => {
+        if (doc.result.n == 1) {
+          console.log("intent deleted " + id);
+
+        } else {
+          console.log("No resource with given id found");
+        }
+      }).catch(error => {
+        console.log("retrieveIntent before delete: error=" + error);
+      });
+  })
+    .catch(error => {
+      console.log("retrieveIntent before delete: error=" + error);
+    });
+}
 
 ////////////////////////////////////////////////////////
 // Functions reads mongo to extract intent expression //
@@ -68,6 +97,7 @@ function getIntentExpressionandDeleteKG(query,resourceType) {
           console.log('doc: '+JSON.stringify(doc));
           //convert to triples and delete
           extractTriplesandKG(doc.expression.expressionValue,`delete`,'text/turtle');
+          deleteIntent(doc.id);
         } else {
           console.log("No resource with given id found");
         }

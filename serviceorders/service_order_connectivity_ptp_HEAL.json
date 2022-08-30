@@ -1,0 +1,49 @@
+{
+    "externalId": "external-ID_SentToNBI_BSS_ID",
+    "priority": "4",
+    "category": "Connectivity Paramaters Override",
+    "source": "SIMF",
+    "orderType": "CREATE",
+    "relatedParty": [
+        {
+            "id": "CONNECTIVITY_PTP",
+            "source": "BSS",
+            "name": "CONNECTIVITY_PTP",
+            "role": "customer"
+        }
+    ],
+    "orderItems": [
+        {
+            "action": "New",
+            "service": {
+                "serviceSpecification": {
+                    "code": "CONNECTIVITY_PTP_OVERRIDE",
+                    "version": "1.0"
+                },
+                "characteristics": [
+                    {
+                        "name": "priority",
+                        "value": "3"
+                    },
+                    {
+                        "name": "userEquipmentMaxDevices",
+                        "value": "200"
+                    }
+                ],
+                "publicIdentifier": "CONNECTIVITY_PTP_OVERRIDE",
+                "serviceRelationship": [
+                    {
+                        "relationshipType": "DEPENDENCY",
+                        "service": {
+                            "id": "",
+                            "source": "SYM-SOM",
+                            "name": "CONNECTIVITY_PTP (CONNECTIVITY_PTP)",
+                            "publicIdentifier": "CONNECTIVITY_PTP_TEST"
+                        }
+                    }
+                ]
+            },
+            "id": "1"
+        }
+    ]
+}

@@ -21,6 +21,24 @@ const handlerUtils = require('../utils/handlerUtils');
 
 const Intent = require('../controllers/Intent');
 
+// Initialize parameters to be processed in service intent, the values 
+// are modified later based on what is received in actual intent
+var serviceIntentParams = {
+  "intentName": "XYZintent",
+  "bandwidth": 10,
+  "availability": 0.9999,
+  "networkUtil" : 0.6,
+  "quality": "Premmium",
+  "locations": [
+    "locA",
+    "locB"
+  ],
+  "reportInterval": 1
+};
+
+var intentStateMap = new Map();
+var intentReportTimerMap = new Map();
+
 // This function is called from the SI once the intent has been stored in MongoDB
 //it will send a service order to SO over TMF641,
 //extract the expression from the request body, parse the expresion into
@@ -28,31 +46,61 @@ const Intent = require('../controllers/Intent');
 //It then reads a hardcode intent report and send this back to the listeners 
 //using the SI HUB
 exports.processIntent = function(req) {
-  const soUtils = require('../utils/soUtils');
 
-  // send a hardcoded service order over TMF641
+  //extract expression
+  const expression = handlerUtils.getExpression(req);
+  extractParamsFromIntent(expression, 'text/turtle');
+  console.log("Received Intent Params = " + JSON.stringify(serviceIntentParams));
+
+  intentStateMap.set(req.body.id, 'degraded');
+
+  //From expression extract triples and load the intent in GraphDB 
+  handlerUtils.extractTriplesandKG(expression, `insert`, 'text/turtle');
+
+  sendCreateServiceOrder();
+
+  createIntentReport(req);
+
+};
+
+function sendCreateServiceOrder() {
+  const soUtils = require('../utils/soUtils');
   fs.readFile('./serviceorders/service_order_connectivity_ptp_CREATE.json', 'utf8', (err, createOrder) => {
+
     if (err) {
       console.error('unable to read create service order json file due to error:', err);
       return;
     }
 
+    var createOrderJson = JSON.parse(createOrder);
+
+    if ((serviceIntentParams.quality == 'Premium') && (serviceIntentParams.availability >= 0.99)) {
+      createOrderJson.orderItems[0].service.characteristics[0].value = "Silver";
+    } else {
+      createOrderJson.orderItems[0].service.characteristics[0].value = "Bronze";
+    }
+
+    createOrderJson.orderItems[0].service.characteristics[1].value = serviceIntentParams.bandwidth.toString();
+
+    createOrderJson.orderItems[0].service.places[0].name = serviceIntentParams.locations[0];
+    createOrderJson.orderItems[0].service.places[1].name = serviceIntentParams.locations[1];
+    console.log("SERVICE ORDER = " + JSON.stringify(createOrderJson));
+
     try {
-      soUtils.sendServiceOrder(createOrder);
+      soUtils.sendServiceOrder(JSON.stringify(createOrderJson));
     }
     catch (error) {
-      console.error('SIH: processIntent failed with error:', error);
+      console.error('SIH: sendCreateServiceOrder failed with error:', error);
       return;
     }
   });
+}
 
-  //extract expression
-  const expression = handlerUtils.getExpression(req);
-  //From expression extract triples and load the data in GraphDB 
-  handlerUtils.extractTriplesandKG(expression, `insert`, 'text/turtle');
-
+function createIntentReport(req) {
   //check type of intent...just search for B1, S1, R1&slice or R1&private
+  const expression = handlerUtils.getExpression(req);
   var filename = handlerUtils.intentReportFileName(expression);
+  var intentId = req.body.id;
   //now we need to send the IntentReport
   //1. read report - async
   fs.readFile('./ontologies/' + filename, 'utf8', (err, data) => {
@@ -60,16 +108,123 @@ exports.processIntent = function(req) {
       console.error(err);
       return;
     }
-    //   console.log(data);
-    //2. insert report in grapbdb
-    handlerUtils.extractTriplesandKG(data, `insert`, 'text/turtle');
 
-    //3. insert report into mongodb and send notification
-    handlerUtils.insertIntentReport(data, req);
-    //4. create event
-    //  inside the previous step as async
+    if (serviceIntentParams.reportInterval != null) {
+      var timerId = setTimeout(function sendReport() {
+        console.log("reportingInterval expired for service intent, sending the report now");
+        timerId = setTimeout(sendReport, serviceIntentParams.reportInterval * 1000);
+        intentReportTimerMap.set(intentId, timerId);
+
+      }, serviceIntentParams.reportInterval * 1000);
+      
+      intentReportTimerMap.set(intentId, timerId);
+
+      //   console.log(data);
+      //2. insert report in grapbdb
+      handlerUtils.extractTriplesandKG(data, `insert`, 'text/turtle');
+  
+      //3. insert report into mongodb and send notification
+      handlerUtils.insertIntentReport(data, req);
+      //4. create event
+      //  inside the previous step as async
+    }
+
   });
+}
+
+function extractParamsFromIntent(expression, type) {
+  const RDF = $rdf.Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+  const RDFS = $rdf.Namespace("http://www.w3.org/2000/01/rdf-schema#");
+  const EX = $rdf.Namespace("http://www.example.org/IntentNamespace#");
+  const ICM = $rdf.Namespace("http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#");
+  const CEM = $rdf.Namespace("http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#");
+  const MET = $rdf.Namespace("http://www.sdo2.org/TelecomMetrics/Version_1.0#");
+  const T = $rdf.Namespace("http://www.w3.org/2006/time#");
+
+  var uri = 'http://www.example.org/IntentNamespace/';
+  var mimeType = 'application/ld+json';
+  if (type !== undefined) {
+    mimeType = type;
+  }
+
+  var store = $rdf.graph();
+  //create rdf object
+  try {
+    $rdf.parse(expression, store, uri, mimeType);
+
+    var intentName = store.each(undefined, CEM('layer'), "service");
+    serviceIntentParams.intentName = intentName[0].value;
+
+    var networkUtilObservationObject = store.each(undefined, ICM('latestValueOf'), MET('NetworkUtilization'));
+    var networkUtilTriplesSubject = store.each(undefined, ICM('observation'), networkUtilObservationObject[0]);
+    var networkUtilTriples = store.each(networkUtilTriplesSubject[0], ICM('smaller'), undefined);
+    var networkUtil = store.each(networkUtilTriples[0], ICM('value'), undefined);
+    if ((networkUtilObservationObject[0] == undefined) || (networkUtilTriplesSubject[0] == undefined) || (networkUtilTriples[0] == undefined) || (networkUtil[0] == undefined)) {
+      serviceIntentParams.networkUtil = null;
+    } else {
+      serviceIntentParams.networkUtil = parseFloat(networkUtil[0].value);
+    }
+    
+    var bandwidthObservationObject = store.each(undefined, ICM('latestValueOf'), MET('ServiceBandwidth'));
+    var bandwidthTriplesSubject = store.each(undefined, ICM('observation'), bandwidthObservationObject[0]);
+    var bandwidthTriples = store.each(bandwidthTriplesSubject[0], ICM('atLeast'), undefined);
+    var bandwidth = store.each(bandwidthTriples[0], ICM('value'), undefined);
+    if ((bandwidthObservationObject[0] == undefined) || (bandwidthTriplesSubject[0] == undefined) || (bandwidthTriples[0] == undefined) || (bandwidth[0] == undefined)) {
+      serviceIntentParams.bandwidth = null;
+    } else {
+      serviceIntentParams.bandwidth = parseFloat(bandwidth[0].value);
+    }
+
+    var availabilityObservationObject = store.each(undefined, ICM('latestValueOf'), MET('ServiceAvailability'));
+    var availabilityTriplesSubject = store.each(undefined, ICM('observation'), availabilityObservationObject[0]);
+    var availabilityTriples = store.each(availabilityTriplesSubject[0], ICM('atLeast'), undefined);
+    var availability = store.each(availabilityTriples[0], ICM('value'), undefined);
+    if ((availabilityObservationObject[0] == undefined) || (availabilityTriplesSubject[0] == undefined) || (availabilityTriples[0] == undefined) || (availability[0] == undefined)) {
+      serviceIntentParams.availability = null;
+    } else {
+      serviceIntentParams.availability = parseFloat(availability[0].value);
+    }
+
+    var qualityTriples = store.each(EX('S1P5_service_level'), ICM('intersectsWith'), undefined);
+    var quality = store.each(qualityTriples[0], RDFS('member'), undefined);
+    if ((qualityTriples[0] == undefined) || (quality[0] == undefined)) {
+      serviceIntentParams.quality = null;
+    } else if (CEM('PremiumService').equals(quality[0])) {
+      serviceIntentParams.quality = 'Premium';
+    } else {
+      serviceIntentParams.quality = '';
+    }
+
+    var locationsTriplesSubject = store.each(undefined, ICM('includedIn'), MET('ConnectedLocations'));
+    var locationsTriples = store.each(locationsTriplesSubject[0], ICM('subjectContainer'), undefined);
+    var locations = store.each(locationsTriples[0], RDF('member'), undefined);
+    if ((locationsTriplesSubject[0] == undefined) || (locationsTriples[0] == undefined) || (locations[0] == undefined) || (locations[1] == undefined)) {
+      serviceIntentParams.locations = null;
+    } else {
+      serviceIntentParams.locations = [locations[0].value, locations[1].value];
+    }
+
+    var reportIntervalTriplesSubject = store.each(undefined, RDF('type'), ICM('ReportingExpectation'));
+    var reportIntervalTriples = store.each(reportIntervalTriplesSubject[0], ICM('reportingInterval'), undefined);
+    var reportIntervalValue = store.each(reportIntervalTriples[0], T('numericDuration'), undefined);
+    var reportIntervalUnit = store.each(reportIntervalTriples[0], T('temporalUnit'), undefined);
+    if ((reportIntervalTriplesSubject[0] == undefined) || (reportIntervalTriples[0] == undefined) || (reportIntervalValue[0] == undefined) || (reportIntervalUnit[0] == undefined)) {
+      serviceIntentParams.reportInterval = null;
+    } else if (T('unitSecond').equals(reportIntervalUnit[0])) {
+      serviceIntentParams.reportInterval = parseFloat(reportIntervalValue[0].value);
+    } else if (T('unitMinute').equals(reportIntervalUnit[0])) {
+      serviceIntentParams.reportInterval = parseFloat(reportIntervalValue[0].value * 60);
+    } else if (T('unitHour').equals(reportIntervalUnit[0])) {
+      serviceIntentParams.reportInterval = parseFloat(reportIntervalValue[0].value * 3600);
+    } else {
+      serviceIntentParams.reportInterval = -1;
+    }
+  }
+  catch (err) {
+    console.log(err);
+  };
 };
+
 
 // This function is called from the SI once the intent has been deleted from MOngo
 //it deletes the service order in SO over TMF641,
@@ -78,7 +233,17 @@ exports.processIntent = function(req) {
 exports.deleteIntent = function (query, resourceType) {
   const soUtils = require('../utils/soUtils');
 
-  // send a hardcoded service order over TMF641
+  // stop sending intent reports
+  if ((intentStateMap.has(query.id)) && (intentReportTimerMap.has(query.id))) {
+    clearTimeout(intentReportTimerMap.get(query.id));
+    intentStateMap.delete(query.id);
+    intentReportTimerMap.delete(query.id);
+
+  } else {
+    console.error('ERROR: intent ' + query.id + ' is not known to the SIH');
+    return;
+  }
+
   fs.readFile('./serviceorders/service_order_connectivity_ptp_DELETE.json', 'utf8', (err, deleteOrder) => {
     if (err) {
       console.error('unable to read delete service order json file due to error:', err);
@@ -94,7 +259,7 @@ exports.deleteIntent = function (query, resourceType) {
     }
   });
 
-  console.log('query: ' + query)
+  console.log('query.id: ' + query.id)
   console.log('resourceType: ' + resourceType)
   //reads intent from mongo and then deletes objects from KG.  All in one function as async
   handlerUtils.getIntentExpressionandDeleteKG(query, resourceType);

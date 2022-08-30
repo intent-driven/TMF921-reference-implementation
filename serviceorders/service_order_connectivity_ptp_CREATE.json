@@ -22,36 +22,12 @@
                 },
                 "characteristics": [
                     {
-                        "name": "countries",
-                        "value": "USA"
+                        "name": "serviceType",
+                        "value": "Bronze"
                     },
                     {
-                        "name": "regions",
-                        "value": "StateX"
-                    },
-                    {
-                        "name": "zones",
-                        "value": "Zone1"
-                    },
-                    {
-                        "name": "availability",
-                        "value": "999900"
-                    },
-                    {
-                        "name": "maxPacketLossRate",
-                        "value": "Premmium"
-                    },
-                    {
-                        "name": "bandwith",
+                        "name": "bandwidth",
                         "value": "1"
-                    },
-                    {
-                        "name": "jitter",
-                        "value": "30"
-                    },
-                    {
-                        "name": "latency",
-                        "value": "2"
                     }
                 ],
                 "places": [

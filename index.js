@@ -5,6 +5,7 @@ const fs = require('fs'),
       http = require('http'),
       mongoUtils = require('./utils/mongoUtils'),
       soUtils = require('./utils/soUtils'),
+      saUtils = require('./utils/saUtils'),
       swaggerUtils = require('./utils/swaggerUtils');
 
 const {TError, TErrorEnum, sendError} = require('./utils/errorUtils');
@@ -13,6 +14,8 @@ const app = require('connect')();
 const swaggerTools = require('swagger-tools');
 
 const serverPort = 8080;
+
+const monitorIssuesInterval = 60; // seconds
 
 // Correct the url in swagger-ui-dist that points to some demo (like the petstore)
 // And add additional useful options
@@ -65,6 +68,14 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
   // Since the token needs to be obtained only once hence it is done during
   // initilization rather than getting it each time an intent is created or deleted
   soUtils.storeSoTokenAfterLogin();
+
+  // Monitor issues that are reported by the SA in issue repo of graphDB
+  var timerId = setTimeout(function monitorIssues() {
+    console.log("monitorIssuesInterval expired, checking graphDb now");
+    timerId = setTimeout(monitorIssues, monitorIssuesInterval * 1000);
+    saUtils.monitorIssuesGraphDb();
+
+  }, monitorIssuesInterval * 1000);
   /* XXXXXXXXXXXXX Ericsson IRC - End  XXXXXXXXXXXXXXXx*/
 
   // Start the server
