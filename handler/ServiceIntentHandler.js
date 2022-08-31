@@ -97,6 +97,26 @@ function sendCreateServiceOrder() {
 }
 
 function createIntentReport(req) {
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+/// Fernando
+///////////////////////////////////////////////////////////
+//we return the following reports
+/*
+// 1. Intent Accepted
+
+filename = 'S1R1_Intent_Accepted.ttl'
+handlerUtils.sendIntentReport('S1R1_Intent_Accepted',filename,req);
+console.log('log: S1 Report Accepted sent');
+
+//we return the following reports
+// 2. Intent Degraded
+
+filename = 'S1R2_Intent_Degraded.ttl'
+handlerUtils.sendIntentReport('S1R2_Intent_Degraded',filename,req);
+console.log('log: S1 Report Degraded sent');
+*/
+
   //check type of intent...just search for B1, S1, R1&slice or R1&private
   const expression = handlerUtils.getExpression(req);
   var filename = handlerUtils.intentReportFileName(expression);

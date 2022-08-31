@@ -50,13 +50,13 @@
 ex:B1_PSE_Biz_Intent1
   a icm:Intent ;
   rdfs:comment "'Intent for ordering connectivity service via dynamic pricing'" ;
-  imo:intentOwner ex:IMF_Customer1 ;
+  imo:intentOwner ex:PSE_Customer ;
   cem:layer "'business'" ;
   arc:intentRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
   arc:updateRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
-  icm:hasExpectation ex:PSE_Exp_delivery ,
-                     ex:PSE_Exp_property ,
-                     ex:PSE_Exp_reporting ; 
+  icm:hasExpectation ex:B1E1_delivery ,
+                     ex:B1E2_property ,
+                     ex:B1E3_reporting ; 
 .
 
 ##### Targets #################################################################
@@ -167,7 +167,7 @@ ex:B1P1_delivery_type
 # condition. This means the observation is associated with the target.
 # If no suitable target resource is available to make this observation, the 
 # parameter would be evaluated as not compliant. 
-ex:B1P2_delivery_condition ;
+ex:B1P2_delivery_condition 
   a icm:Parameter ;
   icm:observation [ icm:latestValueOf spot:Price ] ;
   icm:atMost [ icm:value 10 ;
@@ -226,7 +226,7 @@ ex:B1P4_bandwidth
   a icm:Parameter ;  
   icm:observation [ icm:latestValueOf met:AvailableBandwidth ] ;
   icm:atLeast [ icm:value 1 ;
-                icm:unit80000 "GBit/s" ;
+                icm:unit80000 "'GBit/s'" ;
 			  ] ;
 .
 # There is an collection of all connected locations. This compliance condition
@@ -279,7 +279,7 @@ ex:B1E3_reporting
 ex:B1P6_reporting
   a icm:Parameter ;
   icm:subjectContainer icm:NewEventTypes ;
-  intersectWith [ rdf:li icm:ReportingIntervalExpired ;
+  icm:intersectWith [ rdf:li icm:ReportingIntervalExpired ;
                   rdf:li icm:IntentRejected ;
                   rdf:li icm:StateComplies ;
                   rdf:li icm:StateDegrades ;
@@ -288,6 +288,3 @@ ex:B1P6_reporting
                   rdf:li icm:UpdateFinished  ;
                 ] ;
 .
-
-
-

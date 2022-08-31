@@ -12,6 +12,9 @@ const mongoUtils = require('../utils/mongoUtils');
 const swaggerUtils = require('../utils/swaggerUtils');
 const notificationUtils = require('../utils/notificationUtils');
 
+/* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
+const handlerUtils = require('../utils/handlerUtils');
+/* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
 const {sendDoc} = require('../utils/mongoUtils');
 
 const {setBaseProperties, traverse, 
@@ -290,6 +293,11 @@ exports.listenToIntentReportCreateEvent = function(req, res, next) {
 
             sendDoc(res, 201, payload);
             notificationUtils.publish(req,payload);
+
+    /* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
+    // check and send reports
+            handlerUtils.checkandSendReport(payload.event.intentReport.expression,req);
+
           })
           .catch((error) => {
             console.log("listenToIntentReportCreateEvent: error=" + error);
@@ -304,9 +312,7 @@ exports.listenToIntentReportCreateEvent = function(req, res, next) {
     .catch( error => {
       console.log("listenToIntentReportCreateEvent: error=" + error.toString());
       sendError(res, error);
-    });
-
-
+    });  
 
 };
 

@@ -33,21 +33,24 @@ exports.processIntent = function(req) {
   //From expression extract triples and load the data in GraphDB 
   handlerUtils.extractTriplesandKG(expression,`insert`,'text/turtle');
   
+  
+
   var filename;
-//we return the following reports
+
+  //we return the following reports
 // 1. Intent Accepted
 
-  filename = 'R1R1_Intent_Accepted.ttl'
-  handlerUtils.sendIntentReport('R1R1_Intent_Accepted',filename,req);
+  filename = 'B1R1_Intent_Accepted.ttl'
+  handlerUtils.sendIntentReport('B1R1_Intent_Accepted',filename,req);
   console.log('log: B1 Report Accepted sent');
 
-// 1. Intent Accepted
+  // 2. The send the S1 intent
+  filename = 'S1_catalyst_service_intent.ttl'
+  handlerUtils.postIntent('S1_Intent_ConnectivityService',filename,req);
+  console.log('log: S1 Intent POSTed');
 
-filename = 'R1R2_Intent_Compliant.ttl'
-handlerUtils.sendIntentReport('R1R2_Intent_Compliant',filename,req);
-console.log('log: B1 Report Accepted sent');
+
 };
-
 
 // This function is called from the RI once the intent as been deleted from MOngo
 //it reads the intent expression from mongo, parse the expresion into

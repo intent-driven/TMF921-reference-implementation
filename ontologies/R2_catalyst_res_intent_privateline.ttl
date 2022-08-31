@@ -1,0 +1,123 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix icm: <http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#> .
+@prefix imo: <http://tio.models.tmforum.org/tio/v1.0.0/IntentManagementOntology#> .
+@prefix pbi: <http://tio.models.tmforum.org/tio/v1.0.0/ProposalBestIntent#> .
+@prefix cat: <http://www.operator.com/Catalog#> .
+@prefix spot: <http://www.sdo1.org/Models/DynamicpriceOntology#> .
+@prefix met: <http://www.sdo2.org/TelecomMetrics/Version_1.0#> .
+@prefix   t: <http://www.w3.org/2006/time#> .
+@prefix  ex: <http://www.example.org/IntentNamespace#> .
+@prefix iv: <https://tmforum.org/2021/07/intentValidity#> .
+@prefix itv: <https://tmforum.org/2021/07/intentTemporalValidity#> .
+@prefix cem:  <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix prl: <http://io.irc.huawei.com/Io/v1.0.0/PrivateLineExtensionModel#> .
+@prefix  inv: <http://www.operator.org/Inventory#> .
+
+# --- Intent ----------
+ex:R2_PSE_Res_PrivateLine_Intent1
+ a icm:Intent ;
+   rdfs:comment "'Intent for ordering connectivity via PrivateLine'";
+   imo:intentOwner ex:IntentManagerXYZ_S;
+   cem:layer "'resource'";
+   icm:hasExpectation ex:PSE_Exp_R2PrivateLine_delivery,
+                         ex:PSE_Exp_R2PrivateLine_property,
+                         ex:PSE_Exp_R2PrivateLine_reporting; 
+.
+##Delivery Expectation
+ex:PSE_Exp_R2PrivateLine_delivery
+ a icm:DeliveryExpectation ;
+   icm:target _:resource_privateline ;
+   icm:params ex:PSE_Exp_R2PrivateLine_delivery_Param_type;
+.
+ex:PSE_Exp_R2PrivateLine_delivery_Param_type
+ a icm:DeliveryParam ;
+   icm:targetDescription cat:ietf-eth-tran-types_p2p-svc 
+.
+
+##Property Expectation
+ex:PSE_Exp_R2PrivateLine_property
+ a icm:PropertyExpectation ;
+   icm:target _:resource_privateline ;
+   icm:params ex:PSE_Exp_R2PrivateLine_property_Param_customer , 
+               ex:PSE_Exp_R2PrivateLine_property_Param_protection , 
+               ex:PSE_Exp_R2PrivateLine_property_Param_convergence , 
+##  Topology should be decided by the AD
+#               ex:PSE_Exp_R2PrivateLine_property_Param_topology , 
+               ex:PSE_Exp_R2PrivateLine_property_Param_latency , 
+               ex:PSE_Exp_R2PrivateLine_property_Param_tunnel_state , 
+               ex:PSE_Exp_R2PrivateLine_property_Param_excludeservices , 
+               ex:PSE_Exp_R2PrivateLine_property_Param_bandwidthprofile , 
+               ex:PSE_Exp_R2PrivateLine_property_Param_classification , 
+               ex:PSE_Exp_R2PrivateLine_property_Param_accessnode , 
+               ex:PSE_Exp_R2PrivateLine_property_Param_peernode 
+.
+ex:PSE_Exp_R2PrivateLine_property_Param_customer
+ a icm:PropertyParam ;
+   prl:customer [ icm:value "'eth-service-customer'"^^xsd:string ] ;
+.
+ex:PSE_Exp_R2PrivateLine_property_Param_protection
+ a icm:PropertyParam ;
+   prl:protection [ icm:value "'true'"^^xsd:string ] ;
+.
+ex:PSE_Exp_R2PrivateLine_property_Param_convergence
+ a icm:PropertyParam ;
+   prl:convergence [ icm:value "'true'"^^xsd:string ] ;
+.
+ex:PSE_Exp_R2PrivateLine_property_Param_tunnel_state
+ a icm:PropertyParam ;
+    prl:sliceState [ icm:value prl:up ] ;
+.
+ex:PSE_Exp_R2PrivateLine_property_latency
+ a icm:PropertyParam ;
+   met:latency [ icm:atMost "200 ms" ] ;
+.
+ex:PSE_Exp_R2PrivateLine_property_Param_excludeservices  
+ a icm:PropertyParam ;  
+   prl:service_name [ icm:value "'3b61eb8e-4293-44b3-89f3-4cb1e0705601'"^^xsd:string ] ;
+.
+ex:PSE_Exp_R2PrivateLine_property_Param_bandwidthprofile  
+ a icm:PropertyParam ;  
+   prl:CIR [ icm:atLeast [ met:value "'5000'" ; met:unit met:unitMBPS  ] ] ;
+   prl:EIR [ icm:atLeast [ met:value "'5000'" ; met:unit met:unitMBPS  ] ] ;
+   prl:limit-mode [ icm:value  "'ietf-eth-tran-types:pw-shaping'"^^xsd:string] ;
+.
+ex:PSE_Exp_R2PrivateLine_property_Param_classification  
+ a icm:PropertyParam ;  
+   prl:service-classification [ icm:value "'ietf-eth-tran-types:port-classification'"^^xsd:string ];
+.
+ex:PSE_Exp_R2PrivateLine_property_Param_accessnode  
+ a icm:PropertyParam ;  
+   prl:node-uuid [ icm:value "'a90a84d1-e22c-4d5b-ad07-1e53559851d4'"^^xsd:string ];
+   prl:node-ip [ icm:value "'0.127.0.204'"^^xsd:string ];
+.
+ex:PSE_Exp_R2PrivateLine_property_Param_peernode  
+ a icm:PropertyParam ;  
+   prl:node-uuid [ icm:value "'a90a84d1-e22c-4d5b-ad07-1e53559851d4'"^^xsd:string ];
+   prl:node-ip [ icm:value "'0.185.0.7'"^^xsd:string ];
+.
+
+
+##Reporting Expectation
+ex:PSE_Exp_R2PrivateLine_reporting
+ a icm:ReportingExpectation ;
+   icm:target ex:R2_PSE_Res_PrivateLine_Intent1 ;
+   icm:params ex:PSE_Exp_R2PrivateLine_reporting_Param_interval,
+               ex:PSE_Exp_R2PrivateLine_reporting_Param_event ;
+.
+ex:PSE_Exp_R2PrivateLine_reporting_Param_interval
+ a icm:ReportingParam ;
+   icm:reportingInterval [ a t:Duration ;
+                                t:numericDuration 10 ;
+                                t:temporalUnit t:unitMinute ] .
+ex:PSE_Exp_R2PrivateLine_reporting_Param_event              
+ a icm:ReportingParam ; 
+   icm:reportingEvent icm:ReportingIntervalExpired ,
+                        icm:IntentRejected ,
+                        icm:StateComplies ,
+                        icm:StateDegrades ,
+                        icm:HandlingEnded ,
+                        icm:UpdateRejected ,
+                        icm:UpdateFinished  ;
+.

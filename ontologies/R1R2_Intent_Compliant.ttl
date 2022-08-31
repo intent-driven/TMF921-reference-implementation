@@ -1,0 +1,129 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix icm: <http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#> .
+@prefix imo: <http://tio.models.tmforum.org/tio/v1.0.0/IntentManagementOntology#> .
+@prefix pbi: <http://tio.models.tmforum.org/tio/v1.0.0/ProposalBestIntent#> .
+@prefix cat: <http://www.operator.com/Catalog#> .
+@prefix spot: <http://www.sdo1.org/Models/DynamicpriceOntology#> .
+@prefix met: <http://www.sdo2.org/TelecomMetrics/Version_1.0#> .
+@prefix   t: <http://www.w3.org/2006/time#> .
+@prefix  ex: <http://www.example.org/IntentNamespace#> .
+@prefix iv: <https://tmforum.org/2021/07/intentValidity#> .
+@prefix itv: <https://tmforum.org/2021/07/intentTemporalValidity#> .
+@prefix cem:  <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix sli: <http://io.irc.huawei.com/Io/v1.0.0/SliceExtensionModel#> .
+@prefix  inv: <http://www.operator.org/Inventory#> .
+
+# --- Intent ----------
+ex:R1R2_Intent_Compliant
+ a icm:IntentReport ;
+   rdfs:comment "'Intent report'" ;
+   imo:intentOwner ex:IMF_Service ;
+   imo:intentHandler ex:IMF_Resource ;
+   icm:reportsAbout ex:R1_Intent_Slice_Core ; 
+   icm:reportTimestamp [ t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime ] ;
+   icm:handlingState icm:StateDegraded ;
+   icm:updateState icm:StateNoUpdate ;
+   icm:reportNumber 2 ;
+   cem:layer "'resource'" ;
+   icm:hasExpectationReport
+                         ex:R1R2ER1_delivery,
+                                   ex:R1R2ER2_property ,
+                                   ex:R1R2ER3_reporting ;  
+.
+
+##### Targets #################################################################
+ex:R1R2T1_CoreSlice 
+  a icm:IndividualTarget ;
+  rdfs:element ex:CoreSlice001 ;
+.
+
+##Delivery Expectation
+ex:R1R2ER1_delivery
+     a icm:ExpectationReport ;
+        icm:reportsAbout ex:R1E1_delivery ;
+        icm:targetReport ex:R1R2T1_CoreSlice;
+  icm:compliant [ a icm:ConditionReport ,
+                  icm:reportsAbout ex:R1P1_delivery_type ;
+			 	  icm:deliveryDescription cat:CoreSlice ; 
+                  icm:deliveryType ex:ServiceType_CoreSlice ; 
+	  			  icm:reason icm:ReasonConditionTrue ;
+                ] ;		
+.
+
+
+# --- Propoerty Expectation Report ----------
+ex:R1R2E2_property
+    a                   icm:ExpectationReport ;
+    icm:reportsAbout    ex:R1E2_property ;
+    icm:target          ex:R1R2T1_Capability ;
+    icm:compliant [ a icm:ConditionReport ;
+                 # Compliant, becasue the bandwidth is high enough
+                 icm:reportsAbout ex:R1P5_bandwidth ;
+				 icm:observation [ a met:CoreSliceBandwidth ;
+				                   icm:observed [ a icm:Quantity ;
+								                  # put in the value from the knowledge base
+								                  icm:value 1.2 ;
+												  icm:unit80000 "'GBit/s'" ;
+												] ;
+									];
+                 icm:reason icm:ReasonConditionTrue ;
+			   ] ,
+               [ a icm:ConditionReport ;
+                 icm:reportsAbout ex:R1P2_packet_loss ;
+				 icm:observation [ a met:SlicePacketLossRate ;
+				                   icm:observed [ a icm:Quantity ;
+								                  icm:value 0.009812 ;
+												] ;
+									];
+               icm:reason icm:ReasonConditionTrue ;
+			   ] ,
+               [ a icm:ConditionReport ;
+                 icm:reportsAbout ex:R1P3_availability ;
+				 icm:observation [ a met:ServiceAvailability ;
+				                   icm:observed [ a icm:Quantity ;
+								                  icm:value 0.99991 ;
+												] ;
+									];
+                 icm:reason icm:ReasonConditionTrue ;
+			   ] ,
+               [ a icm:ConditionReport ;
+                 icm:reportsAbout ex:R1P4_jitter ;
+				 icm:observation [ a met:CoreSliceJitter ;
+				                   icm:observed [ a icm:Quantity ;
+								                  icm:value 23 ;
+												] ;
+									];
+               	 icm:reason icm:ReasonConditionTrue ;
+			   ] ,
+               [ a icm:ConditionReport ;
+                 icm:reportsAbout ex:R1P6_latency ;
+				 icm:observation [ a met:CoreSliceLatency ;
+				                   icm:observed [ a icm:Quantity ;
+								                  icm:value 1.3 ;
+                                                  icm:unit80000 "ms" ;
+               									] ;
+									];
+                icm:reason icm:ReasonConditionTrue ;
+			   ] ;
+.
+
+
+##Reporting Expectation
+ex:R1R2E3_reporting
+  a icm:ExpectationReport ;
+  icm:reportsAbout ex:R1E3_reporting ;
+  icm:target ex:T2_R1_Reporting ;
+  icm:receiver ex:IMF_Service ;
+  icm:compliant [ a icm:ConditionReport ;
+                  icm:reportsAbout ex:R1P7_reporting ;
+                  icm:observation [ a rdf:Container ;
+                                rdfs:element icm:StateComplies ;
+                              ] ;
+                ] ;
+  icm:reportingIntervalRemaining [ a t:Duration ;
+                                   t:numericDuration 5 ;
+                                   t:temporalUnit t:unitMinute ;
+                            ] ;
+.

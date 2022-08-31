@@ -13,6 +13,7 @@
 @prefix cem:  <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix sli: <http://io.irc.huawei.com/Io/v1.0.0/SliceExtensionModel#> .
+@prefix  arc: <http://tio.models.tmforum.org/tio/v1.0.0/IntentAcceptanceControl/> .
 
 
 ##### Resouce Intent towards core network #####################################
@@ -22,15 +23,14 @@
 #
 ex:R1_Intent_Slice_Core
   a icm:Intent ;
-  rdfs:comment "Intent for ordering connectivity via slice" ;
+  rdfs:comment "'Intent for ordering connectivity via slice'" ;
   imo:intentOwner ex:IMF_Service ;
   arc:intentRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
   arc:updateRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
-  cem:layer "resource" ;
-  icm:oneOf [ rdfs:member ex:R1E1_delivery ;
-              rdfs:member ex:R1E2_property ;
-			  rdfs:member ex:R1E3_reporting ;
-            ] ; 
+  cem:layer "'resource'" ;
+  icm:hasExpectation ex:R1E1_delivery ,
+                     ex:R1E2_property ,
+                     ex:R1E3_reporting ; 
 .
 
 ##### Targets #################################################################
@@ -140,163 +140,4 @@ ex:R1P7_reporting
                   rdf:li icm:UpdateRejected ;
                   rdf:li icm:UpdateFinished  ;
                 ] ;
-.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-##########################################################################
-
-
-
-
-##Delivery Expectation
-ex:PSE_Exp_R1Slice_delivery
- a icm:DeliveryExpectation ;
-   icm:target _:resource_slice ;
-   icm:params ex:PSE_Exp_R1Slice_delivery_Param_type;
-.
-ex:PSE_Exp_R1Slice_delivery_Param_type
- a icm:DeliveryParam ;
-   icm:targetDescription cat:Slice_NEST_eMBB;
-.
-
-##Property Expectation
-ex:PSE_Exp_R1Slice_property
- a icm:PropertyExpectation ;
-   icm:target _:resource_slice ;
-   icm:params ex:PSE_Exp_R1Slice_property_Param_nssiId , 
-               ex:PSE_Exp_R1Slice_property_Param_nssiName , 
-               ex:PSE_Exp_R1Slice_property_Param_nsiId , 
-               ex:PSE_Exp_R1Slice_property_Param_latency , 
-               ex:PSE_Exp_R1Slice_property_Param_ue ,
-               ex:PSE_Exp_R1Slice_property_Param_availability ,
-               ex:PSE_Exp_R1Slice_property_Param_throughputUL ,
-               ex:PSE_Exp_R1Slice_property_Param_throughputDL ,
-               ex:PSE_Exp_R1Slice_property_Param_ueMobilityLevel , 
-               ex:PSE_Exp_R1Slice_property_Param_areaTrafficDL , 
-               ex:PSE_Exp_R1Slice_property_Param_areaTrafficUL , 
-               ex:PSE_Exp_R1Slice_property_Param_expDataRateDL , 
-               ex:PSE_Exp_R1Slice_property_Param_expDataRateUL , 
-               ex:PSE_Exp_R1Slice_property_Param_SLA5QI , 
-               ex:PSE_Exp_R1Slice_property_Param_packetErrorRate , 
-               ex:PSE_Exp_R1Slice_property_Param_packetSize , 
-               ex:PSE_Exp_R1Slice_property_Param_numberofPDUSession , 
-               ex:PSE_Exp_R1Slice_property_Param_latencyFromUFPToApplicationServer , 
-               ex:PSE_Exp_R1Slice_property_Param_missionCritical , 
-               ex:PSE_Exp_R1Slice_property_Param_V2XCommunicationMode ;
-.
-ex:PSE_Exp_R1Slice_property_Param_nssiId
- a icm:PropertyParam ;
-   sli:nssiId [ icm:value "'NEST-EMBB_VIDEOSTREAMING_INSIDE_VENUE_5G'"^^xsd:string ] ;
-.
-ex:PSE_Exp_R1Slice_property_Param_nssiName
- a icm:PropertyParam ;
-   sli:nssiName [ icm:value "'NEST-EMBB_VIDEOSTREAMING_INSIDE_VENUE_5G'"^^xsd:string ] ;
-.
-ex:PSE_Exp_R1Slice_property_Param_nsiId
- a icm:PropertyParam ;
-   sli:nsiId [ icm:value "'NEST-EMBB_VIDEOSTREAMING_INSIDE_VENUE_5G'"^^xsd:string ] ;
-.
-ex:PSE_Exp_R1Slice_property_Param_latency
- a icm:PropertyParam ;
-   met:latency [ icm:atMost "'12 ms'" ] ;
-.
-ex:PSE_Exp_R1Slice_property_Param_ue
- a icm:PropertyParam ;
-   sli:numberofUEs [ icm:atMost "'10000'" ] ;
-.
-ex:PSE_Exp_R1Slice_property_Param_throughputUL  
- a icm:PropertyParam ;  
-   sli:throughputUL [ icm:atLeast [ met:value "'100'" ; met:unit met:unitMBPS  ] ] ;
-.
-ex:PSE_Exp_R1Slice_property_Param_throughputDL  
- a icm:PropertyParam ;  
-   sli:throughputDL [ icm:atLeast [ met:value "'100000'" ; met:unit met:unitMBPS  ] ] ;
-.
-ex:PSE_Exp_R1Slice_property_Param_availability  
- a icm:PropertyParam ;  
-   met:availability [ icm:greater [ met:value "'99.99'"; met:unit met:percentage ] ];
-.
-ex:PSE_Exp_R1Slice_property_Param_ueMobilityLevel  
- a icm:PropertyParam ;  
-   sli:ueMobilityLevel [ icm:value "'10'"^^xsd:string ];
-.
-ex:PSE_Exp_R1Slice_property_Param_areaTrafficDL 
- a icm:PropertyParam ;  
-   sli:areaTrafficDL [ icm:atMost [ met:value "'100000'" ; met:unit met:unitMBPS  ] ];
-.
-ex:PSE_Exp_R1Slice_property_Param_areaTrafficUL 
- a icm:PropertyParam ;  
-   met:areaTrafficUL [ icm:atMost [ met:value "'100'" ; met:unit met:unitMBPS  ] ];
-.
-ex:PSE_Exp_R1Slice_property_Param_expDataRateDL 
- a icm:PropertyParam ;  
-   sli:expDataRateDL [ icm:atMost [ met:value "'100000'" ; met:unit met:unitMBPS  ] ];
-.
-ex:PSE_Exp_R1Slice_property_Param_expDataRateDL 
- a icm:PropertyParam ;  
-   sli:expDataRateUL [ icm:atMost [ met:value "'100'" ; met:unit met:unitMBPS  ] ];
-.
-ex:PSE_Exp_R1Slice_property_Param_SLA5QI 
- a icm:PropertyParam ;  
-   sli:SLA5QI [ icm:value "'1'"^^xsd:string  ];
-.
-ex:PSE_Exp_R1Slice_property_Param_packetErrorRate 
- a icm:PropertyParam ;  
-   sli:packetErrorRate [ icm:value "'Premium'"^^xsd:string  ];
-.
-ex:PSE_Exp_R1Slice_property_Param_packetSize 
- a icm:PropertyParam ;  
-   sli:packetSize [ icm:atMost [ met:value "'1500'" ; met:unit met:unitByte  ]  ];
-.
-ex:PSE_Exp_R1Slice_property_Param_numberofPDUSession 
- a icm:PropertyParam ;  
-   sli:numberofPDUSession [ icm:value "'123'"^^xsd:string  ];
-.
-ex:PSE_Exp_R1Slice_property_Param_latencyFromUFPToApplicationServer 
- a icm:PropertyParam ;  
-   sli:latencyFromUFPToApplicationServer [ icm:atMost "'1 ms'"  ];
-.
-ex:PSE_Exp_R1Slice_property_Param_missionCritical 
- a icm:PropertyParam ;  
-   sli:missionCritical [ icm:value "'No'"^^xsd:string ];
-.
-ex:PSE_Exp_R1Slice_property_Param_V2XCommunicationMode 
- a icm:PropertyParam ;  
-   sli:V2XCommunicationMode [  icm:value "'No'"^^xsd:string ];
-.
-
-##Reporting Expectation
-ex:PSE_Exp_R1Slice_reporting
- a icm:ReportingExpectation ;
-   icm:target ex:R1_PSE_Res_Slice_Intent1 ;
-   icm:params ex:PSE_Exp_R1Slice_reporting_Param_interval,
-               ex:PSE_Exp_R1Slice_reporting_Param_event ;
-.
-ex:PSE_Exp_R1Slice_reporting_Param_interval
- a icm:ReportingParam ;
-   icm:reportingInterval [ a t:Duration ;
-                                t:numericDuration "'10'" ;
-                                t:temporalUnit t:unitMinute ] .
-ex:PSE_Exp_R1Slice_reporting_Param_event              
- a icm:ReportingParam ; 
-   icm:reportingEvent icm:ReportingIntervalExpired ,
-                        icm:IntentRejected ,
-                        icm:StateComplies ,
-                        icm:StateDegrades ,
-                        icm:HandlingEnded ,
-                        icm:UpdateRejected ,
-                        icm:UpdateFinished  ;
 .

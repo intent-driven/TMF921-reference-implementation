@@ -15,43 +15,75 @@
 @prefix prl: <http://io.irc.huawei.com/Io/v1.0.0/PrivateLineExtensionModel#> .
 @prefix  inv: <http://www.operator.org/Inventory#> .
 
-# --- Intent ----------
-ex:R2_PSE_Res_PrivateLine_Intent1
+##### Resouce Intent towards transport network #####################################
+#
+# This is the intent sent from service IMF (by the orchestrator) to the intent
+# management function in Trnasport Network
+#
+ex:R2_Intent_PrivateLine_Transport
  a icm:Intent ;
    rdfs:comment "'Intent for ordering connectivity via PrivateLine'";
-   imo:intentOwner ex:IntentManagerXYZ_S;
+   imo:intentOwner ex:IMF_Service;
+   arc:intentRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
+   arc:updateRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
    cem:layer "'resource'";
-   icm:hasExpectation ex:PSE_Exp_R2PrivateLine_delivery,
-                         ex:PSE_Exp_R2PrivateLine_property,
-                         ex:PSE_Exp_R2PrivateLine_reporting; 
-.
-##Delivery Expectation
-ex:PSE_Exp_R2PrivateLine_delivery
- a icm:DeliveryExpectation ;
-   icm:target _:resource_privateline ;
-   icm:params ex:PSE_Exp_R2PrivateLine_delivery_Param_type;
-.
-ex:PSE_Exp_R2PrivateLine_delivery_Param_type
- a icm:DeliveryParam ;
-   icm:targetDescription cat:ietf-eth-tran-types_p2p-svc 
+   icm:hasExpectation ex:R2E1_delivery,
+                         ex:R2E2_property,
+                         ex:R2E3_reporting; 
 .
 
-##Property Expectation
-ex:PSE_Exp_R2PrivateLine_property
+##### Targets #################################################################
+#
+ex:T1_PrivateLine 
+  a icm:IndividualTarget ;
+  icm:OneElementOf [ icm:elementType rdf:Resource ] ;
+.
+ex:T2_R2_Reporting
+  a icm:IndividualTarget ;
+  rdfs:member ex:R2_Intent_PrivateLine_Transport ;
+. 
+
+##### Delivery Expectation ####################################################
+#
+ex:R2E1_delivery
+  a icm:DeliveryExpectation ;
+  icm:target ex:T1_PrivateLine ;
+  icm:allOf [ rdfs:member ex:R2P1_delivery_type ;
+            ] ;			  
+.
+# Description and type the selected target service shall comply to
+ex:R2P1_delivery_type
+  a icm:Parameter ;
+  icm:deliveryDescription cat:ietf-eth-tran-types_p2p-svc  ; 
+  icm:deliveryType ex:ServiceType_PrivateLine ; 
+.
+
+
+##### Property Expectation ####################################################
+#
+# R1: maxPacketLossRate 0.0001
+# R1: Availability of core slice resource > 0.9999
+# R1: jitter <30
+# R1: SliceBandwidth 1 Gbit/s
+# R1: Latency <2ms
+#
+
+ex:R2E2_property
  a icm:PropertyExpectation ;
-   icm:target _:resource_privateline ;
-   icm:params ex:PSE_Exp_R2PrivateLine_property_Param_customer , 
-               ex:PSE_Exp_R2PrivateLine_property_Param_protection , 
-               ex:PSE_Exp_R2PrivateLine_property_Param_convergence , 
+   icm:target ex:T1_PrivateLine ;
+   icm:allOf [ rdfs:member ex:PSE_Exp_R2PrivateLine_property_Param_customer ;
+                rdfs:member ex:PSE_Exp_R2PrivateLine_property_Param_protection ; 
+                rdfs:member ex:PSE_Exp_R2PrivateLine_property_Param_convergence ; 
 ##  Topology should be decided by the AD
 #               ex:PSE_Exp_R2PrivateLine_property_Param_topology , 
-               ex:PSE_Exp_R2PrivateLine_property_Param_latency , 
-               ex:PSE_Exp_R2PrivateLine_property_Param_tunnel_state , 
-               ex:PSE_Exp_R2PrivateLine_property_Param_excludeservices , 
-               ex:PSE_Exp_R2PrivateLine_property_Param_bandwidthprofile , 
-               ex:PSE_Exp_R2PrivateLine_property_Param_classification , 
-               ex:PSE_Exp_R2PrivateLine_property_Param_accessnode , 
-               ex:PSE_Exp_R2PrivateLine_property_Param_peernode 
+                rdfs:member ex:PSE_Exp_R2PrivateLine_property_Param_latency ; 
+                rdfs:member ex:PSE_Exp_R2PrivateLine_property_Param_tunnel_state ; 
+                rdfs:member ex:PSE_Exp_R2PrivateLine_property_Param_excludeservices ; 
+                rdfs:member ex:PSE_Exp_R2PrivateLine_property_Param_bandwidthprofile ; 
+                rdfs:member ex:PSE_Exp_R2PrivateLine_property_Param_classification ; 
+                rdfs:member ex:PSE_Exp_R2PrivateLine_property_Param_accessnode ; 
+                rdfs:member ex:PSE_Exp_R2PrivateLine_property_Param_peernode 
+			   ];
 .
 ex:PSE_Exp_R2PrivateLine_property_Param_customer
  a icm:PropertyParam ;
@@ -99,25 +131,29 @@ ex:PSE_Exp_R2PrivateLine_property_Param_peernode
 .
 
 
-##Reporting Expectation
-ex:PSE_Exp_R2PrivateLine_reporting
- a icm:ReportingExpectation ;
-   icm:target ex:R2_PSE_Res_PrivateLine_Intent1 ;
-   icm:params ex:PSE_Exp_R2PrivateLine_reporting_Param_interval,
-               ex:PSE_Exp_R2PrivateLine_reporting_Param_event ;
+##### Reporting Expectation ###################################################
+#
+ex:R2E3_reporting
+  a icm:ReportingExpectation ;
+  icm:target ex:T2_R2_Reporting ;
+  icm:receiver ex:IMF_Service ;
+  icm:allOf [ rdfs:member ex:R2P11_reporting ;
+            ] ;
+  icm:reportingInterval [ a t:Duration ;
+                          t:numericDuration 10 ;
+                          t:temporalUnit t:unitMinute ;
+    					] ;
 .
-ex:PSE_Exp_R2PrivateLine_reporting_Param_interval
- a icm:ReportingParam ;
-   icm:reportingInterval [ a t:Duration ;
-                                t:numericDuration 10 ;
-                                t:temporalUnit t:unitMinute ] .
-ex:PSE_Exp_R2PrivateLine_reporting_Param_event              
- a icm:ReportingParam ; 
-   icm:reportingEvent icm:ReportingIntervalExpired ,
-                        icm:IntentRejected ,
-                        icm:StateComplies ,
-                        icm:StateDegrades ,
-                        icm:HandlingEnded ,
-                        icm:UpdateRejected ,
-                        icm:UpdateFinished  ;
+
+ex:R2P11_reporting
+  a icm:Parameter ;
+  icm:subjectContainer icm:NewEventTypes ;
+  intersectWith [ rdf:li icm:ReportingIntervalExpired ;
+                  rdf:li icm:IntentRejected ;
+                  rdf:li icm:StateComplies ;
+                  rdf:li icm:StateDegrades ;
+                  rdf:li icm:HandlingEnded ;
+                  rdf:li icm:UpdateRejected ;
+                  rdf:li icm:UpdateFinished  ;
+                ] ;
 .

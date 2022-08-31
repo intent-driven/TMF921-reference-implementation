@@ -32,6 +32,7 @@ const assert = require('assert');
 
 /* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
 const intentHandler = require('../handler/IntentHandler');
+const businessintentHandler = require('../handler/BusinessIntentHandler');
 const handlerUtils = require('../utils/handlerUtils');
 /* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
 
@@ -85,7 +86,7 @@ exports.createIntent = async function(req, res, next) {
             }
 //for the time being using the common handler for the biz intent
             if (expression.indexOf("B1")>0){ // check whether it's a resource intent
-              intentHandler.processIntent(req);
+              businessintentHandler.processIntent(req);
             }
 /* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
 
@@ -443,4 +444,3 @@ exports.retrieveIntent = function(req, res, next) {
 
 
 };
-

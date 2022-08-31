@@ -35,7 +35,7 @@
 # 
 # The service IMF will decide which maxPacketLossRate, SliceAvailability, Jitter, 
 # SliceBandwidth and Latency it needs to satisfy the S1 intent. 
-# It then cooses a service from the catalog that it expects to deliver the wanted 
+# It then chooses a service from the catalog that it expects to deliver the wanted 
 # function and experience. 
 #
 # The service IMF will order the ConnectivityP2P service over TMF641 and it 
@@ -46,15 +46,14 @@
 
 ex:S1_Intent_ConnectivityService
   a icm:Intent ;
-  rdfs:comment "Intent for connectivity service";
+  rdfs:comment "'Intent for connectivity service'";
   imo:intentOwner ex:IMF_Business ;
   arc:intentRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
   arc:updateRejectionReasonOverride imo:SuccessfulHandlingNotExpected ;
-  cem:layer "service" ;
-  icm:allOf [ rdfs:member ex:S1E1_delivery ;
-              rdfs:member ex:S1E2_property ;
-              rdfs:member ex:S1E3_reporting ; 
-			] ; 
+  cem:layer "'service'" ;
+  icm:hasExpectation ex:S1E1_delivery ,
+                     ex:S1E2_property ,
+                     ex:S1E3_reporting ; 
 .
 
 ##### Targets #################################################################
@@ -107,7 +106,7 @@ ex:S1P3_bandwidth
   a icm:Parameter ;  
   icm:observation [ icm:latestValueOf met:ServiceBandwidth ] ;
   icm:atLeast [ icm:value 1 ;
-                icm:unit80000 "GBit/s" ;
+                icm:unit80000 "'GBit/s'" ;
 			  ] ;
 .
 # S1: Avilability of service at least 0.9999
@@ -136,8 +135,8 @@ ex:S1P5_service_level
 # forwarding the location requirement to the service layer
 ex:S1P6_location
   a icm:Parameter ;
-  icm:subjectContainer [ rdf:member "locationA" ;
-                         rdf:member "locationB" ;
+  icm:subjectContainer [ rdf:member "'locationA'" ;
+                         rdf:member "'locationB'" ;
                        ] ;
   icm:includedIn met:ConnectedLocations ;
 .

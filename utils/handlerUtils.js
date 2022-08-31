@@ -18,11 +18,15 @@ const intentService = require('../service/IntentService');
 const $rdf = require('rdflib');
 const uuid = require('uuid');
 const notificationUtils = require('../utils/notificationUtils');
+const XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 
 var spec = null;
 var swaggerDoc = null;
 
 const EXPRESSION = "expression";
+
+//Wait between reports, 10s
+const wait_number = 10000;
 
 //////////////////////////////////////////////////////
 // Functions returns the expressionValue            //
@@ -47,9 +51,9 @@ function intentReportFileName(expression) {
   } else if (expression.indexOf("S1")>0) { 
     filename = 'S1R_catalyst_service_intent_report.ttl'
   } else if (expression.indexOf("R1")>0) { 
-    filename = 'R1_catalyst_resource_intent_report_slice.ttl'
+    filename = 'R1R_catalyst_resource_intent_report_slice.ttl'
   } else if (expression.indexOf("R2")>0) { 
-    filename = 'R2_catalyst_resource_intent_report_privateline.ttl'
+    filename = 'R2R_catalyst_resource_intent_report_privateline.ttl'
   }
   return filename;
 }
@@ -203,7 +207,7 @@ function extractTriplesandKG (expression,action,type) {
 
   var store = $rdf.graph();
   var triples;
-  console.log('extract Triples:: ' + expression);
+//  console.log('extract Triples:: ' + expression);
 
  //create rdf object
  try {
@@ -309,11 +313,11 @@ function kgOperation(triples,action) {
 // stores the intent report into mongo                //
 // generates event (notify)                           //
 ////////////////////////////////////////////////////////
-function insertIntentReport(report,req) {
+function insertIntentReport(name,report,req) {
   const resourceType = 'IntentReport';
 
   //generates message
-  const message = createIntentReportMessage(report,req);
+  const message = createIntentReportMessage(name,report,req);
   //generates request for the notification
   const req1 = createIntentReportReq(req,resourceType);
 
@@ -340,7 +344,7 @@ function insertIntentReport(report,req) {
 ////////////////////////////////////////////////////////
 // Generates intent report message                    //
 ////////////////////////////////////////////////////////
-function createIntentReportMessage(data,req) {
+function createIntentReportMessage(name,data,req) {
   var intent_uuid = req.body.id;
   var intent_href=req.body.href;
     //expression
@@ -363,6 +367,7 @@ function createIntentReportMessage(data,req) {
   var message = {
     id: id,
     href: intent_href+'/intentReport/'+id,
+    name: name,
     creationDate: (new Date()).toISOString(),
     expression: expression,
     intent: intent
@@ -403,6 +408,135 @@ function cleanmessageid(message) {
   return message
 }
 
+////////////////////////////////////////////////////////
+// Function used to send intent reports               //
+////////////////////////////////////////////////////////
+function sendIntentReport(name,filename,req) {
+  fs.readFile('./ontologies/'+filename, 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+ //   console.log(data);
+  //2. insert report in grapbdb
+  extractTriplesandKG(data,`insert`,'text/turtle');
+
+ //3. insert report into mongodb and send notification
+  insertIntentReport(name,data,req);
+  //4. create event
+//  inside the previous step as async
+
+  wait(wait_number);
+});
+
+}
+function wait(ms){
+  var start = new Date().getTime();
+  var end = start;
+  while(end < start + ms) {
+    end = new Date().getTime();
+ }
+}
+
+////////////////////////////////////////////////////////
+// Generates intent report message                    //
+////////////////////////////////////////////////////////
+function createIntentMessage(name,data) {
+  
+  var date = new Date();
+  var date_start = date.toISOString();
+  var date_end = (new Date(date.getFullYear()+1, date.getMonth(), date.getDate())).toISOString();
+
+  //expression
+  var expression = {
+    iri: "http://tio.models.tmforum.org/tio/v2.0.0/IntentCommonModel",
+    "@baseType": "Expression",
+    "@type": "TurtleExpression", 
+    expressionLanguage: "Turtle",
+    expressionValue: data,
+    "@schemaLocation": "https://mycsp.com:8080/tmf-api/schema/Common/TurtleExpression.schema.json",
+  };
+
+  var message = {
+    creationDate: date_start,
+    expression: expression,
+    name: name,
+    description: name,
+    '@schemaLocation': "https://mycsp.com:8080/tmf-api/schema/Common/TurtleExpression.schema.json",
+    lifecycleStatus: "Created",
+    '@baseType': "Intent",
+    validFor: {
+      startDateTime: date_start,
+      endDateTime: date_end
+    },
+    '@type': "Intent",
+    'version': "1"
+    };  
+
+  return message;
+
+};
+
+////////////////////////////////////////////////////////
+// POST a new Intent to the next layer               //
+////////////////////////////////////////////////////////
+function postIntent(name,filename,req) {
+  fs.readFile('./ontologies/'+filename, 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+       if (this.readyState == 4 && this.status == 200) {
+           //do nothing for now
+           null;
+           //alert(this.responseText);
+       }
+    };
+    var url = 'http://'+req.headers.host+req.originalUrl;
+    console.log('URL: '+url);
+    xhttp.open("POST", url, true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.setRequestHeader("accept", "application/json");
+    
+    var payload = JSON.stringify(createIntentMessage(name,data));
+    
+    xhttp.send(payload);
+
+  });
+};
+
+function checkandSendReport(payload,req) {
+  var filename;
+  //S1R1 -> B1R2
+  if (payload.expressionValue.indexOf("S1R1")>0){ // check whether it's a resource intent
+     filename = 'B1R2_Intent_Degraded.ttl'
+     sendIntentReport('B1R2_Intent_Degraded',filename,req);;
+     console.log('log: B1 Report Degraded 1 sent');
+  }
+  //S1R2 -> B1R3
+  else if (payload.expressionValue.indexOf("S1R2")>0){ // check whether it's a resource intent
+    filename = 'B1R3_Intent_Degraded.ttl'
+    sendIntentReport('B1R3_Intent_Degraded',filename,req);
+    console.log('log: B1 Report Degraded 2 sent');
+  }
+     
+  //R1R2 -> S1R3 -> B1R4
+  else if (payload.expressionValue.indexOf("R1R2")>0){ // check whether it's a resource intent
+    filename = 'S1R3_Intent_Compliant.ttl'
+    sendIntentReport('S1R3_Intent_Compliant',filename,req);
+    console.log('log: S1 Report Compliant sent');
+
+    filename = 'B1R4_Intent_Compliant.ttl'
+    sendIntentReport('B1R4_Intent_Compliant',filename,req);
+    console.log('log: B1 Report Compliant sent');
+  }
+
+
+}
+
 module.exports = { 
   getExpression,
   getIntentExpressionandDeleteKG,
@@ -412,5 +546,9 @@ module.exports = {
   insertIntentReport,
   createIntentReportMessage,
   createIntentReportReq,
-  intentReportFileName
+  intentReportFileName,
+  sendIntentReport,
+  postIntent,
+  createIntentMessage,
+  checkandSendReport
 				   			 };

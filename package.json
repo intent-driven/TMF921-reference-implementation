@@ -32,7 +32,8 @@
     "swagger-ui-dist": "^3.17.6",
     "untildify": "^3.0.3",
     "use-strict": "^1.0.1",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "xmlhttprequest": "^1.8.0"
   },
   "engines": {
     "node": ">=12.18",
