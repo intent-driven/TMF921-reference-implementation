@@ -23,7 +23,7 @@ ex:R1R2_Intent_Compliant
    imo:intentHandler ex:IMF_Resource ;
    icm:reportsAbout ex:R1_Intent_Slice_Core ; 
    icm:reportTimestamp [ t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime ] ;
-   icm:handlingState icm:StateDegraded ;
+   icm:handlingState icm:StateCompliant ;
    icm:updateState icm:StateNoUpdate ;
    icm:reportNumber 2 ;
    cem:layer "'resource'" ;
