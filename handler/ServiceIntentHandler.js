@@ -12,13 +12,9 @@ const uuid = require('uuid');
 const fs = require('fs');
 const async = require('async');
 const $rdf = require('rdflib')
-
 const notificationUtils = require('../utils/notificationUtils');
-
-
 const {TError, TErrorEnum, sendError} = require('../utils/errorUtils');
 const handlerUtils = require('../utils/handlerUtils');
-
 const Intent = require('../controllers/Intent');
 
 // Initialize parameters to be processed in service intent, the values 
@@ -36,14 +32,11 @@ var serviceIntentParams = {
   "reportInterval": 1
 };
 
-var intentStateMap = new Map();
-var intentReportTimerMap = new Map();
-
 // This function is called from the SI once the intent has been stored in MongoDB
 //it will send a service order to SO over TMF641,
 //extract the expression from the request body, parse the expresion into
 //triples and then store these triples in the graphdb.
-//It then reads a hardcode intent report and send this back to the listeners 
+//It then reads a hardcoded intent report and send this back to the listeners 
 //using the SI HUB
 exports.processIntent = function(req) {
 
@@ -52,14 +45,12 @@ exports.processIntent = function(req) {
   extractParamsFromIntent(expression, 'text/turtle');
   console.log("Received Intent Params = " + JSON.stringify(serviceIntentParams));
 
-  intentStateMap.set(req.body.id, 'degraded');
-
   //From expression extract triples and load the intent in GraphDB 
   handlerUtils.extractTriplesandKG(expression, `insert`, 'text/turtle');
 
-  sendCreateServiceOrder();
-
   createIntentReport(req);
+
+  sendCreateServiceOrder();
 
 };
 
@@ -96,60 +87,17 @@ function sendCreateServiceOrder() {
   });
 }
 
+
 function createIntentReport(req) {
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-/// Fernando
-///////////////////////////////////////////////////////////
-//we return the following reports
-/*
-// 1. Intent Accepted
+  // 1. Intent Accepted
+  filename = 'S1R1_Intent_Accepted.ttl'
+  handlerUtils.sendIntentReport('S1R1_Intent_Accepted', filename, req);
+  console.log('log: S1 Report Accepted sent');
 
-filename = 'S1R1_Intent_Accepted.ttl'
-handlerUtils.sendIntentReport('S1R1_Intent_Accepted',filename,req);
-console.log('log: S1 Report Accepted sent');
-
-//we return the following reports
-// 2. Intent Degraded
-
-filename = 'S1R2_Intent_Degraded.ttl'
-handlerUtils.sendIntentReport('S1R2_Intent_Degraded',filename,req);
-console.log('log: S1 Report Degraded sent');
-*/
-
-  //check type of intent...just search for B1, S1, R1&slice or R1&private
-  const expression = handlerUtils.getExpression(req);
-  var filename = handlerUtils.intentReportFileName(expression);
-  var intentId = req.body.id;
-  //now we need to send the IntentReport
-  //1. read report - async
-  fs.readFile('./ontologies/' + filename, 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-      return;
-    }
-
-    if (serviceIntentParams.reportInterval != null) {
-      var timerId = setTimeout(function sendReport() {
-        console.log("reportingInterval expired for service intent, sending the report now");
-        timerId = setTimeout(sendReport, serviceIntentParams.reportInterval * 1000);
-        intentReportTimerMap.set(intentId, timerId);
-
-      }, serviceIntentParams.reportInterval * 1000);
-      
-      intentReportTimerMap.set(intentId, timerId);
-
-      //   console.log(data);
-      //2. insert report in grapbdb
-      handlerUtils.extractTriplesandKG(data, `insert`, 'text/turtle');
-  
-      //3. insert report into mongodb and send notification
-      handlerUtils.insertIntentReport(data, req);
-      //4. create event
-      //  inside the previous step as async
-    }
-
-  });
+  // 2. Intent Degraded
+  filename = 'S1R2_Intent_Degraded.ttl'
+  handlerUtils.sendIntentReport('S1R2_Intent_Degraded', filename, req);
+  console.log('log: S1 Report Degraded sent');
 }
 
 function extractParamsFromIntent(expression, type) {
@@ -250,19 +198,8 @@ function extractParamsFromIntent(expression, type) {
 //it deletes the service order in SO over TMF641,
 //reads the intent expression from mongo, parses the expression into
 //triples and then deletes these triples from the graphdb.
-exports.deleteIntent = function (query, resourceType) {
+exports.deleteIntent = function(query, resourceType) {
   const soUtils = require('../utils/soUtils');
-
-  // stop sending intent reports
-  if ((intentStateMap.has(query.id)) && (intentReportTimerMap.has(query.id))) {
-    clearTimeout(intentReportTimerMap.get(query.id));
-    intentStateMap.delete(query.id);
-    intentReportTimerMap.delete(query.id);
-
-  } else {
-    console.error('ERROR: intent ' + query.id + ' is not known to the SIH');
-    return;
-  }
 
   fs.readFile('./serviceorders/service_order_connectivity_ptp_DELETE.json', 'utf8', (err, deleteOrder) => {
     if (err) {
@@ -288,7 +225,7 @@ exports.deleteIntent = function (query, resourceType) {
 // This function is called from the SI once the intentReport has been deleted from MOngo
 //it reads the intentReport expression from mongo, parse the expresion into
 //triples and then deletes these triples from the graphdb.
-exports.deleteIntentReports = function (id, resourceType) {
+exports.deleteIntentReports = function(id, resourceType) {
 
   console.log('intentid: ' + id)
   console.log('resourceType: ' + resourceType)
