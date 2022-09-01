@@ -132,7 +132,7 @@ ex:R1E3_reporting
 ex:R1P7_reporting
   a icm:Parameter ;
   icm:subjectContainer icm:NewEventTypes ;
-  intersectWith [ rdf:li icm:ReportingIntervalExpired ;
+  icm:intersectWith [ rdf:li icm:ReportingIntervalExpired ;
                   rdf:li icm:IntentRejected ;
                   rdf:li icm:StateComplies ;
                   rdf:li icm:StateDegrades ;

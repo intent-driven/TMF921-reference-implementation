@@ -21,7 +21,7 @@ ex:R1R4_Intent_Compliant
    rdfs:comment "'Intent report'" ;
    imo:intentOwner ex:IMF_Service ;
    imo:intentHandler ex:IMF_Resource ;
-   icm:reportsAbout ex:R1_Intent_Slice_Core ; 
+   icm:reportsAbout ex:R1_Intent_Slice_Core_Patch ; 
    icm:reportTimestamp [ t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime ] ;
    icm:handlingState icm:StateCompliant ;
    icm:updateState icm:StateNoUpdate ;
@@ -44,7 +44,7 @@ ex:R1R4ER1_delivery
      a icm:ExpectationReport ;
         icm:reportsAbout ex:R1E1_delivery ;
         icm:targetReport ex:R1R4T1_CoreSlice;
-  icm:compliant [ a icm:ConditionReport ,
+  icm:compliant [ a icm:ConditionReport ;
                   icm:reportsAbout ex:R1P1_delivery_type ;
 			 	  icm:deliveryDescription cat:CoreSlice ; 
                   icm:deliveryType ex:ServiceType_CoreSlice ; 

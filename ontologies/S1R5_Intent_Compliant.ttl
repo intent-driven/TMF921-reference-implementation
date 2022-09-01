@@ -21,7 +21,7 @@
 # 
 ex:S1R5_Intent_Compliant
   a icm:IntentReport ;
-  rdfs:comment "Intent Report after acting the intent" ;
+  rdfs:comment "'Intent Report after acting the intent'" ;
   imo:intentOwner ex:IMF_Business ;
   imo:intentHander ex:IMF_Service ;
   icm:reportsAbout ex:S1_Intent_ConnectivityService ;
