@@ -19,36 +19,36 @@
 # This intent report is sent on acceptance of the service intnet to the intnet 
 # manager on business level
 # 
-ex:S1R4_Intent_Issue
+ex:S1R5_Intent_Compliant
   a icm:IntentReport ;
-  rdfs:comment "Intent Report after accting the intent" ;
+  rdfs:comment "Intent Report after acting the intent" ;
   imo:intentOwner ex:IMF_Business ;
   imo:intentHander ex:IMF_Service ;
   icm:reportsAbout ex:S1_Intent_ConnectivityService ;
   # put in the live timestamp from the time the report is created:
   icm:generated [ t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime ] ;
-  icm:handlingState icm:StateDegraded ;
+  icm:handlingState icm:StateCompliant ;
   icm:updateState icm:StateNoUpdate ;
-  icm:reportNumber 4 ;
+  icm:reportNumber 5 ;
   cem:layer "'service'" ;
-  icm:hasExpectationReport ex:S1R4E1_delivery ,
-                           ex:S1R4E2_property ,
-                           ex:S1R4E3_reporting ;
+  icm:hasExpectationReport ex:S1R5E1_delivery ,
+                           ex:S1R5E2_property ,
+                           ex:S1R5E3_reporting ;
 .
 
 ##### Targets #################################################################
 # Service resource is selected 
-ex:S1R4T1_Service 
+ex:S1R5T1_Service 
   a icm:IndividualTarget ;
   rdfs:element ex:ConnectivityService001 ;
 .
 
 ##### Delivery Expectation Report #############################################
 #
-ex:S1R4E1_delivery
+ex:S1R5E1_delivery
   a icm:ExpectationReport ;
   icm:reportsAbout ex:S1E1_delivery ;
-  icm:target ex:S1R4T1_Service ;
+  icm:target ex:S1R5T1_Service ;
   icm:compliant [ a icm:ConditionReport ;
                   icm:reportsAbout ex:S1P1_delivery_type ;
 			 	  icm:deliveryDescription cat:Connectivity_Service ; 
@@ -69,10 +69,10 @@ ex:S1R4E1_delivery
 
 ##### Property Expectation Report ################################################
 #
-ex:S1R4E2_property
+ex:S1R5E2_property
   a icm:ExpectationReport ;
   icm:reportsAbout ex:S1E2_property ;
-  icm:target ex:S1R4T1_Service ;
+  icm:target ex:S1R5T1_Service ;
   icm:compliant [ a icm:ConditionReport ;
                  # Compliant, becasue the bandwidth is high enough
                  icm:reportsAbout ex:S1P3_bandwidth ;
@@ -82,9 +82,9 @@ ex:S1R4E2_property
 								                  icm:value 1.4 ;
 												  icm:unit80000 "'GBit/s'" ;
 												] ;
-                                 ];
+									];
 				 icm:reason icm:ReasonConditionTrue ;
-			   ] ,
+			    ] ,
 			   [ a icm:ConditionReport ;
 			     # Compliant, becasue the availability is high enough
                  icm:reportsAbout ex:S1P4_service_availability ;
@@ -93,7 +93,16 @@ ex:S1R4E2_property
   								                  # put in the value from the knowledge base
 								                  icm:value 0.9945 ;
 			                                    ] ;
-			                     ];
+									];
+                 icm:reason icm:ReasonConditionTrue ;
+			   ] ,
+			   [ a icm:ConditionReport ;
+			     # Compliant, becasue the service level propoerties of the target
+				 # includes the wanted premiumService attribute
+                 icm:reportsAbout ex:S1P5_service_level ;
+                 icm:observation [ a rdf:Container ;
+				                   rdfs:member cem:PremiumService ;
+				                 ] ;
 				 icm:reason icm:ReasonConditionTrue ;
 			   ] ,
 			   [ a icm:ConditionReport ;
@@ -102,29 +111,13 @@ ex:S1R4E2_property
 				 icm:observation [ a rdf:Container ;
 				                   rdfs:member "'locationA'" , "'locationB'", "'locationC'" ;
 				                 ] ;
-				 icm:reason icm:ReasonConditionTrue ;
-			   ] ;
-  icm:degraded [ a icm:ConditionReport ;
-			     # Degraded, becasue the service is now considered to be only 
-				 # a basic service due to the higher latency
-                 icm:reportsAbout ex:S1P5_service_level ;
-                 icm:observation [ a rdf:Container ;
-				                   rdfs:member cem:BasicService ;
-				                 ] ;
-				 icm:reason icm:ReasonConditionNotMet ;
+   				 icm:reason icm:ReasonConditionTrue ;
 			   ] ;
 .
 			   
 ##### Reporting Expectation Report ############################################
-# This report was sent, becasue the intent entered a degraded stste. 
-# note: the intent also got accepted, but the intent owner has not asked for
-# a report for the intent acceptance event. But as the intent handling starts 
-# in a degraded state, the owner gets the report from the degradation event. 
 #
-# The reporting expectation is compliant, becasue an report was actually sent
-# according to the reporting conditions. 
-#
-ex:S1R4E3_reporting
+ex:S1R5E3_reporting
   a icm:ExpectationReport ;
   icm:reportsAbout ex:S1E3_reporting ;
   icm:target ex:T2_S1_Reporting ;

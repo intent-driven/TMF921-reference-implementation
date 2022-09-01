@@ -80,7 +80,7 @@ ex:S1R1E1_delivery
 
 
 ##### Property Expectation Report ################################################
-# As there is no resource selected to report about, none of the conditions 
+# As there is no reasource selected to report about, none of the conditions 
 # could be evaluated. 
 #
 ex:S1R1E2_property
@@ -100,12 +100,12 @@ ex:S1R1E2_property
 .
             
 ##### Reporting Expectation Report ############################################
-# This report was sent, becasue the intent entered a degraded state. 
+# This report was sent, becasue the intent entered a degraded stste. 
 # note: the intent also got accepted, but the intent owner has not asked for
 # a report for the intent acceptance event. But as the intent handling starts 
 # in a degraded state, the owner gets the report from the degradation event. 
 #
-# The reporting expectation is compliant, becasue a report was actually sent
+# The reporting expectation is compliant, becasue an report was actually sent
 # according to the reporting conditions. 
 #
 ex:S1R1E3_reporting

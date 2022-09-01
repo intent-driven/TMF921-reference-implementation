@@ -16,7 +16,7 @@
 @prefix  inv: <http://www.operator.org/Inventory#> .
 
 # --- Intent ----------
-ex:R1R2_Intent_Compliant
+ex:R1R4_Intent_Compliant
  a icm:IntentReport ;
    rdfs:comment "'Intent report'" ;
    imo:intentOwner ex:IMF_Service ;
@@ -25,25 +25,25 @@ ex:R1R2_Intent_Compliant
    icm:reportTimestamp [ t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime ] ;
    icm:handlingState icm:StateCompliant ;
    icm:updateState icm:StateNoUpdate ;
-   icm:reportNumber 2 ;
+   icm:reportNumber 4 ;
    cem:layer "'resource'" ;
    icm:hasExpectationReport
-                         ex:R1R2ER1_delivery,
-                                   ex:R1R2ER2_property ,
-                                   ex:R1R2ER3_reporting ;  
+                         ex:R1R4ER1_delivery,
+                                   ex:R1R4ER2_property ,
+                                   ex:R1R4ER3_reporting ;  
 .
 
 ##### Targets #################################################################
-ex:R1R2T1_CoreSlice 
+ex:R1R4T1_CoreSlice 
   a icm:IndividualTarget ;
   rdfs:element ex:CoreSlice001 ;
 .
 
 ##Delivery Expectation
-ex:R1R2ER1_delivery
+ex:R1R4ER1_delivery
      a icm:ExpectationReport ;
         icm:reportsAbout ex:R1E1_delivery ;
-        icm:targetReport ex:R1R2T1_CoreSlice;
+        icm:targetReport ex:R1R4T1_CoreSlice;
   icm:compliant [ a icm:ConditionReport ,
                   icm:reportsAbout ex:R1P1_delivery_type ;
 			 	  icm:deliveryDescription cat:CoreSlice ; 
@@ -54,10 +54,10 @@ ex:R1R2ER1_delivery
 
 
 # --- Propoerty Expectation Report ----------
-ex:R1R2E2_property
+ex:R1R4E2_property
     a                   icm:ExpectationReport ;
     icm:reportsAbout    ex:R1E2_property ;
-    icm:target          ex:R1R2T1_Capability ;
+    icm:target          ex:R1R4T1_Capability ;
     icm:compliant [ a icm:ConditionReport ;
                  # Compliant, becasue the bandwidth is high enough
                  icm:reportsAbout ex:R1P5_bandwidth ;
@@ -106,12 +106,21 @@ ex:R1R2E2_property
                									] ;
 									];
                 icm:reason icm:ReasonConditionTrue ;
+			   ] ,
+               [ a icm:ConditionReport ;
+                 icm:reportsAbout ex:R1P7_users ;
+				 icm:observation [ a met:CoreConnectedUsers ;
+				                   icm:observed [ a icm:Quantity ;
+								                  icm:value 89 ;
+               									] ;
+									];
+                icm:reason icm:ReasonConditionTrue ;
 			   ] ;
 .
 
 
 ##Reporting Expectation
-ex:R1R2E3_reporting
+ex:R1R4E3_reporting
   a icm:ExpectationReport ;
   icm:reportsAbout ex:R1E3_reporting ;
   icm:target ex:T2_R1_Reporting ;

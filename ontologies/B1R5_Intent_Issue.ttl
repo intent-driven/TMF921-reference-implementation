@@ -1,0 +1,130 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix icm:  <http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#> .
+@prefix imo:  <http://tio.models.tmforum.org/tio/v1.0.0/IntentManagementOntology#> .
+@prefix pbi:  <http://tio.models.tmforum.org/tio/v1.0.0/ProposalBestIntent#> .
+@prefix cat:  <http://www.operator.com/Catalog#> .
+@prefix inv:  <http://www.operator.org/Inventory#> .
+@prefix spot: <http://www.sdo1.org/Models/DynamicpriceOntology#> .
+@prefix met:  <http://www.sdo2.org/TelecomMetrics/Version_1.0#> .
+@prefix t:    <http://www.w3.org/2006/time#> .
+@prefix ex:   <http://www.example.org/IntentNamespace#> .
+@prefix iv:   <https://tmforum.org/2021/07/intentValidity#> .
+@prefix itv:  <https://tmforum.org/2021/07/intentTemporalValidity#> .
+@prefix cem:  <http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+# --- Intent Report ----------
+##IntentReport
+ex:B1R5_Intent_Issue
+    a                              icm:IntentReport ;
+    rdfs:comment                   "'Intent report after acting the Intent'" ;
+    imo:intentOwner                ex:PSE_Customer ;
+    imo:intentHandler              ex:IMF_Business ;
+    icm:reportsAbout               ex:B1_PSE_Biz_Intent1 ;
+    icm:reportTimestamp            [ t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime ] ;
+    icm:handlingState icm:StateDegraded ;
+    icm:updateState   icm:StateNoUpdate ;
+    icm:reportNumber               5 ;
+    cem:layer "'business'" ;
+    icm:hasExpectationReport       ex:B1R5ER1_delivery,
+                                   ex:B1R5ER2_property ,
+                                   ex:B1R5ER3_reporting ;
+.
+##### Targets #################################################################
+# Business target not yet selected and therefore the target is 
+# and empty colelction 
+# Target for reporting is still the intent and therefore the same target from 
+# the intent is used
+ex:B1R5T1_Capability 
+  a icm:IndividualTarget ;
+  rdfs:element ex:Capability001 ;
+.
+
+# --- Delivery Expectation Report ----------
+ex:B1R5ER1_delivery
+    a                   icm:ExpectationReport ;
+    icm:reportsAbout    ex:B1E1_delivery ;
+    icm:targetReport    ex:B1R5T1_Capability ;
+    icm:compliant [ a icm:ConditionReport ;
+                 icm:reportsAbout ex:B1P1_delivery_type ;
+			 	  icm:deliveryDescription cat:Connectivity_DynamicPrice ; 
+                  icm:deliveryType ex:ConnectivityCapability_DynamicPrice ; 
+	  			  icm:reason icm:ReasonConditionTrue ;
+                ] ;				
+  icm:compliant [ a icm:ConditionReport ;
+                 icm:reportsAbout ex:B1P2_delivery_condition ; 
+				 icm:observation [ a spot:Price ;
+				                   icm:observed [ a icm:value ;
+								                  icm:value 9.67 ;
+								                  spot:unit spot:unitDollarHour ;
+												] ;
+								];
+				 icm:reason icm:ReasonConditionTrue ;
+			   ] ;
+.
+
+##### Property Expectation Report ################################################
+#
+ex:B1R5E2_property
+  a icm:ExpectationReport ;
+  icm:reportsAbout ex:B1E2_property ;
+  icm:target ex:B1R5T1_Capability ;
+  icm:compliant [ a icm:ConditionReport ;
+                 # Compliant, becasue the bandwidth is high enough
+                 icm:reportsAbout ex:B1P4_bandwidth ;
+				 icm:observation [ a met:ServiceBandwidth ;
+				                   icm:observed [ a icm:Quantity ;
+								                  # put in the value from the knowledge base
+								                  icm:value 1.4 ;
+												  icm:unit80000 "'GBit/s'" ;
+												] ;
+									];
+				 icm:reason icm:ReasonConditionTrue ;
+			   ] ,
+			   [ a icm:ConditionReport ;
+                 icm:reportsAbout ex:B1P3_price ;
+                 icm:observation [ a spot:Price ;
+				                   icm:observed [ a icm:value ;
+								                  icm:value 9.67 ;
+								                  spot:unit spot:unitDollarHour ;
+												] ;
+									];
+				 icm:reason icm:ReasonConditionTrue ;
+			   ] ,
+			   [ a icm:ConditionReport ;
+			     # Compliant, becasue the needed locations are in the list of all connected locations
+                 icm:reportsAbout ex:B1P5_location ;
+				 icm:observation [ a rdf:Container ;
+				                   rdfs:member "'locationA'" , "'locationB'", "'locationC'" ;
+				                 ] ;
+				 icm:reason icm:ReasonConditionTrue ;
+			   ] ;
+.
+			   
+##### Reporting Expectation Report ############################################
+# This report was sent, becasue the intent entered a degraded stste. 
+# note: the intent also got accepted, but the intent owner has not asked for
+# a report for the intent acceptance event. But as the intent handling starts 
+# in a degraded state, the owner gets the report from the degradation event. 
+#
+# The reporting expectation is compliant, becasue an report was actually sent
+# according to the reporting conditions. 
+#
+ex:B1R5E3_reporting
+  a icm:ExpectationReport ;
+  icm:reportsAbout ex:B1E3_reporting ;
+  icm:target ex:T2_B1_Reporting ;
+  icm:receiver ex:PSE_Customer ;
+  icm:compliant [ a icm:ConditionReport ;
+                  icm:reportsAbout ex:B1P6_reporting ;
+				  icm:observation [ a rdf:Container ;
+				                    rdfs:element icm:StateComplies ;
+				                  ] ;
+                ] ;
+  icm:reportingIntervalRemaining [ a t:Duration ;
+                                   t:numericDuration 5 ;
+                                   t:temporalUnit t:unitMinute ;
+    					         ] ;
+.
+

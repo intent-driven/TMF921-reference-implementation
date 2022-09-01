@@ -362,6 +362,15 @@ exports.patchIntent = function(req, res, next) {
 
                   sendDoc(res, 200, doc);
                   notificationUtils.publish(req,doc,old);
+
+                  var expression = handlerUtils.getExpression(req);
+                  /* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
+                  // calls the intent handler for the knowledge extraction and storage
+                              if ((expression.indexOf("R1")>0) || (expression.indexOf("R2")>0)){ // check whether it's a resource intent
+                                intentHandler.processIntent(req);
+                              }
+                  /* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/                
+
                 })
                 .catch((error) => {
                   console.log("patchIntent error=" + error);

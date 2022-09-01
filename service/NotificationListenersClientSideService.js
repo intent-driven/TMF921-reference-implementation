@@ -50,7 +50,13 @@ exports.listenToIntentChangeEvent = function(req, res, next) {
   const requestSchema = getPayloadSchema(req);
 
   swaggerUtils.getPayload(req)
-    .then(payload => validateRequest(req, 'listenToIntentChangeEvent', payload))
+    /* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
+    // check and send reports
+    .then(payload => {
+      handlerUtils.checkandSendReport(JSON.stringify(payload.event.incident),req);
+      validateRequest(req, 'listenToIntentChangeEvent', payload)
+     })
+    /* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/
     .then(payload => traverse(req, requestSchema, payload,[],getPayloadType(req)))
     .then(payload => processCommonAttributes(req, resourceType, payload))
     .then(payload => processAssignmentRules('listenToIntentChangeEvent', payload))
@@ -296,7 +302,7 @@ exports.listenToIntentReportCreateEvent = function(req, res, next) {
 
     /* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
     // check and send reports
-            handlerUtils.checkandSendReport(payload.event.intentReport.expression,req);
+            handlerUtils.checkandSendReport(payload.event.intentReport.expression.expressionValue,req);
 
           })
           .catch((error) => {

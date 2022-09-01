@@ -26,7 +26,7 @@ var swaggerDoc = null;
 const EXPRESSION = "expression";
 
 //Wait between reports, 10s
-const wait_number = 10000;
+const wait_number = 0;
 
 //////////////////////////////////////////////////////
 // Functions returns the expressionValue            //
@@ -346,7 +346,13 @@ function insertIntentReport(name,report,req) {
 ////////////////////////////////////////////////////////
 function createIntentReportMessage(name,data,req) {
   var intent_uuid = req.body.id;
-  var intent_href=req.body.href;
+  var intent_href 
+  
+  if (req.body.href!==undefined)
+     intent_href=req.body.href;
+  else 
+     intent_href='http://'+req.headers.host+'/tmf-api/intent/v4/intent/'+intent_uuid;
+  
     //expression
   var expression = {
     iri: "http://tio.models.tmforum.org/tio/v2.0.0/IntentCommonModel",
@@ -428,8 +434,118 @@ function sendIntentReport(name,filename,req) {
 
   wait(wait_number);
 });
-
 }
+
+////////////////////////////////////////////////////////
+// Function used to send intent reports               //
+////////////////////////////////////////////////////////
+function sendIntentReportandFindID(name,filename,req) {
+  fs.readFile('./ontologies/'+filename, 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+ //   console.log(data);
+  //2. insert report in grapbdb
+  extractTriplesandKG(data,`insert`,'text/turtle');
+
+ //3. find parentid
+  var id = req.body.event.intentReport.intent.id
+  var parentId;
+
+ var query = mongoUtils.getMongoQuery(req);
+ query.criteria.id = id
+
+ query = swaggerUtils.updateQueryServiceType(query, req,'id');
+
+ var resourceType = 'Intent'; 
+ const internalError =  new TError(TErrorEnum.INTERNAL_SERVER_ERROR, "Internal database error");
+
+ mongoUtils.connect().then(db => {
+   db.collection(resourceType)
+     .findOne(query.criteria, query.options)
+     .then(doc => {
+       if(doc) {
+         parentId = doc.version;
+         console.log('ID: '+id+ ' parentId: '+parentId);
+         req.body.id = parentId;
+//3. insert report into mongodb and send notification
+         insertIntentReport(name,data,req);
+       } else {
+         sendError(res, new TError(TErrorEnum.RESOURCE_NOT_FOUND,"No resource with given id found"));
+       }
+     })
+     .catch(error => {
+       console.log("retrieveIntent: error=" + error);
+       sendError(res, internalError);
+     });
+ })
+ .catch(error => {
+   console.log("retrieveIntent: error=" + error);
+   sendError(res, internalError);
+ });
+
+ //4. create event
+//  inside the previous step as async
+
+  wait(wait_number);
+});
+}
+
+////////////////////////////////////////////////////////
+// Function used to send intent reports               //
+////////////////////////////////////////////////////////
+function sendIntentReportandFindR1(name,filename,req) {
+  fs.readFile('./ontologies/'+filename, 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+ //   console.log(data);
+  //2. insert report in grapbdb
+  extractTriplesandKG(data,`insert`,'text/turtle');
+
+ //3. find parentid
+  var parentId;
+
+ var query = mongoUtils.getMongoQuery(req);
+ query.criteria.name = 'R1_catalyst_resource_intent_slice'
+
+ query = swaggerUtils.updateQueryServiceType(query, req,'name');
+
+ var resourceType = 'Intent'; 
+ const internalError =  new TError(TErrorEnum.INTERNAL_SERVER_ERROR, "Internal database error");
+
+ mongoUtils.connect().then(db => {
+   db.collection(resourceType)
+   .find(query.criteria, query.options).toArray()
+   .then(doc => {
+
+     doc.forEach(x => {
+       req.body.id = x.id;
+//3. insert report into mongodb and send notification
+         insertIntentReport(name,data,req);
+         return
+     })
+
+     })
+     .catch(error => {
+       console.log("retrieveIntent: error=" + error);
+       sendError(res, internalError);
+     });
+ })
+ .catch(error => {
+   console.log("retrieveIntent: error=" + error);
+   sendError(res, internalError);
+ });
+
+ //4. create event
+//  inside the previous step as async
+
+  wait(wait_number);
+});
+}
+
 function wait(ms){
   var start = new Date().getTime();
   var end = start;
@@ -501,7 +617,9 @@ function postIntent(name,filename,req) {
     xhttp.setRequestHeader("Content-Type", "application/json");
     xhttp.setRequestHeader("accept", "application/json");
     
-    var payload = JSON.stringify(createIntentMessage(name,data));
+    var payload = createIntentMessage(name,data);
+    payload.version=req.body.id;
+    payload = JSON.stringify(payload);
     
     xhttp.send(payload);
 
@@ -510,31 +628,59 @@ function postIntent(name,filename,req) {
 
 function checkandSendReport(payload,req) {
   var filename;
+ //Provisioning flow
   //S1R1 -> B1R2
-  if (payload.expressionValue.indexOf("S1R1")>0){ // check whether it's a resource intent
+  if (payload.indexOf("S1R1")>0){ // check whether it's a resource intent
      filename = 'B1R2_Intent_Degraded.ttl'
-     sendIntentReport('B1R2_Intent_Degraded',filename,req);;
+     sendIntentReportandFindID('B1R2_Intent_Degraded',filename,req);;
      console.log('log: B1 Report Degraded 1 sent');
   }
   //S1R2 -> B1R3
-  else if (payload.expressionValue.indexOf("S1R2")>0){ // check whether it's a resource intent
+  else if (payload.indexOf("S1R2")>0){ // check whether it's a resource intent
     filename = 'B1R3_Intent_Degraded.ttl'
-    sendIntentReport('B1R3_Intent_Degraded',filename,req);
+    sendIntentReportandFindID('B1R3_Intent_Degraded',filename,req);
     console.log('log: B1 Report Degraded 2 sent');
   }
      
-  //R1R2 -> S1R3 -> B1R4
-  else if (payload.expressionValue.indexOf("R1R2")>0){ // check whether it's a resource intent
+  //R1R2 -> S1R3 
+  else if (payload.indexOf("R1R2")>0){ // check whether it's a resource intent
     filename = 'S1R3_Intent_Compliant.ttl'
-    sendIntentReport('S1R3_Intent_Compliant',filename,req);
+    sendIntentReportandFindID('S1R3_Intent_Compliant',filename,req);
     console.log('log: S1 Report Compliant sent');
+  }
 
-    filename = 'B1R4_Intent_Compliant.ttl'
-    sendIntentReport('B1R4_Intent_Compliant',filename,req);
-    console.log('log: B1 Report Compliant sent');
+    //S1R3 -> B1R4
+  else if (payload.indexOf("S1R3")>0){ // check whether it's a resource intent
+      filename = 'B1R4_Intent_Compliant.ttl'
+      sendIntentReportandFindID('B1R4_Intent_Compliant',filename,req);
+      console.log('log: B1 Report Compliant sent');
+  }
+
+//Degradation floww
+ 
+  //incident -> R1R3
+  else if (payload.indexOf("incident")>0){ // check whether it's a resource intent
+    filename = 'R1R3_Intent_Issue.ttl'
+    sendIntentReportandFindR1('R1R3_Intent_Issue',filename,req);
+    console.log('log: R1 Report Issue sent');
+  }
+  
+  //R1R3 -> S1R4
+  else if (payload.indexOf("R1R3")>0){ // check whether it's a resource intent
+      filename = 'S1R4_Intent_Issue.ttl'
+      sendIntentReportandFindID('S1R4_Intent_Issue',filename,req);
+      console.log('log: S1 Report Issue sent');
+  }
+
+  //S1R4 -> B1R5
+  else if (payload.indexOf("S1R4")>0){ // check whether it's a resource intent
+    filename = 'B1R5_Intent_Issue.ttl'
+    sendIntentReportandFindID('B1R5_Intent_Issue',filename,req);
+    console.log('log: B1 Report Issue sent');
   }
 
 
+ 
 }
 
 module.exports = { 

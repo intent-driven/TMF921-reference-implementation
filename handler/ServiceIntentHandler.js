@@ -49,12 +49,13 @@ exports.processIntent = function(req) {
   handlerUtils.extractTriplesandKG(expression, `insert`, 'text/turtle');
 
   createIntentReport(req);
+  var id = req.body.id;
 
-  sendCreateServiceOrder();
+  sendCreateServiceOrder(id);
 
 };
 
-function sendCreateServiceOrder() {
+function sendCreateServiceOrder(id) {
   const soUtils = require('../utils/soUtils');
   fs.readFile('./serviceorders/service_order_connectivity_ptp_CREATE.json', 'utf8', (err, createOrder) => {
 
@@ -64,6 +65,8 @@ function sendCreateServiceOrder() {
     }
 
     var createOrderJson = JSON.parse(createOrder);
+    //add the service intent id
+    createOrderJson.orderItems[0].service.publicIdentifier = id;
 
     if ((serviceIntentParams.quality == 'Premium') && (serviceIntentParams.availability >= 0.99)) {
       createOrderJson.orderItems[0].service.characteristics[0].value = "Silver";
@@ -89,6 +92,7 @@ function sendCreateServiceOrder() {
 
 
 function createIntentReport(req) {
+  var filename;
   // 1. Intent Accepted
   filename = 'S1R1_Intent_Accepted.ttl'
   handlerUtils.sendIntentReport('S1R1_Intent_Accepted', filename, req);

@@ -16,35 +16,35 @@
 @prefix  inv: <http://www.operator.org/Inventory#> .
 
 # --- Intent ----------
-ex:R1R2_Intent_Compliant
+ex:R1R3_Intent_Issue
  a icm:IntentReport ;
    rdfs:comment "'Intent report'" ;
    imo:intentOwner ex:IMF_Service ;
    imo:intentHandler ex:IMF_Resource ;
    icm:reportsAbout ex:R1_Intent_Slice_Core ; 
    icm:reportTimestamp [ t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime ] ;
-   icm:handlingState icm:StateCompliant ;
+   icm:handlingState icm:StateDegraded ;
    icm:updateState icm:StateNoUpdate ;
-   icm:reportNumber 2 ;
+   icm:reportNumber 3 ;
    cem:layer "'resource'" ;
    icm:hasExpectationReport
-                         ex:R1R2ER1_delivery,
-                                   ex:R1R2ER2_property ,
-                                   ex:R1R2ER3_reporting ;  
+                         ex:R1R3ER1_delivery,
+                                   ex:R1R3ER2_property ,
+                                   ex:R1R3ER3_reporting ;  
 .
 
 ##### Targets #################################################################
-ex:R1R2T1_CoreSlice 
+ex:R1R3T1_CoreSlice 
   a icm:IndividualTarget ;
   rdfs:element ex:CoreSlice001 ;
 .
 
 ##Delivery Expectation
-ex:R1R2ER1_delivery
+ex:R1R3ER1_delivery
      a icm:ExpectationReport ;
         icm:reportsAbout ex:R1E1_delivery ;
-        icm:targetReport ex:R1R2T1_CoreSlice;
-  icm:compliant [ a icm:ConditionReport ,
+        icm:targetReport ex:R1R3T1_CoreSlice;
+  icm:compliant [ a icm:ConditionReport ;
                   icm:reportsAbout ex:R1P1_delivery_type ;
 			 	  icm:deliveryDescription cat:CoreSlice ; 
                   icm:deliveryType ex:ServiceType_CoreSlice ; 
@@ -54,10 +54,10 @@ ex:R1R2ER1_delivery
 
 
 # --- Propoerty Expectation Report ----------
-ex:R1R2E2_property
+ex:R1R3E2_property
     a                   icm:ExpectationReport ;
     icm:reportsAbout    ex:R1E2_property ;
-    icm:target          ex:R1R2T1_Capability ;
+    icm:target          ex:R1R3T1_Capability ;
     icm:compliant [ a icm:ConditionReport ;
                  # Compliant, becasue the bandwidth is high enough
                  icm:reportsAbout ex:R1P5_bandwidth ;
@@ -96,22 +96,22 @@ ex:R1R2E2_property
 												] ;
 									];
                	 icm:reason icm:ReasonConditionTrue ;
-			   ] ,
-               [ a icm:ConditionReport ;
+			   ] ;
+  icm:degraded[ a icm:ConditionReport ;
                  icm:reportsAbout ex:R1P6_latency ;
 				 icm:observation [ a met:CoreSliceLatency ;
 				                   icm:observed [ a icm:Quantity ;
-								                  icm:value 1.3 ;
+								                  icm:value 4.3 ;
                                                   icm:unit80000 "ms" ;
                									] ;
 									];
-                icm:reason icm:ReasonConditionTrue ;
+                icm:reason icm:ReasonConditionNotMet ;
 			   ] ;
 .
 
 
 ##Reporting Expectation
-ex:R1R2E3_reporting
+ex:R1R3E3_reporting
   a icm:ExpectationReport ;
   icm:reportsAbout ex:R1E3_reporting ;
   icm:target ex:T2_R1_Reporting ;
