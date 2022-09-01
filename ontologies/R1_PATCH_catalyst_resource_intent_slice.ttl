@@ -105,7 +105,7 @@ ex:R1P5_bandwidth
   a icm:Parameter ;  
   icm:observation [ icm:latestValueOf met:CoreSliceBandwidth ] ;
   icm:smaller [ icm:value 1 ;
-                icm:unit80000 "GBit/s" ;
+                icm:unit80000 "'GBit/s'" ;
 			  ] ;
 .
 # Latency on the slice in the core network shall not exceed 2ms
@@ -113,7 +113,7 @@ ex:R1P6_latency
   a icm:Parameter ;  
   icm:observation [ icm:latestValueOf met:CoreSliceLatency ] ;
   icm:atMost [ icm:value 2 ;
-               icm:unit80000 "ms" ;
+               icm:unit80000 "'ms'" ;
 			 ] ;
 .
 # Max number of users

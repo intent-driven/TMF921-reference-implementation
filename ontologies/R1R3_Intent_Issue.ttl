@@ -102,7 +102,7 @@ ex:R1R3E2_property
 				 icm:observation [ a met:CoreSliceLatency ;
 				                   icm:observed [ a icm:Quantity ;
 								                  icm:value 4.3 ;
-                                                  icm:unit80000 "ms" ;
+                                                  icm:unit80000 "'ms'" ;
                									] ;
 									];
                 icm:reason icm:ReasonConditionNotMet ;
