@@ -85,7 +85,7 @@ async function sendServiceOrder(order) {
     method: 'POST',
     headers: {
       'Accept': '*/*',
-      'X-Organization-Code': 'IDAN',
+      'X-Organization-Code': 'IDANCATALYST',
       'X-Authorization': token,
       'Content-Type': 'application/iway-service-order-post-v1-hal+json'
     },
