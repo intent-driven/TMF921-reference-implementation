@@ -18,6 +18,7 @@ const intentService = require('../service/IntentService');
 const $rdf = require('rdflib');
 const uuid = require('uuid');
 const notificationUtils = require('./notificationUtils');
+const handlerUtils = require('./handlerUtils');
 
 var spec = null;
 var swaggerDoc = null;
@@ -155,6 +156,12 @@ async function monitorIssuesGraphDb() {
 }
 
 function resolveIssue(issueId, graphDBEndpoint, graphDBContext) {
+  // 2. The send the S1 intent
+  //just needed to test without symphonica
+//  var filename = 'R1_PATCH_catalyst_resource_intent_slice.ttl'
+//  handlerUtils.patchIntent('R1_PATCH_catalyst_resource_intent_slice',filename);
+//  console.log('log: R1 Patch Intent POSTed');
+  
   return new Promise(function (resolve, reject) {
     const serviceIdIri = "http://www.example.org/IntentNamespace#";
 

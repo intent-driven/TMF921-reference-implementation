@@ -48,6 +48,26 @@ handlerUtils.sendIntentReport('R1R2_Intent_Compliant',filename,req);
 console.log('log: B1 Report Accepted sent');
 };
 
+exports.patchIntent = function(req) {
+
+  //extract expression
+  const expression = handlerUtils.getExpression(req);
+
+  //From expression extract triples and load the data in GraphDB 
+  handlerUtils.extractTriplesandKG(expression,`insert`,'text/turtle');
+  
+  var filename;
+//we return the following reports
+// 1. Intent Accepted
+  var id = req.url.substring(26);
+  req.body.id = id;
+
+  filename = 'R1R4_Intent_Compliant.ttl'
+  handlerUtils.sendIntentReport('R1R4_Intent_Compliant',filename,req);
+  console.log('log: R1 patch Report Accepted sent');
+
+};
+
 
 // This function is called from the RI once the intent as been deleted from MOngo
 //it reads the intent expression from mongo, parse the expresion into

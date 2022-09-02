@@ -21,7 +21,7 @@
 # Adding a new Expectation to patch the intent
 # Add MaxNumberof Users < 100
 #
-ex:R1_Intent_Slice_Core_Patch
+ex:R1_Intent_Slice_Core
   a icm:Intent ;
   rdfs:comment "'Intent for ordering connectivity via slice'" ;
   imo:intentOwner ex:IMF_Service ;

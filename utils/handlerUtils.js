@@ -26,7 +26,7 @@ var swaggerDoc = null;
 const EXPRESSION = "expression";
 
 //Wait between reports, 10s
-const wait_number = 0;
+const wait_number = 10000;
 
 //////////////////////////////////////////////////////
 // Functions returns the expressionValue            //
@@ -557,12 +557,12 @@ function wait(ms){
 ////////////////////////////////////////////////////////
 // Generates intent report message                    //
 ////////////////////////////////////////////////////////
-function createIntentMessage(name,data) {
+function createIntentMessage(name,data,version) {
   
   var date = new Date();
   var date_start = date.toISOString();
   var date_end = (new Date(date.getFullYear()+1, date.getMonth(), date.getDate())).toISOString();
-
+  if (version==undefined) version = "1"
   //expression
   var expression = {
     iri: "http://tio.models.tmforum.org/tio/v2.0.0/IntentCommonModel",
@@ -586,7 +586,7 @@ function createIntentMessage(name,data) {
       endDateTime: date_end
     },
     '@type': "Intent",
-    'version': "1"
+    'version': version
     };  
 
   return message;
@@ -622,6 +622,71 @@ function postIntent(name,filename,req) {
     payload = JSON.stringify(payload);
     
     xhttp.send(payload);
+
+  });
+};
+
+////////////////////////////////////////////////////////
+// POST a new Intent to the next layer               //
+////////////////////////////////////////////////////////
+function patchIntent(name,filename) {
+  fs.readFile('./ontologies/'+filename, 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+//3. find parentid
+var id;
+var query = {
+  name: 'R1_catalyst_resource_intent_slice'
+};
+
+
+
+var resourceType = 'Intent'; 
+const internalError =  new TError(TErrorEnum.INTERNAL_SERVER_ERROR, "Internal database error");
+
+mongoUtils.connect().then(db => {
+  db.collection(resourceType)
+  .find(query).toArray()
+  .then(doc => {
+
+    doc.forEach(x => {
+      id = x.id;
+      //3. insert report into mongodb and send notification
+      var xhttp = new XMLHttpRequest();
+      xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+            //do nothing for now
+            null;
+           //alert(this.responseText);
+        }
+      };
+    var url = 'http://localhost:8080/tmf-api/intent/v4/intent/'+id;
+    console.log('URL: '+url);
+    xhttp.open("PATCH", url, true);
+    xhttp.setRequestHeader("Content-Type", "application/json");
+    xhttp.setRequestHeader("accept", "application/json");
+
+    var payload = createIntentMessage(name,data,x.version);
+    payload = JSON.stringify(payload);
+
+    xhttp.send(payload);
+    
+    return
+    })
+
+    })
+    .catch(error => {
+      console.log("retrieveIntent: error=" + error);
+      sendError(res, internalError);
+    });
+})
+.catch(error => {
+  console.log("retrieveIntent: error=" + error);
+  sendError(res, internalError);
+});
+
 
   });
 };
@@ -679,6 +744,21 @@ function checkandSendReport(payload,req) {
     console.log('log: B1 Report Issue sent');
   }
 
+  //R1R4 -> S1R5
+  else if (payload.indexOf("R1R4")>0){ // check whether it's a resource intent
+    filename = 'S1R5_Intent_Compliant.ttl'
+    sendIntentReportandFindID('S1R5_Intent_Compliant',filename,req);
+    console.log('log: S1 Report Patch sent');
+  }
+  
+  //S1R5 -> B1R6
+  else if (payload.indexOf("S1R5")>0){ // check whether it's a resource intent
+      filename = 'B1R6_Intent_Compliant.ttl'
+      sendIntentReportandFindID('B1R6_Intent_Compliant',filename,req);
+      console.log('log: B1 Report patch sent');
+  }
+
+
 
  
 }
@@ -694,7 +774,8 @@ module.exports = {
   createIntentReportReq,
   intentReportFileName,
   sendIntentReport,
-  postIntent,
+  postIntent, 
+  patchIntent,
   createIntentMessage,
   checkandSendReport
 				   			 };

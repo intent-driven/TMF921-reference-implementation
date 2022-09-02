@@ -21,7 +21,7 @@ ex:R1R4_Intent_Compliant
    rdfs:comment "'Intent report'" ;
    imo:intentOwner ex:IMF_Service ;
    imo:intentHandler ex:IMF_Resource ;
-   icm:reportsAbout ex:R1_Intent_Slice_Core_Patch ; 
+   icm:reportsAbout ex:R1_Intent_Slice_Core ; 
    icm:reportTimestamp [ t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime ] ;
    icm:handlingState icm:StateCompliant ;
    icm:updateState icm:StateNoUpdate ;

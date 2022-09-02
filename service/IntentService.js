@@ -367,7 +367,7 @@ exports.patchIntent = function(req, res, next) {
                   /* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
                   // calls the intent handler for the knowledge extraction and storage
                               if ((expression.indexOf("R1")>0) || (expression.indexOf("R2")>0)){ // check whether it's a resource intent
-                                intentHandler.processIntent(req);
+                                intentHandler.patchIntent(req);
                               }
                   /* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/                
 

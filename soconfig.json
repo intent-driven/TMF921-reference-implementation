@@ -1,5 +1,5 @@
 {
- "SO_BASE_URL": "https://localhost:8000",
- "SO_USERNAME": "Test",
- "SO_PASSWORD": "Test"
+ "SO_BASE_URL": "https://idancatalyst.qa.cloud.intraway.com",
+ "SO_USERNAME": "idan.catalyst@intraway.com",
+ "SO_PASSWORD": "ENICUThaRIat"
 }

@@ -102,6 +102,12 @@ function createIntentReport(req) {
   filename = 'S1R2_Intent_Degraded.ttl'
   handlerUtils.sendIntentReport('S1R2_Intent_Degraded', filename, req);
   console.log('log: S1 Report Degraded sent');
+
+  // 3. The send the S1 intent
+  //just needed to test without symphonica
+  //filename = 'R1_catalyst_resource_intent_slice.ttl'
+  //handlerUtils.postIntent('R1_catalyst_resource_intent_slice',filename,req);
+  //console.log('log: S1 Intent POSTed');
 }
 
 function extractParamsFromIntent(expression, type) {
