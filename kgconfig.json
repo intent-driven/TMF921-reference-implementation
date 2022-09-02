@@ -1,5 +1,5 @@
 {
- "GRAPHDB_BASE_URL": "http://10.220.239.92:7200",
+ "GRAPHDB_BASE_URL": "http://graphdb:7200",
  "GRAPHDB_REPOSITORY": "intent",
  "GRAPHDB_ISSUE_REPOSITORY": "issue",
  "GRAPHDB_USERNAME": "Test",
