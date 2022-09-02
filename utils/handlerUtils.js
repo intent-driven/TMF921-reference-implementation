@@ -509,7 +509,7 @@ function sendIntentReportandFindR1(name,filename,req) {
   var parentId;
 
  var query = mongoUtils.getMongoQuery(req);
- query.criteria.name = 'R1_catalyst_resource_intent_slice'
+ query.criteria.name = 'R1_Intent_Slice_Core'
 
  query = swaggerUtils.updateQueryServiceType(query, req,'name');
 
@@ -627,7 +627,7 @@ function postIntent(name,filename,req) {
 };
 
 ////////////////////////////////////////////////////////
-// POST a new Intent to the next layer               //
+// PATCH intent               //
 ////////////////////////////////////////////////////////
 function patchIntent(name,filename) {
   fs.readFile('./ontologies/'+filename, 'utf8', (err, data) => {
@@ -638,7 +638,7 @@ function patchIntent(name,filename) {
 //3. find parentid
 var id;
 var query = {
-  name: 'R1_catalyst_resource_intent_slice'
+  name: 'R1_Intent_Slice_Core'
 };
 
 
