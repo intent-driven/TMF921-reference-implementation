@@ -26,7 +26,7 @@ var swaggerDoc = null;
 const EXPRESSION = "expression";
 
 //Wait between reports, 10s
-const wait_number = 10000;
+const wait_number = 0;
 
 //////////////////////////////////////////////////////
 // Functions returns the expressionValue            //
@@ -791,6 +791,7 @@ module.exports = {
   sendIntentReport,
   postIntent, 
   patchIntent,
+  wait,
   createIntentMessage,
   checkandSendReport
 				   			 };
