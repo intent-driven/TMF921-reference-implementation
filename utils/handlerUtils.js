@@ -449,7 +449,7 @@ function sendIntentReportandFindID(name,filename,req) {
       return;
     }
 
-  addTimestamp(data);
+    data = addTimestamp(data);
 
  //   console.log(data);
   //2. insert report in grapbdb
@@ -508,7 +508,7 @@ function sendIntentReportandFindR1(name,filename,req) {
       return;
     }
  //   console.log(data);
- addTimestamp(data);
+ data = addTimestamp(data);
 
   //2. insert report in grapbdb
   extractTriplesandKG(data,`insert`,'text/turtle');
