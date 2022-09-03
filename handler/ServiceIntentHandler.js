@@ -98,11 +98,14 @@ function createIntentReport(req) {
   handlerUtils.sendIntentReport('S1R1_Intent_Accepted', filename, req);
   console.log('log: S1 Report Accepted sent');
 
+  handlerUtils.wait(15000);
+  
   // 2. Intent Degraded
   filename = 'S1R2_Intent_Degraded.ttl'
   handlerUtils.sendIntentReport('S1R2_Intent_Degraded', filename, req);
   console.log('log: S1 Report Degraded sent');
 
+  handlerUtils.wait(15000);
   // 3. The send the S1 intent
   //just needed to test without symphonica
   //filename = 'R1_catalyst_resource_intent_slice.ttl'
