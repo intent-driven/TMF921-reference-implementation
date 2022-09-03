@@ -22,7 +22,7 @@ ex:B1R4_Intent_Compliant
     imo:intentOwner                ex:PSE_Customer ;
     imo:intentHandler              ex:IMF_Business ;
     icm:reportsAbout               ex:B1_PSE_Biz_Intent1 ;
-    icm:reportTimestamp            [ t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime ] ;
+    icm:reportTimestamp            [ t:inXSDDateTimeStamp date_to_be_generated^^xsd:dateTime ] ;
     icm:handlingState icm:StateCompliant ;
     icm:updateState   icm:StateNoUpdate ;
     icm:reportNumber               4 ;

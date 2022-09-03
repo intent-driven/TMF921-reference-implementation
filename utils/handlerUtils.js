@@ -423,6 +423,9 @@ function sendIntentReport(name,filename,req) {
       console.error(err);
       return;
     }
+
+    data = addTimestamp(data);
+
  //   console.log(data);
   //2. insert report in grapbdb
   extractTriplesandKG(data,`insert`,'text/turtle');
@@ -445,6 +448,9 @@ function sendIntentReportandFindID(name,filename,req) {
       console.error(err);
       return;
     }
+
+  addTimestamp(data);
+
  //   console.log(data);
   //2. insert report in grapbdb
   extractTriplesandKG(data,`insert`,'text/turtle');
@@ -502,6 +508,8 @@ function sendIntentReportandFindR1(name,filename,req) {
       return;
     }
  //   console.log(data);
+ addTimestamp(data);
+
   //2. insert report in grapbdb
   extractTriplesandKG(data,`insert`,'text/turtle');
 
@@ -627,7 +635,7 @@ function postIntent(name,filename,req) {
 };
 
 ////////////////////////////////////////////////////////
-// PATCH intent               //
+// PATCH Intent               //
 ////////////////////////////////////////////////////////
 function patchIntent(name,filename) {
   fs.readFile('./ontologies/'+filename, 'utf8', (err, data) => {
@@ -690,6 +698,13 @@ mongoUtils.connect().then(db => {
 
   });
 };
+
+function addTimestamp (data) {
+  var date = new Date().toISOString();
+  var date_in_report= 'date_to_be_generated';
+  var a = data.indexOf(date_in_report);
+  return data.replace(date_in_report,"\"'"+date+"'\"");
+}
 
 function checkandSendReport(payload,req) {
   var filename;

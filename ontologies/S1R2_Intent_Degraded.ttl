@@ -25,7 +25,7 @@ ex:S1R2_Intent_Degraded
   imo:intentHander ex:IMF_Service ;
   icm:reportsAbout ex:S1_Intent_ConnectivityService ;
   # put in the live timestamp from the time the report is created:
-  icm:generated [ t:inXSDDateTimeStamp "'2022-12-01T10:30:10+10:00'"^^xsd:dateTime ] ;
+  icm:reportTimestamp [ t:inXSDDateTimeStamp date_to_be_generated^^xsd:dateTime ] ;
   icm:handlingState icm:StateDegraded ;
   icm:updateState icm:StateNoUpdate ;
   icm:reportNumber 2 ;
