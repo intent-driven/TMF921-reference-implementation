@@ -557,6 +557,7 @@ function sendIntentReportandFindR1(name,filename,req) {
 function wait(ms){
   var start = new Date().getTime();
   var end = start;
+  return
   while(end < start + ms) {
     end = new Date().getTime();
  }
@@ -710,6 +711,7 @@ function checkandSendReport(payload,req) {
   var filename;
  //Provisioning flow
   //S1R1 -> B1R2
+  wait(15000);
   if (payload.indexOf("S1R1")>0){ // check whether it's a resource intent
      filename = 'B1R2_Intent_Degraded.ttl'
      sendIntentReportandFindID('B1R2_Intent_Degraded',filename,req);;

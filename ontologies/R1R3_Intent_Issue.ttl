@@ -22,15 +22,15 @@ ex:R1R3_Intent_Issue
    imo:intentOwner ex:IMF_Service ;
    imo:intentHandler ex:IMF_Resource ;
    icm:reportsAbout ex:R1_Intent_Slice_Core ; 
-   icm:reportTimestamp [ t:inXSDDateTimeStamp date_to_be_generated^^xsd:dateTime ] ;
+    icm:reportTimestamp            date_to_be_generated^^xsd:dateTime ;
    icm:handlingState icm:StateDegraded ;
    icm:updateState icm:StateNoUpdate ;
    icm:reportNumber 3 ;
    cem:layer "'resource'" ;
    icm:hasExpectationReport
-                         ex:R1R3ER1_delivery,
-                                   ex:R1R3ER2_property ,
-                                   ex:R1R3ER3_reporting ;  
+                         ex:R1R3E1_delivery,
+                                   ex:R1R3E2_property ,
+                                   ex:R1R3E3_reporting ;  
 .
 
 ##### Targets #################################################################
@@ -40,10 +40,10 @@ ex:R1R3T1_CoreSlice
 .
 
 ##Delivery Expectation
-ex:R1R3ER1_delivery
+ex:R1R3E1_delivery
      a icm:ExpectationReport ;
         icm:reportsAbout ex:R1E1_delivery ;
-        icm:targetReport ex:R1R3T1_CoreSlice;
+        icm:target ex:R1R3T1_CoreSlice;
   icm:compliant [ a icm:ConditionReport ;
                   icm:reportsAbout ex:R1P1_delivery_type ;
 			 	  icm:deliveryDescription cat:CoreSlice ; 

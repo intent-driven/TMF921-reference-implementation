@@ -39,13 +39,14 @@ exports.processIntent = function(req) {
 
   filename = 'R1R1_Intent_Accepted.ttl'
   handlerUtils.sendIntentReport('R1R1_Intent_Accepted',filename,req);
-  console.log('log: B1 Report Accepted sent');
+  console.log('log: R1 Report Accepted sent');
 
 // 1. Intent Accepted
+handlerUtils.wait(60000);
 
 filename = 'R1R2_Intent_Compliant.ttl'
 handlerUtils.sendIntentReport('R1R2_Intent_Compliant',filename,req);
-console.log('log: B1 Report Accepted sent');
+console.log('log: R1 Report Compliant sent');
 };
 
 exports.patchIntent = function(req) {

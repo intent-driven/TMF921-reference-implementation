@@ -26,7 +26,7 @@ ex:S1R5_Intent_Compliant
   imo:intentHander ex:IMF_Service ;
   icm:reportsAbout ex:S1_Intent_ConnectivityService ;
   # put in the live timestamp from the time the report is created:
-  icm:reportTimestamp [ t:inXSDDateTimeStamp date_to_be_generated^^xsd:dateTime ] ;
+    icm:reportTimestamp            date_to_be_generated^^xsd:dateTime ;
   icm:handlingState icm:StateCompliant ;
   icm:updateState icm:StateNoUpdate ;
   icm:reportNumber 5 ;

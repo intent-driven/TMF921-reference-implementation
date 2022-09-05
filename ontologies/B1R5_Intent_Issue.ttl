@@ -22,14 +22,14 @@ ex:B1R5_Intent_Issue
     imo:intentOwner                ex:PSE_Customer ;
     imo:intentHandler              ex:IMF_Business ;
     icm:reportsAbout               ex:B1_PSE_Biz_Intent1 ;
-    icm:reportTimestamp            [ t:inXSDDateTimeStamp date_to_be_generated^^xsd:dateTime ] ;
+    icm:reportTimestamp            date_to_be_generated^^xsd:dateTime ;
     icm:handlingState icm:StateDegraded ;
     icm:updateState   icm:StateNoUpdate ;
     icm:reportNumber               5 ;
     cem:layer "'business'" ;
-    icm:hasExpectationReport       ex:B1R5ER1_delivery,
-                                   ex:B1R5ER2_property ,
-                                   ex:B1R5ER3_reporting ;
+    icm:hasExpectationReport       ex:B1R5E1_delivery,
+                                   ex:B1R5E2_property ,
+                                   ex:B1R5E3_reporting ;
 .
 ##### Targets #################################################################
 # Business target not yet selected and therefore the target is 
@@ -42,10 +42,10 @@ ex:B1R5T1_Capability
 .
 
 # --- Delivery Expectation Report ----------
-ex:B1R5ER1_delivery
+ex:B1R5E1_delivery
     a                   icm:ExpectationReport ;
     icm:reportsAbout    ex:B1E1_delivery ;
-    icm:targetReport    ex:B1R5T1_Capability ;
+    icm:target    ex:B1R5T1_Capability ;
     icm:compliant [ a icm:ConditionReport ;
                  icm:reportsAbout ex:B1P1_delivery_type ;
 			 	  icm:deliveryDescription cat:Connectivity_DynamicPrice ; 

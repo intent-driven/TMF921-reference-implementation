@@ -25,14 +25,14 @@ ex:S1R1_Intent_Accepted
   imo:intentHander ex:IMF_Service ;
   icm:reportsAbout ex:S1_Intent_ConnectivityService ;
   # put in the live timestamp from the time the report is created:
-  icm:reportTimestamp [ t:inXSDDateTimeStamp date_to_be_generated^^xsd:dateTime ] ;
+    icm:reportTimestamp            date_to_be_generated^^xsd:dateTime ;
   icm:handlingState icm:StateDegraded ;
   icm:updateState icm:StateNoUpdate ;
   icm:reportNumber 1 ;
   cem:layer "'service'" ;
-  icm:hasExpectationReport ex:S1R1ER1_delivery ,
-                           ex:S1R1ER2_property ,
-                           ex:S1R1ER3_reporting ; 
+  icm:hasExpectationReport ex:S1R1E1_delivery ,
+                           ex:S1R1E2_property ,
+                           ex:S1R1E3_reporting ; 
 .
 
 ##### Targets #################################################################
