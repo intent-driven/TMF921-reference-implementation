@@ -37,7 +37,7 @@ ex:B1R4_Intent_Compliant
 # Target for reporting is still the intent and therefore the same target from 
 # the intent is used
 ex:B1R4T1_Capability 
-  a icm:IndividualTarget ;
+#  a icm:IndividualTarget ;
   rdfs:element ex:Capability001 ;
 .
 

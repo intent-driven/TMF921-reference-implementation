@@ -39,7 +39,7 @@ ex:S1R4_Intent_Issue
 ##### Targets #################################################################
 # Service resource is selected 
 ex:S1R4T1_Service 
-  a icm:IndividualTarget ;
+#  a icm:IndividualTarget ;
   rdfs:element ex:ConnectivityService001 ;
 .
 

@@ -35,7 +35,7 @@ ex:R1R3_Intent_Issue
 
 ##### Targets #################################################################
 ex:R1R3T1_CoreSlice 
-  a icm:IndividualTarget ;
+#  a icm:IndividualTarget ;
   rdfs:element ex:CoreSlice001 ;
 .
 

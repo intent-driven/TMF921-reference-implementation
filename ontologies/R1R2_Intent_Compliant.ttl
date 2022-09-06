@@ -35,7 +35,7 @@ ex:R1R2_Intent_Compliant
 
 ##### Targets #################################################################
 ex:R1R2T1_CoreSlice 
-  a icm:IndividualTarget ;
+#  a icm:IndividualTarget ;
   rdfs:element ex:CoreSlice001 ;
 .
 
@@ -44,7 +44,7 @@ ex:R1R2E1_delivery
      a icm:ExpectationReport ;
         icm:reportsAbout ex:R1E1_delivery ;
         icm:target ex:R1R2T1_CoreSlice;
-  icm:compliant [ a icm:ConditionReport ,
+  icm:compliant [ a icm:ConditionReport ;
                   icm:reportsAbout ex:R1P1_delivery_type ;
 			 	  icm:deliveryDescription cat:CoreSlice ; 
                   icm:deliveryType ex:ServiceType_CoreSlice ; 

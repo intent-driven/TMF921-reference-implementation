@@ -130,7 +130,6 @@ exports.deleteIntent = function(req, res, next) {
 /* matching isRestfulDestroy */
 
   const id = String(req.swagger.params.id.value);
-
   var query = {
     id: id
   };
@@ -181,7 +180,7 @@ exports.deleteIntent = function(req, res, next) {
         } else {
           sendError(res, new TError(TErrorEnum.RESOURCE_NOT_FOUND, "No resource with given id found"));
         }
-      }).catch(error => sendError(res, internalError))
+      }).catch(error => console.log('error in expression process: internalError'))
   })
     .then(db => {
       db.collection(resourceType)
@@ -193,9 +192,21 @@ exports.deleteIntent = function(req, res, next) {
           } else {
             sendError(res, new TError(TErrorEnum.RESOURCE_NOT_FOUND, "No resource with given id found"));
           }
-        }).catch(error => sendError(res, internalError))
+        }).catch(error => sendDoc(res, 204, {}))
     })
-    .catch(error => sendError(res, internalError));
+    .catch(error => sendDoc(res, 204, {}));
+
+///////////////////////////
+//now delete S1 qnd R1 too//
+////////////////////////////
+
+  //R1
+  intentHandler.deleteIntentbyName('R1_PATCH_Intent_Slice_Core',req,false);
+  //R1
+  intentHandler.deleteIntentbyName('R1_Intent_Slice_Core',req,false);
+  //S1
+  intentHandler.deleteIntentbyName('S1_Intent_ConnectivityService',req,true);
+
 
 };
 

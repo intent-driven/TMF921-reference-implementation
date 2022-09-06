@@ -39,7 +39,7 @@ ex:S1R5_Intent_Compliant
 ##### Targets #################################################################
 # Service resource is selected 
 ex:S1R5T1_Service 
-  a icm:IndividualTarget ;
+#  a icm:IndividualTarget ;
   rdfs:element ex:ConnectivityService001 ;
 .
 

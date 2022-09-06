@@ -35,7 +35,7 @@ ex:R1R4_Intent_Compliant
 
 ##### Targets #################################################################
 ex:R1R4T1_CoreSlice 
-  a icm:IndividualTarget ;
+#  a icm:IndividualTarget ;
   rdfs:element ex:CoreSlice001 ;
 .
 

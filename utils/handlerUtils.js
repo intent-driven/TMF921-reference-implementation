@@ -434,8 +434,8 @@ function sendIntentReport(name,filename,req) {
   insertIntentReport(name,data,req);
   //4. create event
 //  inside the previous step as async
+  wait(10000)
 
-  wait(wait_number);
 });
 }
 
@@ -494,7 +494,7 @@ function sendIntentReportandFindID(name,filename,req) {
  //4. create event
 //  inside the previous step as async
 
-  wait(wait_number);
+
 });
 }
 
@@ -550,14 +550,13 @@ function sendIntentReportandFindR1(name,filename,req) {
  //4. create event
 //  inside the previous step as async
 
-  wait(wait_number);
+
 });
 }
 
 function wait(ms){
   var start = new Date().getTime();
   var end = start;
-  return
   while(end < start + ms) {
     end = new Date().getTime();
  }
@@ -611,7 +610,6 @@ function postIntent(name,filename,req) {
       console.error(err);
       return;
     }
-
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
        if (this.readyState == 4 && this.status == 200) {
@@ -671,7 +669,7 @@ mongoUtils.connect().then(db => {
            //alert(this.responseText);
         }
       };
-    var url = 'http://localhost:8080/tmf-api/intent/v4/intent/'+id;
+    var url = 'http://10.220.239.92:8092/tmf-api/intent/v4/intent/'+id;
     console.log('URL: '+url);
     xhttp.open("PATCH", url, true);
     xhttp.setRequestHeader("Content-Type", "application/json");
@@ -711,7 +709,7 @@ function checkandSendReport(payload,req) {
   var filename;
  //Provisioning flow
   //S1R1 -> B1R2
-  wait(15000);
+
   if (payload.indexOf("S1R1")>0){ // check whether it's a resource intent
      filename = 'B1R2_Intent_Degraded.ttl'
      sendIntentReportandFindID('B1R2_Intent_Degraded',filename,req);;

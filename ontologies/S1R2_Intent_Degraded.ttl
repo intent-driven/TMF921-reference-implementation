@@ -68,8 +68,8 @@ ex:S1R2E1_delivery
                ] ;      
   icm:degraded [ a icm:ConditionReport ;
                   icm:reportsAbout ex:S1P2_delivery_condition ; 
-                  icm:observation [ a met:NetworkUtilization ;
-                                      icm:observed [ a icm:Quantity ;
+                  icm:observation [ icm:latestValueOf met:NetworkUtilization ;
+                                      icm:observed [ a icm:value ;
                                           # put in the value from the knowledge base
                                           icm:value 0.54 ;
                                           ];
