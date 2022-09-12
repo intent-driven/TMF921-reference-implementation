@@ -436,7 +436,7 @@ function sendIntentReport(name,filename,req) {
   insertIntentReport(name,data,req);
   //4. create event
 //  inside the previous step as async
-  wait(10000)
+//  wait(10000)
 
 });
 }
