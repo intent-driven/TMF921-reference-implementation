@@ -220,8 +220,13 @@ exports.deleteIntent = function(query, resourceType) {
       return;
     }
 
+    var deleteOrderJson = JSON.parse(deleteOrder);
+    //add the service intent id
+    deleteOrderJson.orderItems[0].service.publicIdentifier = query.id;
+    console.log("SERVICE ORDER = " + JSON.stringify(deleteOrderJson));
+
     try {
-      soUtils.sendServiceOrder(deleteOrder);
+      soUtils.sendServiceOrder(JSON.stringify(deleteOrderJson));
     }
     catch (error) {
       console.error('SIH: deleteIntent failed with error:', error);
