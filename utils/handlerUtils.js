@@ -273,7 +273,7 @@ function initGraphdbEndpointAndContext() {
     const { EnapsoGraphDBClient } = require('@innotrade/enapso-graphdb-client');
     // connection data to the GraphDB instance
     const GRAPHDB_BASE_URL = kgConfig.GRAPHDB_BASE_URL,
-      GRAPHDB_ISSUE_REPOSITORY = kgConfig.GRAPHDB_ISSUE_REPOSITORY,
+      GRAPHDB_INTENT_REPOSITORY = kgConfig.GRAPHDB_INTENT_REPOSITORY,
       GRAPHDB_USERNAME = kgConfig.GRAPHDB_USERNAME,
       GRAPHDB_PASSWORD = kgConfig.GRAPHDB_PASSWORD,
       GRAPHDB_CONTEXT_TEST = "http://www.example.org/IntentNamespace#",
@@ -298,7 +298,7 @@ function initGraphdbEndpointAndContext() {
 
     graphDBEndpoint = new EnapsoGraphDBClient.Endpoint({
       baseURL: GRAPHDB_BASE_URL,
-      repository: GRAPHDB_ISSUE_REPOSITORY,
+      repository: GRAPHDB_INTENT_REPOSITORY,
       prefixes: DEFAULT_PREFIXES
     });
 
