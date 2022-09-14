@@ -46,10 +46,10 @@ ex:R1R4E1_delivery
         icm:target ex:R1R4T1_CoreSlice;
   icm:compliant [ a icm:ConditionReport ;
                   icm:reportsAbout ex:R1P1_delivery_type ;
-			 	  icm:deliveryDescription cat:CoreSlice ; 
+               icm:deliveryDescription cat:CoreSlice ; 
                   icm:deliveryType ex:ServiceType_CoreSlice ; 
-	  			  icm:reason icm:ReasonConditionTrue ;
-                ] ;		
+                icm:reason icm:ReasonConditionTrue ;
+                ] ;      
 .
 
 
@@ -57,65 +57,65 @@ ex:R1R4E1_delivery
 ex:R1R4E2_property
     a                   icm:ExpectationReport ;
     icm:reportsAbout    ex:R1E2_property ;
-    icm:target          ex:R1R4T1_Capability ;
+    icm:target          ex:R1R4T1_CoreSlice ;
     icm:compliant [ a icm:ConditionReport ;
-                 # Compliant, becasue the bandwidth is high enough
-                 icm:reportsAbout ex:R1P5_bandwidth ;
-				 icm:observation [ a met:CoreSliceBandwidth ;
-				                   icm:observed [ a icm:Quantity ;
-								                  # put in the value from the knowledge base
-								                  icm:value 1.2 ;
-												  icm:unit80000 "'GBit/s'" ;
-												] ;
-									];
-                 icm:reason icm:ReasonConditionTrue ;
-			   ] ,
+                      # Compliant, becasue the bandwidth is high enough
+                      icm:reportsAbout ex:R1P5_bandwidth ;
+                      icm:observation [ a met:CoreSliceBandwidth ;
+                                          icm:observed [ a icm:Quantity ;
+                                          # put in the value from the knowledge base
+                                          icm:value 1.2 ;
+                                          icm:unit80000 "'GBit/s'" ;
+                                        ] ;
+                      ];
+                      icm:reason icm:ReasonConditionTrue ;
+               ] ,
                [ a icm:ConditionReport ;
                  icm:reportsAbout ex:R1P2_packet_loss ;
-				 icm:observation [ a met:SlicePacketLossRate ;
-				                   icm:observed [ a icm:Quantity ;
-								                  icm:value 0.009812 ;
-												] ;
-									];
-               icm:reason icm:ReasonConditionTrue ;
-			   ] ,
+                 icm:observation [ a met:SlicePacketLossRate ;
+                                      icm:observed [ a icm:Quantity ;
+                                                         icm:value 0.009812 ;
+                                                     ] ;
+                                   ];
+                 icm:reason icm:ReasonConditionTrue ;
+               ] ,
                [ a icm:ConditionReport ;
                  icm:reportsAbout ex:R1P3_availability ;
-				 icm:observation [ a met:ServiceAvailability ;
-				                   icm:observed [ a icm:Quantity ;
-								                  icm:value 0.99991 ;
-												] ;
-									];
+                 icm:observation [ a met:ServiceAvailability ;
+                                      icm:observed [ a icm:Quantity ;
+                                                         icm:value 0.99991 ;
+                                                     ] ;
+                                   ];
                  icm:reason icm:ReasonConditionTrue ;
-			   ] ,
+               ] ,
                [ a icm:ConditionReport ;
                  icm:reportsAbout ex:R1P4_jitter ;
-				 icm:observation [ a met:CoreSliceJitter ;
-				                   icm:observed [ a icm:Quantity ;
-								                  icm:value 23 ;
-												] ;
-									];
-               	 icm:reason icm:ReasonConditionTrue ;
-			   ] ,
+                 icm:observation [ a met:CoreSliceJitter ;
+                                     icm:observed [ a icm:Quantity ;
+                                                        icm:value 23 ;
+                                                   ] ;
+                                   ];
+                icm:reason icm:ReasonConditionTrue ;
+               ] ,
                [ a icm:ConditionReport ;
                  icm:reportsAbout ex:R1P6_latency ;
-				 icm:observation [ a met:CoreSliceLatency ;
-				                   icm:observed [ a icm:Quantity ;
-								                  icm:value 1.3 ;
-                                                  icm:unit80000 "'ms'" ;
-               									] ;
-									];
+                 icm:observation [ a met:CoreSliceLatency ;
+                                      icm:observed [ a icm:Quantity ;
+                                                        icm:value 1.3 ;
+                                                       icm:unit80000 "'ms'" ;
+                                                     ] ;
+                                   ];
                 icm:reason icm:ReasonConditionTrue ;
-			   ] ,
+               ] ,
                [ a icm:ConditionReport ;
-                 icm:reportsAbout ex:R1P7_users ;
-				 icm:observation [ a met:CoreConnectedUsers ;
-				                   icm:observed [ a icm:Quantity ;
-								                  icm:value 89 ;
-               									] ;
-									];
+                 icm:reportsAbout ex:R1P8_users ;
+                 icm:observation [ a met:CoreConnectedUsers ;
+                                   icm:observed [ a icm:Quantity ;
+                                                     icm:value 89 ;
+                                                 ] ;
+                           ];
                 icm:reason icm:ReasonConditionTrue ;
-			   ] ;
+            ] ;
 .
 
 
