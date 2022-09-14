@@ -47,7 +47,7 @@ exports.processIntent = function(req) {
   console.log('log: R1 Report Accepted sent');
 
 // 1. Intent Accepted
-handlerUtils.wait(60000);
+//handlerUtils.wait(60000);
 
 filename = 'R1R2_Intent_Compliant.ttl'
 handlerUtils.sendIntentReport('R1R2_Intent_Compliant',filename,req);

@@ -219,6 +219,7 @@ function sendHealServiceOrder(serviceId) {
     var healOrderJson = JSON.parse(healOrder);
     healOrderJson.orderItems[0].service.characteristics[0].value = "2";
     healOrderJson.orderItems[0].service.characteristics[1].value = "100";
+    healOrderJson.orderItems[0].service.publicIdentifier = serviceId+'_override';
     healOrderJson.orderItems[0].service.serviceRelationship[0].service.publicIdentifier = serviceId;
     console.log("SERVICE ORDER = " + JSON.stringify(healOrderJson));
 

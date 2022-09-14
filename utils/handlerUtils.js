@@ -294,11 +294,13 @@ function kgOperation(triples,action) {
     var triple = triples [i];
     var q = action + ` data { graph <${GRAPHDB_CONTEXT_TEST}> { ` + triple.subject +` `+ triple.predicate +` `+ triple.object + ` }}`;
     q = q.replace(/_:/g,'ex:');
-    console.log('query: '+q); 
+    //console.log('query: '+q); 
     graphDBEndpoint
     .update( q)
     .then((result) => {
-      console.log('OK');})
+      //console.log('OK');
+	    null;
+    })
     .catch((err) => {
       console.log("failed "+ action + " " + err.message);});
   }
@@ -434,7 +436,7 @@ function sendIntentReport(name,filename,req) {
   insertIntentReport(name,data,req);
   //4. create event
 //  inside the previous step as async
-  wait(10000)
+//  wait(10000)
 
 });
 }
