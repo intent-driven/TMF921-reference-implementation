@@ -25,6 +25,9 @@ var swaggerDoc = null;
 
 const EXPRESSION = "expression";
 
+var graphDBEndpoint = null;
+var graphDBContext = null;
+
 //Wait between reports, 10s
 const wait_number = 0;
 
@@ -232,59 +235,8 @@ function extractTriplesandKG (expression,action,type) {
 ////////////////////////////////////////////////////////
 function kgOperation(triples,action) {
 // Conf file for KG
-  var conf;
-  try {
-      conf = require('../kgconfig.json');
-      console.log("Loaded kgconfig");
-  } catch (e) {
-      console.log(e)
-  }
-
-  //  Now load into GraphDB
-  const { EnapsoGraphDBClient } = require('@innotrade/enapso-graphdb-client');
-    // connection data to the run GraphDB instance
-    const GRAPHDB_BASE_URL = conf.GRAPHDB_BASE_URL,
-          GRAPHDB_REPOSITORY = conf.GRAPHDB_REPOSITORY,
-          GRAPHDB_USERNAME = conf.GRAPHDB_USERNAME,
-          GRAPHDB_PASSWORD = conf.GRAPHDB_PASSWORD,
-          GRAPHDB_CONTEXT_TEST = "http://www.example.org/IntentNamespace#",
-          GRAPHDB_CONTEXT_SHACL = 'http://rdf4j.org/schema/rdf4j#SHACLShapeGraph';
-  const DEFAULT_PREFIXES = [
-    EnapsoGraphDBClient.PREFIX_OWL,
-    EnapsoGraphDBClient.PREFIX_RDF,
-    EnapsoGraphDBClient.PREFIX_RDFS,
-    EnapsoGraphDBClient.PREFIX_XSD,
-    EnapsoGraphDBClient.PREFIX_PROTONS,
-    {
-        prefix: "ex",
-        iri: "http://www.example.org/IntentNamespace#",
-    },
-    {   prefix: "icm",
-        iri: "http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#"
-    },
-    {   prefix: "imo",
-      iri: "http://tio.models.tmforum.org/tio/v1.0.0/IntentManagementOntology#"
-    }
-  ];
-
-
-  console.log('initialized KG');
-  let graphDBEndpoint = new EnapsoGraphDBClient.Endpoint({
-    baseURL: GRAPHDB_BASE_URL,
-    repository: GRAPHDB_REPOSITORY,
-    prefixes: DEFAULT_PREFIXES
-  });
-  console.log('end point KG obtained');
-
-  // connect and authenticate
-  graphDBEndpoint.login(GRAPHDB_USERNAME,GRAPHDB_PASSWORD)
-  .then((result) => {
-    console.log(result);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-
+  initGraphdbEndpointAndContext();
+  
   const intent_iri = '<http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#Intent>';
   const intentreport_iri = '<http://tio.models.tmforum.org/tio/v1.0.0/IntentCommonModel#IntentReport>';
 
@@ -292,14 +244,14 @@ function kgOperation(triples,action) {
   
   for (var i=0; i<triples.length;i++) {
     var triple = triples [i];
-    var q = action + ` data { graph <${GRAPHDB_CONTEXT_TEST}> { ` + triple.subject +` `+ triple.predicate +` `+ triple.object + ` }}`;
+    var q = action + ` data { graph <${graphDBContext}> { ` + triple.subject +` `+ triple.predicate +` `+ triple.object + ` }}`;
     q = q.replace(/_:/g,'ex:');
     //console.log('query: '+q); 
     graphDBEndpoint
     .update( q)
     .then((result) => {
       //console.log('OK');
-	    null;
+      null;
     })
     .catch((err) => {
       console.log("failed "+ action + " " + err.message);});
@@ -309,6 +261,93 @@ function kgOperation(triples,action) {
 
 }
 
+function initGraphdbEndpointAndContext() {
+  if ((graphDBEndpoint == null) || (graphDBContext == null)){
+    var kgConfig;
+    try {
+      kgConfig = require('../kgconfig.json');
+    } catch (e) {
+      console.log(e)
+    }
+
+    const { EnapsoGraphDBClient } = require('@innotrade/enapso-graphdb-client');
+    // connection data to the GraphDB instance
+    const GRAPHDB_BASE_URL = kgConfig.GRAPHDB_BASE_URL,
+      GRAPHDB_ISSUE_REPOSITORY = kgConfig.GRAPHDB_ISSUE_REPOSITORY,
+      GRAPHDB_USERNAME = kgConfig.GRAPHDB_USERNAME,
+      GRAPHDB_PASSWORD = kgConfig.GRAPHDB_PASSWORD,
+      GRAPHDB_CONTEXT_TEST = "http://www.example.org/IntentNamespace#",
+      GRAPHDB_CONTEXT_SHACL = 'http://rdf4j.org/schema/rdf4j#SHACLShapeGraph';
+    const DEFAULT_PREFIXES = [
+      EnapsoGraphDBClient.PREFIX_OWL,
+      EnapsoGraphDBClient.PREFIX_RDF,
+      EnapsoGraphDBClient.PREFIX_RDFS,
+      EnapsoGraphDBClient.PREFIX_XSD,
+      EnapsoGraphDBClient.PREFIX_PROTONS,
+      {
+        prefix: "ex",
+        iri: "http://www.example.org/IntentNamespace#",
+      },
+      {
+        prefix: "cem",
+        iri: "http://tio.labs.tmforum.org/tio/v1.0.0/CatalystExtensionModel#"
+      }
+    ];
+
+    graphDBContext = GRAPHDB_CONTEXT_TEST;
+
+    graphDBEndpoint = new EnapsoGraphDBClient.Endpoint({
+      baseURL: GRAPHDB_BASE_URL,
+      repository: GRAPHDB_ISSUE_REPOSITORY,
+      prefixes: DEFAULT_PREFIXES
+    });
+
+    // connect and authenticate
+    graphDBEndpoint.login(GRAPHDB_USERNAME, GRAPHDB_PASSWORD)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((err) => {
+        console.log(err);
+        return;
+      });
+  }
+}
+
+function deleteAllKGData() {
+  initGraphdbEndpointAndContext();
+
+  var query = `select * from <${graphDBContext}> where {?s ?p ?o}`;
+  //console.log('QUERY3 = ' + query);
+
+  graphDBEndpoint
+  .query(query, { transform: 'toJSON' })
+  .then((result) => {
+  //console.log('QUERY3 OK');
+  //console.log('RESULT = ' + JSON.stringify(result))
+
+    if (result.success) {
+      for (var j = 0; j < result.total; j++) {
+        query = `delete data {graph <${graphDBContext}> { <${result.records[j].s}> <${result.records[j].p}> <${result.records[j].o}> }}`;
+        //console.log('QUERY4 = ' + query);
+
+        graphDBEndpoint
+        .update(query)
+        .then((result) => {
+          //console.log('QUERY4 OK');
+          //console.log('RESULT = ' + JSON.stringify(result))
+        })
+        .catch((err) => {
+          console.log("failed to delete from graphDB " + err.message);
+        });
+      }
+    }
+  })
+  .catch((err) => {
+    console.log("failed to read graphDB " + err.message);
+  });
+
+}
 ////////////////////////////////////////////////////////
 // Uses the intent report expression that was read from hardcoded file  //
 // creates full intent report message                 //
@@ -795,5 +834,6 @@ module.exports = {
   patchIntent,
   wait,
   createIntentMessage,
-  checkandSendReport
+  checkandSendReport,
+  deleteAllKGData
 				   			 };

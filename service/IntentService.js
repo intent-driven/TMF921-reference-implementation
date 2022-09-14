@@ -207,6 +207,8 @@ exports.deleteIntent = function(req, res, next) {
   //S1
   intentHandler.deleteIntentbyName('S1_Intent_ConnectivityService',req,true);
 
+  //delete all data from KG in case there is something still there
+  handlerUtils.deleteAllKGData();
 
 };
 
