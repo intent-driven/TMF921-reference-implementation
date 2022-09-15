@@ -346,6 +346,7 @@ exports.patchIntent = function(req, res, next) {
    id: id
   };
 
+  var old_expression
   query = swaggerUtils.updateQueryServiceType(query, req, 'id');
 
   swaggerUtils.getPayload(req)
@@ -362,7 +363,8 @@ exports.patchIntent = function(req, res, next) {
             return sendError(res, new TError(TErrorEnum.RESOURCE_NOT_FOUND,"No resource with given id"));
           }
 
-          payload = swaggerUtils.updatePayloadServiceType(payload, req, 'id');
+        old_expression=payload.expression;
+        payload = swaggerUtils.updatePayloadServiceType(payload, req, 'id');
           
           // then update and return the complete resource
           db.collection(resourceType)
@@ -380,7 +382,7 @@ exports.patchIntent = function(req, res, next) {
                   /* XXXXXXXXXXXXX Huawei IRC - Start  XXXXXXXXXXXXXXXx*/
                   // calls the intent handler for the knowledge extraction and storage
                               if ((expression.indexOf("R1")>0) || (expression.indexOf("R2")>0)){ // check whether it's a resource intent
-                                intentHandler.patchIntent(req);
+                                intentHandler.patchIntent(req,old_expression);
                               }
                   /* XXXXXXXXXXXXX Huawei IRC - End  XXXXXXXXXXXXXXXx*/                
 
