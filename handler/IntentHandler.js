@@ -54,7 +54,10 @@ handlerUtils.sendIntentReport('R1R2_Intent_Compliant',filename,req);
 console.log('log: R1 Report Compliant sent');
 };
 
-exports.patchIntent = function(req) {
+exports.patchIntent = function(req,old_expression) {
+
+  //Delete old expression from KG 
+  handlerUtils.extractTriplesandKG(old_expression.expressionValue,`delete`,'text/turtle');
 
   //extract expression
   const expression = handlerUtils.getExpression(req);
